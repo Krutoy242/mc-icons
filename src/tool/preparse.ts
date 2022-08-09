@@ -2,7 +2,7 @@ import * as fs from 'fs-extra'
 import _ from 'lodash'
 import iconIterator from 'mc-iexporter-iterator'
 
-import { Item, Tree, tree } from './Tree'
+import { Item, Tree, tree } from '../Tree'
 
 const dot = () => process.stdout.write('.')
 
