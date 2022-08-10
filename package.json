@@ -3,25 +3,27 @@
   "name": "mc-icons",
   "version": "1.0.5",
   "description": "Parsing markdown file to replace item names into item icons.",
-  "main": "build/index.js",
-  "bin": "build/index.js",
+  "main": "./build/index.js",
+  "bin": "./build/index.js",
   "repository": "https://github.com/Krutoy242/E2E-E-icons",
   "license": "MIT",
   "keywords": [],
   "scripts": {
     "build": "tsc",
-    "preparse": "ts-node src/preparse.ts"
+    "preparse": "ts-node src/tool/preparse.ts --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\""
   },
   "engines": {
-    "node": ">=10"
+    "node": ">=14.16"
   },
   "dependencies": {
     "@committed/trie-search": "^0.1.0",
+    "boxen": "5.1.2",
     "chalk": "^4.1.2",
-    "eslint-config-alloy": "^4.5.1",
+    "fast-glob": "^3.2.11",
     "fast-levenshtein": "^3.0.0",
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
+    "log-update": "4",
     "mc-iexporter-iterator": "^1.0.0",
     "terminal-kit": "^2.4.0",
     "yargs": "^17.4.0"
@@ -36,11 +38,13 @@
     "@typescript-eslint/eslint-plugin": "^5.16.0",
     "@typescript-eslint/parser": "^5.16.0",
     "eslint": "^8.12.0",
+    "eslint-config-alloy": "^4.6.2",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-functional": "^4.2.0",
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-prettier": "^4.0.0",
+    "mc-gatherer": "^1.2.0",
     "prettier": "^2.6.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.6.3"

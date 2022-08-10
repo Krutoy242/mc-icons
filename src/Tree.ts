@@ -24,10 +24,13 @@ export class ConstituentTree {
   // source -> entry -> meta -> nbtHash -> sNBT
   public tree: Tree = {}
 
-  public add(item: Item): void {
+  public add(item: Item): boolean {
+    if (this.tree[item.source]?.[item.entry]?.[item.meta]?.[item.hash])
+      return false
     ;(((this.tree[item.source] ??= {})[item.entry] ??= {})[item.meta] ??= {})[
       item.hash
     ] = item.nbt
+    return true
   }
 }
 
