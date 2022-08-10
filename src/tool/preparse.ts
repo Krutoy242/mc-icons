@@ -1,4 +1,5 @@
-import { mkdirSync, readFileSync } from 'fs'
+/* eslint-disable @typescript-eslint/no-invalid-this */
+import { existsSync, mkdirSync, readFileSync } from 'fs'
 import { copyFile } from 'fs/promises'
 import { join, parse } from 'path'
 
@@ -7,6 +8,8 @@ import * as fs from 'fs-extra'
 import _ from 'lodash'
 import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
 import iconIterator from 'mc-iexporter-iterator'
+import hash from 'object-hash'
+import { PNG } from 'pngjs'
 import yargs from 'yargs'
 
 import { Item, Tree, tree } from '../Tree'
@@ -47,18 +50,28 @@ function parseJEIEName(fileName: string) {
   }
 }
 
+function getHash(filePath: string): Promise<string> {
+  return new Promise<string>((resolve) => {
+    fs.createReadStream(filePath)
+      .pipe(new PNG({ filterType: 4 }))
+      .on('parsed', function () {
+        resolve(hash([...this.data]))
+      })
+  })
+}
+
 init()
 async function init() {
   let log = category('JEIExporter')
 
-  log('Generating nbt hash map...')
-
+  log('Open nameMap.json...')
   const nameMap = getNameMap(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')
   )
 
   const sNbtMap: { [hash: string]: string } = {}
 
+  log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
     const [_source, _name, _meta, nbtHash] = id.split(':')
     const sNbt: string = (nameData as any)?.tag
@@ -68,59 +81,111 @@ async function init() {
   })
 
   log('Grabbing icons from places...')
+  const imageHashMap: { [hash: string]: string } = {}
+
+  // Manually Predefined images
+  fast_glob.sync('*.png', { cwd: 'i/placeholder' }).forEach((file) => {
+    addImage(join('i/placeholder', file))
+  })
+
+  function addImage(imgPath: string, newImgPath?: string): Promise<boolean> {
+    return new Promise<boolean>((resolve) => {
+      getHash(imgPath)
+        .then((hash) => {
+          const found = imageHashMap[hash]
+          if (found) return resolve(false)
+          imageHashMap[hash] = newImgPath ?? imgPath
+          if (newImgPath === undefined) return resolve(false)
+          return copyFile(imgPath, newImgPath)
+        })
+        .then(() => {
+          resolve(true)
+        })
+    })
+  }
+
+  let skipped = 0
+  let total = 0
   const jeiePath = join(argv.mc, '/exports/items')
   await handleJEIEFile('fluid', 'fluid')
   await handleJEIEFile('item')
 
-  function handleJEIEFile(subfolder: string, source?: string) {
+  async function handleJEIEFile(subfolder: string, source?: string) {
     const folder = join(jeiePath, subfolder)
-    const files = fast_glob.sync('*.png', { cwd: folder })
-    let total = 0
-    return Promise.all(
-      files.map((file, i) => {
-        const name = parse(file).name
-        let fileSource: string
-        if (source) {
-          addToTree(source, name, 0, '')
-          fileSource = source
-        } else {
-          const base = parseJEIEName(name)
-          fileSource = base.source
-          addToTree(
-            base.source,
-            base.name,
-            base.meta,
-            base.hash,
-            sNbtMap[base.hash]
-          )
-        }
+    const files = fast_glob.sync('*.png', { cwd: folder }).slice(0, 400)
+    let lastFolder = ''
 
-        const dest = join('./i/', fileSource)
-        if (i === 0) mkdirSync(dest)
-        const newFileName = source
-          ? file
-          : file.substring(fileSource.length + 2)
-        const p = copyFile(join(folder, file), join(dest, newFileName))
-        p.then(() => log('Files: ', total++, '/', files.length))
-        return p
-      })
-    )
+    function handleFile(file: string) {
+      const name = parse(file).name
+      let fileSource: string
+      if (source) {
+        addToTree(source, name, 0, '')
+        fileSource = source
+      } else {
+        const base = parseJEIEName(name)
+        fileSource = base.source
+        addToTree(
+          base.source,
+          base.name,
+          base.meta,
+          base.hash,
+          sNbtMap[base.hash]
+        )
+      }
+
+      const dest = join('./i/', fileSource)
+      if (lastFolder !== dest) {
+        lastFolder = dest
+        if (!existsSync(lastFolder)) mkdirSync(dest)
+      }
+      const newFileName = source ? file : file.substring(fileSource.length + 2)
+
+      const p = addImage(join(folder, file), join(dest, newFileName))
+      p.then((isAdded) =>
+        log(
+          `Files: ${++total} / ${files.length}, skipped: ${
+            isAdded ? skipped : ++skipped
+          }`
+        )
+      )
+      return p
+    }
+
+    for (const chunk of _.chunk(files, 1000)) {
+      await Promise.all(chunk.map(handleFile))
+    }
   }
 
   // eslint-disable-next-line require-atomic-updates
   log = category('Icon Exporter')
   let i = 0
   let notAdded = 0
-  for (const icon of iconIterator(argv.icons)) {
-    const isAdded = addToTree(
-      icon.namespace,
-      icon.name,
-      icon.meta,
-      icon.hash ?? '',
-      icon.sNbt
+  log('Getting array...')
+  const iconExporter = [...iconIterator(argv.icons)].slice(0, 1000)
+  for (const chunk of _.chunk(iconExporter, 1000)) {
+    await Promise.all(
+      chunk.map((icon) => {
+        const newFileName = icon.fileName.substring(icon.namespace.length + 2)
+        addToTree(
+          icon.namespace,
+          icon.name,
+          icon.meta,
+          icon.hash ?? '',
+          icon.sNbt
+        )
+        const dest = join('i', icon.namespace)
+        if (!existsSync(dest)) mkdirSync(dest)
+        const p = addImage(icon.filePath, join(dest, newFileName + '.png'))
+        p.then((isAdded) => {
+          log(
+            `Files: ${++total} / ${iconExporter.length}, skipped: ${
+              isAdded ? skipped : ++skipped
+            }`
+          )
+        })
+        return p
+      })
     )
-    if (!isAdded) notAdded++
-    if (i++ % 50 === 0) log('Iterating ', i, notAdded)
   }
 
   const exportTree: Tree = {}

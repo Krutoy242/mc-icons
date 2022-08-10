@@ -6,6 +6,8 @@ specifiers:
   '@types/fs-extra': ^9.0.13
   '@types/lodash': ^4.14.180
   '@types/node': ^18.6.5
+  '@types/object-hash': ^2.2.1
+  '@types/pngjs': ^6.0.1
   '@types/terminal-kit': ^1.28.4
   '@types/yargs': ^17.0.10
   '@typescript-eslint/eslint-plugin': ^5.16.0
@@ -26,6 +28,8 @@ specifiers:
   log-update: '4'
   mc-gatherer: ^1.2.0
   mc-iexporter-iterator: ^1.0.0
+  object-hash: ^3.0.0
+  pngjs: ^6.0.0
   prettier: ^2.6.1
   terminal-kit: ^2.4.0
   ts-node: ^10.7.0
@@ -50,6 +54,8 @@ devDependencies:
   '@types/fs-extra': 9.0.13
   '@types/lodash': 4.14.182
   '@types/node': 18.6.5
+  '@types/object-hash': 2.2.1
+  '@types/pngjs': 6.0.1
   '@types/terminal-kit': 1.34.1
   '@types/yargs': 17.0.11
   '@typescript-eslint/eslint-plugin': 5.33.0_njno5y7ry2l2lcmiu4tywxkwnq
@@ -62,6 +68,8 @@ devDependencies:
   eslint-plugin-import: 2.26.0_qfqnhzzittf54udqwes54xx65q
   eslint-plugin-prettier: 4.2.1_h62lvancfh4b7r6zn2dgodrh5e
   mc-gatherer: 1.2.0
+  object-hash: 3.0.0
+  pngjs: 6.0.0
   prettier: 2.7.1
   ts-node: 10.9.1_cvilj4l3ytrlnvtlqw3tscihve
   typescript: 4.7.4
@@ -423,8 +431,18 @@ packages:
     resolution: {integrity: sha512-Xjt5ZGUa5WusGZJ4WJPbOT8QOqp6nDynVFRKcUt32bOgvXEoc6o085WNkYTMO7ifAj2isEfQQ2cseE+wT6jsRw==}
     dev: true
 
+  /@types/object-hash/2.2.1:
+    resolution: {integrity: sha512-i/rtaJFCsPljrZvP/akBqEwUP2y5cZLOmvO+JaYnz01aPknrQ+hB5MRcO7iqCUsFaYfTG8kGfKUyboA07xeDHQ==}
+    dev: true
+
   /@types/parse-json/4.0.0:
     resolution: {integrity: sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==}
+    dev: true
+
+  /@types/pngjs/6.0.1:
+    resolution: {integrity: sha512-J39njbdW1U/6YyVXvC9+1iflZghP8jgRf2ndYghdJb5xL49LYDB+1EuAxfbuJ2IBbWIL3AjHPQhgaTxT3YaYeg==}
+    dependencies:
+      '@types/node': 18.6.5
     dev: true
 
   /@types/responselike/1.0.0:
@@ -2864,6 +2882,11 @@ packages:
   /object-assign/4.1.1:
     resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
     engines: {node: '>=0.10.0'}
+    dev: true
+
+  /object-hash/3.0.0:
+    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
+    engines: {node: '>= 6'}
     dev: true
 
   /object-inspect/1.12.2:
