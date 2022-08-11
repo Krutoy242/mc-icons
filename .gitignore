@@ -9,5 +9,5 @@ coverage
 *.log
 yarn.lock
 .vscode
-assets
 *.tsbuildinfo
+i

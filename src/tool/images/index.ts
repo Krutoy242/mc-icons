@@ -19,7 +19,7 @@ function getHash(filePath: string): Promise<string> {
   })
 }
 
-const imageHashMap: { [hash: string]: string } = {}
+export const imageHashMap: { [hash: string]: string } = {}
 
 /**
  * Grab image from other folder and append it to repo
@@ -36,7 +36,10 @@ export function appendImage(
         const found = imageHashMap[imgHash]
         if (found) return resolve({ imgHash })
 
-        imageHashMap[imgHash] = newImgPath ?? imgPath
+        imageHashMap[imgHash] = (newImgPath ?? imgPath)
+          .replace(/^i\\/, '') // remove folder
+          .replace(/\.png$/, '') // remove ext
+          .replace(/\\/g, '/') // replace path slash
         if (newImgPath === undefined) return resolve({ imgHash })
 
         newHash = imgHash
@@ -78,7 +81,7 @@ export async function grabImages<T>(
         const newFileName = base.skipSubstr
           ? base.fileName
           : base.fileName.substring(base.source.length + 2)
-        const p = appendImage(base.filePath, join(dest, newFileName + '.png'))
+        const p = appendImage(base.filePath, join(dest, newFileName))
         p.then((res) => {
           tree.add({ ...base, imgHash: res.imgHash })
           onAdd(!!res.isAdded, arr.length)

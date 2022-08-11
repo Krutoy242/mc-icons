@@ -1,3 +1,5 @@
+import { readFileSync } from 'fs'
+
 import { TrieSearch } from '@committed/trie-search'
 import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
@@ -6,21 +8,12 @@ import _ from 'lodash'
 import { Base, Tree } from './Tree'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
-import parsed_items_json from './parsed_items.json'
-import parsed_names_json from './parsed_names.json'
 import { Unclear } from './unclear'
 
 import { CliOpts } from '.'
 
-const parsed_names = parsed_names_json as [
-  name: string,
-  id: `${string}${'' | `':'+${string}`}`,
-  n_meta?: number,
-  nbt?: string
-][]
-const parsed_items = parsed_items_json as Tree
-
 const write = (s = '.') => process.stdout.write(s)
+const loadJson = (f: string) => JSON.parse(readFileSync(f, 'utf8'))
 
 // ##################################################################
 //
@@ -56,9 +49,14 @@ const lookupTree: {
   }
 } = {}
 
+let parsed_names: [name: string, id: string, n_meta?: number, nbt?: string][]
+let parsed_items: Tree
+
 function initTrie() {
   if (trieSearch.size) return
   write(' Init dictionary...')
+  parsed_names ??= loadJson('src/assets/names.json')
+  parsed_items ??= loadJson('src/assets/items.json')
   parsed_names.forEach(([name, id, n_meta, nbt], i) => {
     const [modid, definition] = id.split(':')
     if (!name || !id) return

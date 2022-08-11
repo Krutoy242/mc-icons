@@ -10,8 +10,9 @@ import yargs from 'yargs'
 
 import { tree } from '../Tree'
 
-import { appendImage, grabImages } from './images'
+import { appendImage, grabImages, imageHashMap } from './images'
 import { category } from './log'
+import { generateNames } from './names'
 import { addNbt, sNbtMap } from './nbt'
 
 const argv = yargs(process.argv.slice(2))
@@ -83,7 +84,7 @@ async function init() {
 
   async function handleJEIEFile(subfolder: string, source?: string) {
     const folder = join(jeiePath, subfolder)
-    const files = fast_glob.sync('*.png', { cwd: folder }).slice(0, 400)
+    const files = fast_glob.sync('*.png', { cwd: folder }) // .slice(0, 400)
 
     await grabImages(
       files,
@@ -110,71 +111,40 @@ async function init() {
   log('Getting array...')
 
   const iconExporter: Iteratives[] = []
-  let maxIter = 1000
+  // let maxIter = 1000
   for (const o of iconIterator(argv.icons)) {
     iconExporter.push(o)
     if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)
-    if (--maxIter <= 0) break
+    // if (--maxIter <= 0) break
   }
   await grabImages(
     iconExporter,
-    (icon) => ({ ...icon, source: icon.namespace, entry: icon.name }),
+    (icon) => ({
+      ...icon,
+      source: icon.namespace,
+      entry: icon.name,
+      fileName: icon.fileName + '.png',
+    }),
     logFileAdd
   )
+
+  // eslint-disable-next-line require-atomic-updates
+  log = category('Export')
+  log('Saving ...')
 
   fs.writeFileSync(
     'src/assets/items.json',
     JSON.stringify(tree.export(), null, 2)
   )
   fs.writeFileSync('src/assets/nbt.json', JSON.stringify(sNbtMap, null, 2))
-
-  // ##################################################################
-  //
-  // Item names
-  //
-  // ##################################################################
-
-  const crafttweaker_raw = fs.readFileSync(
-    join(argv.mc, 'crafttweaker_raw.log'),
-    'utf8'
+  fs.writeFileSync(
+    'src/assets/images.json',
+    JSON.stringify(imageHashMap, null, 2)
   )
-  interface CrlogRawType {
-    [mod: string]: [
-      display: string,
-      stack: string,
-      snbt?: string,
-      burnTime?: number
-    ][]
-  }
-  const modMap: CrlogRawType = JSON.parse(crafttweaker_raw)?.all_items
-  if (!modMap) {
-    throw new Error('something wrong with parseCrafttweakerLog_raw')
-  }
-
-  const nameLines = _(modMap)
-    .values()
-    .flatten()
-    .map(([display, stack, snbt]) => {
-      if (display.startsWith('Cable Facade - ')) return undefined
-      const [mod, id, meta] = stack.split(':')
-      const arr: Array<string | number> = [
-        display.replace(/§./g, ''),
-        `${mod}:${id}`,
-      ]
-      const hasNBT = snbt && snbt !== '{}'
-      if (meta || hasNBT) arr.push(meta ?? 0)
-      if (hasNBT) arr.push(snbt)
-      return JSON.stringify(arr)
-    })
-    .filter()
-    .unshift(
-      ..._(modMap)
-        .entries()
-        .map(([modName, [[, id]]]) =>
-          JSON.stringify([modName, id.split(':')[0]])
-        )
-        .value()
+  fs.writeFileSync(
+    'src/assets/names.json',
+    generateNames(
+      fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
     )
-
-  fs.writeFileSync('src/assets/names.json', `[\n${nameLines.join(',\n')}\n]`)
+  )
 }
