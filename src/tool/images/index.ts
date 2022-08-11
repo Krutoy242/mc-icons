@@ -6,7 +6,7 @@ import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
 
-import { Item, tree } from '../../Tree'
+import { tree } from '../../Tree'
 
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -28,18 +28,20 @@ const imageHashMap: { [hash: string]: string } = {}
 export function appendImage(
   imgPath: string,
   newImgPath?: string
-): Promise<boolean> {
-  return new Promise<boolean>((resolve) => {
+): Promise<{ isAdded?: boolean; hash: string }> {
+  return new Promise((resolve) => {
+    let newHash: string
     getHash(imgPath)
       .then((hash) => {
         const found = imageHashMap[hash]
-        if (found) return resolve(false)
+        if (found) return resolve({ hash })
         imageHashMap[hash] = newImgPath ?? imgPath
-        if (newImgPath === undefined) return resolve(false)
+        if (newImgPath === undefined) return resolve({ hash })
+        newHash = hash
         return copyFile(imgPath, newImgPath)
       })
       .then(() => {
-        resolve(true)
+        resolve({ hash: newHash, isAdded: true })
       })
   })
 }
@@ -55,36 +57,22 @@ export async function grabImages<T>(
 
     /** Is skip substring */
     skipSubstr?: boolean
-
-    namespace: string
-    name: string
-    meta: number
-    hash: string
-    sNbt: string | undefined
-  },
+  } & Omit<Parameters<typeof tree.add>[0], 'imgHash'>,
   onAdd: (isAdded: boolean, wholeLength: number) => void
 ) {
   for (const chunk of _.chunk(arr, 1000)) {
     await Promise.all(
       chunk.map((icon) => {
         const base = getBase(icon)
-        tree.add(
-          new Item(
-            base.namespace,
-            base.name,
-            base.meta,
-            base.hash ?? '',
-            base.sNbt
-          )
-        )
-        const dest = join('i', base.namespace)
+        const dest = join('i', base.source)
         if (!existsSync(dest)) mkdirSync(dest)
         const newFileName = base.skipSubstr
           ? base.fileName
-          : base.fileName.substring(base.namespace.length + 2)
+          : base.fileName.substring(base.source.length + 2)
         const p = appendImage(base.filePath, join(dest, newFileName + '.png'))
-        p.then((isAdded) => {
-          onAdd(isAdded, arr.length)
+        p.then((res) => {
+          tree.add({ ...base, imgHash: res.hash })
+          onAdd(!!res.isAdded, arr.length)
         })
         return p
       })

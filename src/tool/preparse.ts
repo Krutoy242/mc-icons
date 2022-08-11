@@ -5,7 +5,7 @@ import fast_glob from 'fast-glob'
 import * as fs from 'fs-extra'
 import _ from 'lodash'
 import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
-import iconIterator from 'mc-iexporter-iterator'
+import iconIterator, { Iteratives } from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 
 import { tree } from '../Tree'
@@ -31,15 +31,15 @@ const argv = yargs(process.argv.slice(2))
 
 function parseJEIEName(fileName: string) {
   const groups = fileName.match(
-    /(?<source>.+?)__(?<name>.+?)__(?<meta>\d+)(__(?<hash>.+))?/
+    /(?<source>.+?)__(?<entry>.+?)__(?<meta>\d+)(__(?<hash>.+))?/
   )?.groups
 
   if (!groups) throw new Error('File Name cannot be parsed: ' + fileName)
   return {
-    namespace: groups.source,
-    name: groups.name,
+    source: groups.source,
+    entry: groups.entry,
     meta: Number(groups.meta) || 0,
-    hash: groups.hash,
+    nbtHash: groups.hash,
   }
 }
 
@@ -92,25 +92,17 @@ async function init() {
       files,
       (file) => {
         const name = parse(file).name
-        let result: Partial<ReturnType<Parameters<typeof grabImages>[1]>>
-        if (source) {
-          result = {
-            namespace: source,
-            name: name,
-            meta: 0,
-            hash: '',
-            skipSubstr: true,
-          }
-        } else {
-          result = parseJEIEName(name)
-          result.sNbt = sNbtMap[result.hash as string]
-        }
-
         return {
-          ...result,
           filePath: join(folder, file),
           fileName: file,
-        } as any
+          ...(source
+            ? {
+                source,
+                entry: name,
+                skipSubstr: true,
+              }
+            : parseJEIEName(name)),
+        }
       },
       logFileAdd
     )
@@ -119,10 +111,16 @@ async function init() {
   // eslint-disable-next-line require-atomic-updates
   log = category('Icon Exporter')
   log('Getting array...')
-  const iconExporter = [...iconIterator(argv.icons)].slice(0, 1000)
+
+  const iconExporter: Iteratives[] = []
+  let maxIter = 1000
+  for (const o of iconIterator(argv.icons)) {
+    iconExporter.push(o)
+    if (--maxIter <= 0) break
+  }
   await grabImages(
     iconExporter,
-    (icon) => ({ ...icon, hash: icon.hash ?? '', sNbt: icon.sNbt }),
+    (icon) => ({ ...icon, source: icon.namespace, entry: icon.name }),
     logFileAdd
   )
 
