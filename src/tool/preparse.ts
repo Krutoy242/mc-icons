@@ -12,6 +12,7 @@ import { tree } from '../Tree'
 
 import { appendImage, grabImages } from './images'
 import { category } from './log'
+import { addNbt, sNbtMap } from './nbt'
 
 const argv = yargs(process.argv.slice(2))
   .alias('h', 'help')
@@ -52,15 +53,11 @@ async function init() {
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')
   )
 
-  const sNbtMap: { [hash: string]: string } = {}
-
   log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
     const [_source, _name, _meta, nbtHash] = id.split(':')
     const sNbt: string = (nameData as any)?.tag
-    if (nbtHash && sNbt) {
-      sNbtMap[nbtHash] = sNbt
-    }
+    addNbt(nbtHash, sNbt)
   })
 
   log('Grabbing icons from places...')
@@ -116,6 +113,7 @@ async function init() {
   let maxIter = 1000
   for (const o of iconIterator(argv.icons)) {
     iconExporter.push(o)
+    if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)
     if (--maxIter <= 0) break
   }
   await grabImages(
@@ -125,9 +123,10 @@ async function init() {
   )
 
   fs.writeFileSync(
-    'src/parsed_items.json',
+    'src/assets/items.json',
     JSON.stringify(tree.export(), null, 2)
   )
+  fs.writeFileSync('src/assets/nbt.json', JSON.stringify(sNbtMap, null, 2))
 
   // ##################################################################
   //
@@ -177,10 +176,5 @@ async function init() {
         .value()
     )
 
-  fs.writeFileSync(
-    'src/parsed_names.json',
-    `[
-${nameLines.join(',\n')}
-]`
-  )
+  fs.writeFileSync('src/assets/names.json', `[\n${nameLines.join(',\n')}\n]`)
 }
