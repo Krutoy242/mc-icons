@@ -6,7 +6,7 @@ import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
 
-import { tree } from '../../Tree'
+import { tree } from '../Tree'
 
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
