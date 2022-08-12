@@ -5,15 +5,15 @@ import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
 
-import { Base, Tree } from './Tree'
+import { Base } from './Tree'
+import getIcon from './getIcon'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
 import { Unclear } from './unclear'
 
-import { CliOpts } from '.'
+import { CliOpts, loadJson } from '.'
 
 const write = (s = '.') => process.stdout.write(s)
-const loadJson = (f: string) => JSON.parse(readFileSync(f, 'utf8'))
 
 // ##################################################################
 //
@@ -50,13 +50,11 @@ const lookupTree: {
 } = {}
 
 let parsed_names: [name: string, id: string, n_meta?: number, nbt?: string][]
-let parsed_items: Tree
 
 function initTrie() {
   if (trieSearch.size) return
   write(' Init dictionary...')
   parsed_names ??= loadJson('src/assets/names.json')
-  parsed_items ??= loadJson('src/assets/items.json')
   parsed_names.forEach(([name, id, n_meta, nbt], i) => {
     const [modid, definition] = id.split(':')
     if (!name || !id) return
@@ -198,22 +196,6 @@ export async function bracketsSearch(
   //
   // ##################################################################
 
-  function getSerialized(base: Base): string | undefined {
-    const [bOwner, bName, bMeta, bNBT] = base
-    const definition = parsed_items[bOwner]?.[bName]
-    if (!definition) return undefined
-    const s = `${bOwner}__${bName}`
-
-    const stack = definition[bMeta]
-    if (stack === undefined) return `${s}__0`
-
-    for (const [key_hash, sNBT] of Object.entries(stack)) {
-      if (sNBT !== '' && sNBT === bNBT) return `${s}__${bMeta}__${key_hash}`
-    }
-
-    return `${s}__${bMeta}`
-  }
-
   write('Replacing ')
 
   let tmpMd = md
@@ -223,8 +205,8 @@ export async function bracketsSearch(
   for (const repl of replaces) {
     tmpMd = tmpMd.replace(repl.from, (match) => {
       const serialized = repl.to
-        .map((r) => getSerialized(r.base))
-        .filter((r) => r)
+        .map(({ base }) => getIcon(base))
+        .filter((r): r is string => !!r)
       if (serialized.length > 0) {
         actualReplaces.push(repl)
 

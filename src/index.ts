@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import * as fs from 'fs-extra'
+import { readFileSync, writeFileSync } from 'fs-extra'
 import yargs from 'yargs'
 
 import { bracketsSearch } from './searcher'
@@ -22,7 +22,7 @@ const yargsOpts = {
     alias: 'r',
     type: 'string',
     describe: 'Repository to make short links to',
-    default: 'https://github.com/Krutoy242/E2E-E-icons/raw/main/x32/',
+    default: 'https://github.com/Krutoy242/mc-icons/raw/master/i/',
   },
   silent: { alias: 's', type: 'boolean', describe: 'Do not any prompt' },
 } as const
@@ -30,6 +30,8 @@ const yargsOpts = {
 export type CliOpts = {
   [key in keyof typeof yargsOpts]: string | number
 }
+
+export const loadJson = (f: string) => JSON.parse(readFileSync(f, 'utf8'))
 
 const argv = yargs(process.argv.slice(2))
   .options(yargsOpts)
@@ -40,6 +42,6 @@ const argv = yargs(process.argv.slice(2))
 
 bracketsSearch(
   argv as unknown as CliOpts,
-  fs.readFileSync(argv.input, 'utf8'),
-  (replaced) => fs.writeFileSync(argv.input, replaced)
+  readFileSync(argv.input, 'utf8'),
+  (replaced) => writeFileSync(argv.input, replaced)
 )
