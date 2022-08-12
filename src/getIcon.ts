@@ -13,9 +13,9 @@ function init() {
   if (initialized) return
   initialized = true
 
-  assetsItems ??= loadJson('src/assets/items.json')
-  const assetsNbt: typeof sNbtMap = loadJson('src/assets/nbt.json')
-  assetsImages ??= loadJson('src/assets/images.json')
+  assetsItems ??= loadJson('assets/items.json')
+  const assetsNbt: typeof sNbtMap = loadJson('assets/nbt.json')
+  assetsImages ??= loadJson('assets/images.json')
 
   Object.entries(assetsNbt).forEach(([nbtHash, sNbt]) => {
     nbtHashMap[sNbt] ??= assetsImages[nbtHash]

@@ -32,6 +32,8 @@ export type CliOpts = {
 }
 
 export const loadJson = (f: string) => JSON.parse(readFileSync(f, 'utf8'))
+export const saveJson = (f: string, obj: any) =>
+  writeFileSync(f, JSON.stringify(obj, null, 2))
 
 const argv = yargs(process.argv.slice(2))
   .options(yargsOpts)

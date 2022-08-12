@@ -5,9 +5,10 @@ import fast_glob from 'fast-glob'
 import * as fs from 'fs-extra'
 import _ from 'lodash'
 import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
-import iconIterator, { Iteratives } from 'mc-iexporter-iterator'
+import iconIterator, { ItemIcon } from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 
+import { saveJson } from '..'
 import { tree } from '../Tree'
 
 import { appendImage, grabImages, imageHashMap } from './images'
@@ -110,7 +111,7 @@ async function init() {
   log = category('Icon Exporter')
   log('Getting array...')
 
-  const iconExporter: Iteratives[] = []
+  const iconExporter: ItemIcon[] = []
   // let maxIter = 1000
   for (const o of iconIterator(argv.icons)) {
     iconExporter.push(o)
@@ -132,17 +133,11 @@ async function init() {
   log = category('Export')
   log('Saving ...')
 
+  saveJson('assets/items.json', tree.export())
+  saveJson('assets/nbt.json', sNbtMap)
+  saveJson('assets/images.json', imageHashMap)
   fs.writeFileSync(
-    'src/assets/items.json',
-    JSON.stringify(tree.export(), null, 2)
-  )
-  fs.writeFileSync('src/assets/nbt.json', JSON.stringify(sNbtMap, null, 2))
-  fs.writeFileSync(
-    'src/assets/images.json',
-    JSON.stringify(imageHashMap, null, 2)
-  )
-  fs.writeFileSync(
-    'src/assets/names.json',
+    'assets/names.json',
     generateNames(
       fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
     )

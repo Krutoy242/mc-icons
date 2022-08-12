@@ -26,7 +26,7 @@ export function generateNames(ctLog: string) {
       ]
       const hasNBT = snbt && snbt !== '{}'
       if (meta || hasNBT) arr.push(meta ?? 0)
-      if (hasNBT) arr.push(snbt)
+      if (hasNBT) arr.push(snbt as string)
       return JSON.stringify(arr)
     })
     .filter()

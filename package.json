@@ -55,7 +55,8 @@
   },
   "files": [
     "build",
-    "README.md"
+    "README.md",
+    "assets"
   ],
   "prettier": {
     "semi": false,

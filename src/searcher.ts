@@ -54,7 +54,7 @@ let parsed_names: [name: string, id: string, n_meta?: number, nbt?: string][]
 function initTrie() {
   if (trieSearch.size) return
   write(' Init dictionary...')
-  parsed_names ??= loadJson('src/assets/names.json')
+  parsed_names ??= loadJson('assets/names.json')
   parsed_names.forEach(([name, id, n_meta, nbt], i) => {
     const [modid, definition] = id.split(':')
     if (!name || !id) return
