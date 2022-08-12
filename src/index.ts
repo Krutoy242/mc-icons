@@ -5,6 +5,8 @@ import yargs from 'yargs'
 
 import { bracketsSearch } from './searcher'
 
+export * from './getIcon'
+
 const yargsOpts = {
   input: {
     alias: 'i',
