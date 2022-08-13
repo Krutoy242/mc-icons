@@ -1,3 +1,5 @@
+import { resolve } from 'path'
+
 import { Tree } from './Tree'
 import { HashMap } from './tool/types'
 
@@ -12,9 +14,9 @@ function init() {
   if (initialized) return
   initialized = true
 
-  assetsItems ??= loadJson('assets/items.json')
-  const assetsNbt: HashMap = loadJson('assets/nbt.json')
-  assetsImages ??= loadJson('assets/images.json')
+  assetsItems ??= loadJson(resolve(__dirname, '../assets/items.json'))
+  const assetsNbt: HashMap = loadJson(resolve(__dirname, '../assets/nbt.json'))
+  assetsImages ??= loadJson(resolve(__dirname, '../assets/images.json'))
 
   Object.entries(assetsNbt).forEach(([nbtHash, sNbt]) => {
     nbtHashMap[sNbt] ??= assetsImages[nbtHash]
