@@ -1,7 +1,7 @@
 {
   "packageManager": "pnpm@7.8.0",
   "name": "mc-icons",
-  "version": "1.1.2",
+  "version": "1.1.4",
   "description": "Parsing markdown file to replace item names into item icons.",
   "main": "./build/index.js",
   "bin": "./build/cli.js",
