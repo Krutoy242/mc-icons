@@ -7,7 +7,7 @@ import _ from 'lodash'
 
 import { Base } from './Tree'
 import type { CliOpts } from './cli'
-import getIcon from './getIcon'
+import { getIcon } from './getIcon'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
 import { Unclear } from './unclear'

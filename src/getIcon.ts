@@ -21,7 +21,7 @@ function init() {
   })
 }
 
-export default function getIcon(
+export function getIcon(
   base: [source: string, entry: string, meta?: number, sNbt?: string]
 ): string | undefined {
   init()
