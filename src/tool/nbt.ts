@@ -1,4 +1,6 @@
-export const sNbtMap: { [hash: string]: string } = {}
+import { HashMap } from './types'
+
+export const sNbtMap: HashMap = {}
 
 const existsNbt = new Set<string>()
 

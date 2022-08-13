@@ -8,6 +8,8 @@ import { PNG } from 'pngjs'
 
 import { tree } from '../Tree'
 
+import { HashMap } from './types'
+
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
     createReadStream(filePath)
@@ -19,7 +21,7 @@ function getHash(filePath: string): Promise<string> {
   })
 }
 
-export const imageHashMap: { [hash: string]: string } = {}
+export const imageHashMap: HashMap = {}
 
 /**
  * Grab image from other folder and append it to repo

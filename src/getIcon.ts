@@ -1,12 +1,11 @@
 import { Tree } from './Tree'
-import { imageHashMap } from './tool/images'
-import { sNbtMap } from './tool/nbt'
+import { HashMap } from './tool/types'
 
 import { loadJson } from '.'
 
 let assetsItems: Tree
 const nbtHashMap: { [sNbt: string]: string } = {}
-let assetsImages: typeof imageHashMap
+let assetsImages: HashMap
 
 let initialized = false
 function init() {
@@ -14,7 +13,7 @@ function init() {
   initialized = true
 
   assetsItems ??= loadJson('assets/items.json')
-  const assetsNbt: typeof sNbtMap = loadJson('assets/nbt.json')
+  const assetsNbt: HashMap = loadJson('assets/nbt.json')
   assetsImages ??= loadJson('assets/images.json')
 
   Object.entries(assetsNbt).forEach(([nbtHash, sNbt]) => {

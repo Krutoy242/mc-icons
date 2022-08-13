@@ -6,12 +6,13 @@ import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
 
 import { Base } from './Tree'
+import type { CliOpts } from './cli'
 import getIcon from './getIcon'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
 import { Unclear } from './unclear'
 
-import { CliOpts, loadJson } from '.'
+import { loadJson } from '.'
 
 const write = (s = '.') => process.stdout.write(s)
 
