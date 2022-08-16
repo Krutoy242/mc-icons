@@ -6,8 +6,8 @@ import { HashMap } from './tool/types'
 import { loadJson } from '.'
 
 let assetsItems: Tree
-const nbtHashMap: { [sNbt: string]: string } = {}
 let assetsImages: HashMap
+const nbtHashMap: { [sNbt: string]: string } = {}
 
 let initialized = false
 function init() {
@@ -15,11 +15,11 @@ function init() {
   initialized = true
 
   assetsItems ??= loadJson(resolve(__dirname, '../assets/items.json'))
-  const assetsNbt: HashMap = loadJson(resolve(__dirname, '../assets/nbt.json'))
   assetsImages ??= loadJson(resolve(__dirname, '../assets/images.json'))
+  const assetsNbt: HashMap = loadJson(resolve(__dirname, '../assets/nbt.json'))
 
   Object.entries(assetsNbt).forEach(([nbtHash, sNbt]) => {
-    nbtHashMap[sNbt] ??= assetsImages[nbtHash]
+    nbtHashMap[sNbt] ??= nbtHash
   })
 }
 

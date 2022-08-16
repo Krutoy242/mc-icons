@@ -11,7 +11,7 @@ import yargs from 'yargs'
 import { saveJson } from '..'
 import { tree } from '../Tree'
 
-import { appendImage, grabImages, imageHashMap } from './images'
+import { appendImage, grabImages, imageHashMap, initOld } from './images'
 import { category } from './log'
 import { generateNames } from './names'
 import { addNbt, sNbtMap } from './nbt'
@@ -29,6 +29,12 @@ const argv = yargs(process.argv.slice(2))
     type: 'string',
     describe: 'Path to folder with icons',
     demandOption: true,
+  })
+  .option('overwrite', {
+    alias: 'o',
+    type: 'boolean',
+    describe: 'Should overwrite .png files?',
+    default: true,
   })
   .parseSync()
 
@@ -55,6 +61,11 @@ async function init() {
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')
   )
 
+  if (!argv.overwrite) {
+    log('Skipping overwriting...')
+    initOld(readFileSync('./assets/images.json', 'utf8'))
+  }
+
   log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
     const [_source, _name, _meta, nbtHash] = id.split(':')
@@ -72,6 +83,7 @@ async function init() {
   let skipped = 0
   let total = 0
   const jeiePath = join(argv.mc, '/exports/items')
+  await handleJEIEFile('mekanism.api.gas.GasStack', 'gas', /^gas__/)
   await handleJEIEFile('fluid', 'fluid')
   await handleJEIEFile('item')
 
@@ -83,21 +95,25 @@ async function init() {
     )
   }
 
-  async function handleJEIEFile(subfolder: string, source?: string) {
+  async function handleJEIEFile(
+    subfolder: string,
+    source?: string,
+    entry_filter?: RegExp
+  ) {
     const folder = join(jeiePath, subfolder)
-    const files = fast_glob.sync('*.png', { cwd: folder }) // .slice(0, 400)
+    const files = fast_glob.sync('./**/*.png', { cwd: folder }) // .slice(0, 400)
 
     await grabImages(
       files,
       (file) => {
-        const name = parse(file).name
+        const name = file.replace(/\.png$/, '')
         return {
           filePath: join(folder, file),
           fileName: file,
           ...(source
             ? {
                 source,
-                entry: name,
+                entry: !entry_filter ? name : name.replace(entry_filter, ''),
                 skipSubstr: true,
               }
             : parseJEIEName(name)),
@@ -112,7 +128,7 @@ async function init() {
   log('Getting array...')
 
   const iconExporter: ItemIcon[] = []
-  // let maxIter = 1000
+  let maxIter = 1000
   for (const o of iconIterator(argv.icons)) {
     iconExporter.push(o)
     if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)

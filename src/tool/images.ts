@@ -1,7 +1,7 @@
-import { createReadStream, existsSync, mkdirSync, readFileSync } from 'fs'
-import { copyFile } from 'fs/promises'
-import { join, parse } from 'path'
+import fs, { createReadStream, existsSync, mkdirSync } from 'fs'
+import { join } from 'path'
 
+import { copyFile } from 'fs-extra'
 import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
@@ -23,6 +23,24 @@ function getHash(filePath: string): Promise<string> {
 
 export const imageHashMap: HashMap = {}
 
+let oldPathHash: { [newImgPath: string]: string } | undefined
+
+export function initOld(jsonText: string) {
+  oldPathHash = {}
+  const json: Record<string, string> = JSON.parse(jsonText)
+
+  Object.entries(json).forEach(([hash, img]) => {
+    ;(oldPathHash as any)[img] = hash
+  })
+}
+
+function trimImgPath(imgPath: string) {
+  return imgPath
+    .replace(/^i\\/, '') // remove folder
+    .replace(/\.png$/, '') // remove ext
+    .replace(/\\/g, '/') // replace path slash
+}
+
 /**
  * Grab image from other folder and append it to repo
  * @returns `true` if copied, `false` if skipped - already have same image
@@ -33,20 +51,34 @@ export function appendImage(
 ): Promise<{ isAdded?: boolean; imgHash: string }> {
   return new Promise((resolve) => {
     let newHash: string
-    getHash(imgPath)
+    let hashFnc: Promise<string> | undefined
+
+    // Use already stored hash if item persist
+    if (oldPathHash && newImgPath) {
+      const oldHash = oldPathHash[trimImgPath(newImgPath)]
+      if (oldHash)
+        hashFnc = new Promise((resolve) => {
+          resolve(oldHash)
+        })
+    }
+
+    ;(hashFnc ?? getHash(imgPath))
       .then((imgHash) => {
         const found = imageHashMap[imgHash]
         if (found) return resolve({ imgHash })
 
-        imageHashMap[imgHash] = (newImgPath ?? imgPath)
-          .replace(/^i\\/, '') // remove folder
-          .replace(/\.png$/, '') // remove ext
-          .replace(/\\/g, '/') // replace path slash
-        if (newImgPath === undefined) return resolve({ imgHash })
+        imageHashMap[imgHash] = trimImgPath(newImgPath ?? imgPath)
+
+        if (newImgPath === undefined || oldPathHash) return resolve({ imgHash })
 
         newHash = imgHash
-        return copyFile(imgPath, newImgPath)
+        return copyFile(
+          imgPath,
+          newImgPath,
+          oldPathHash ? fs.constants.COPYFILE_EXCL : undefined
+        )
       })
+      .catch(() => resolve({ imgHash: newHash }))
       .then(() => {
         resolve({ imgHash: newHash, isAdded: true })
       })
@@ -74,10 +106,6 @@ export async function grabImages<T>(
       chunk.map((icon) => {
         const base = getBase(icon)
 
-        // If this icon is blacklisted
-        // do not add image to hashes nor files
-        // if (isBlacklisted(base)) return Promise.resolve()
-
         const dest = join('i', base.source)
         if (!existsSync(dest)) mkdirSync(dest)
         const newFileName = base.skipSubstr
@@ -93,12 +121,3 @@ export async function grabImages<T>(
     )
   }
 }
-
-// function isBlacklisted(base: ImageBase): boolean {
-//   if(!base.nbtHash) return false
-
-//   const sNbt = getsNbt(base.nbtHash)
-//   if(!sNbt) throw new Error('Request nbt but its not stored previously: '+String(base))
-
-//   return false
-// }
