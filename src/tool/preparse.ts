@@ -10,18 +10,12 @@ import iconIterator, { ItemIcon } from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 
 import { loadJson, saveJson } from '..'
-import { tree } from '../Tree'
 
-import {
-  appendImage,
-  grabImages,
-  ImageBase,
-  imageHashMap,
-  initOld,
-} from './images'
+import { asset, loadAssets, saveAssets } from './assets'
+import { appendImage, grabImages, ImageBase, initOld } from './images'
 import { category } from './log'
 import { generateNames } from './names'
-import { addNbt, appendSNbtMap, sNbtMap } from './nbt'
+import { addNbt } from './nbt'
 
 const argv = yargs(process.argv.slice(2))
   .alias('h', 'help')
@@ -68,21 +62,19 @@ init()
 async function init() {
   let log = category('JEIExporter')
 
-  log('Loading items.json...')
-  tree.import(loadJson('assets/items.json'))
+  log('Importing JSON assets...')
+  await loadAssets()
 
-  log('Loading nbt.json...')
-  appendSNbtMap(loadJson('assets/nbt.json'))
+  log('Loading assets...')
+  if (!argv.overwrite) {
+    log('Skipping overwriting...')
+    initOld(asset.images)
+  }
 
-  log('Open nameMap.json...')
+  log('Open JEIExporter nameMap.json...')
   const nameMap = getNameMap(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')
   )
-
-  if (!argv.overwrite) {
-    log('Skipping overwriting...')
-    initOld(readFileSync('./assets/images.json', 'utf8'))
-  }
 
   log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
@@ -173,31 +165,20 @@ async function init() {
   // eslint-disable-next-line require-atomic-updates
   log = category('Export')
 
-  log('Saving items, nbt, images ...')
-  saveJson('assets/items.json', tree.export())
-  saveJson('assets/nbt.json', sNbtMap)
-  saveJson('assets/images.json', imageHashMap)
+  log('Generating item names ...')
+  asset.names = generateNames(nameMap, asset.names)
 
-  log('Loading mods names ...')
-  const oldNames = loadJson('assets/names.json')
+  log('Generating modpacks data')
+  asset.modpacks[argv.modpack] = Object.keys(asset.mods)
+    .filter((k) => asset.items[k] && Object.keys(asset.items[k]).length)
+    .sort()
+
+  log('Generating mod names ...')
   const newModNames: Record<string, string> = JSON.parse(
     fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
   ).modNames
+  asset.mods = _.merge(asset.mods, newModNames)
 
-  log('Saving modpacks data')
-  const modpacks: { [short: string]: string[] } = loadJson(
-    'assets/modpacks.json'
-  )
-  modpacks[argv.modpack] = Object.keys(newModNames)
-    .filter((k) => tree.tree[k] && Object.keys(tree.tree[k]).length)
-    .sort()
-  saveJson('assets/modpacks.json', modpacks)
-
-  log('Generating names ...')
-  const genNames = generateNames(nameMap, oldNames.items)
-  log('Saving names ...')
-  saveJson('assets/names.json', {
-    mods: _.merge(oldNames.mods, newModNames),
-    items: genNames,
-  })
+  log('Saving assets ...')
+  await saveAssets()
 }

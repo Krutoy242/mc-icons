@@ -6,9 +6,9 @@ import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
 
-import { tree } from '../Tree'
+import { treeTool } from '../Tree'
 
-import { HashMap } from './types'
+import { asset } from './assets'
 
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -21,16 +21,13 @@ function getHash(filePath: string): Promise<string> {
   })
 }
 
-export const imageHashMap: HashMap = {}
-
 let oldPathHash: { [newImgPath: string]: string } | undefined
 
-export function initOld(jsonText: string) {
+export function initOld(images: typeof asset.images) {
   oldPathHash = {}
-  const json: Record<string, string> = JSON.parse(jsonText)
 
-  for (const [hash, img] of Object.entries(json)) {
-    imageHashMap[hash] = img
+  for (const [hash, img] of Object.entries(images)) {
+    asset.images[hash] = img
     oldPathHash[img] = hash
   }
 }
@@ -62,7 +59,7 @@ export function appendImage(
     // Use already stored hash if item persist
     if (oldPathHash && newImgPath) {
       const oldHash = base
-        ? tree.get(base.source, base.entry, base.meta, base.nbtHash)
+        ? treeTool.get(base.source, base.entry, base.meta, base.nbtHash)
         : oldPathHash[trimImgPath(newImgPath)]
       if (oldHash) {
         resolve({ imgHash: oldHash })
@@ -72,11 +69,11 @@ export function appendImage(
 
     getHash(imgPath)
       .then((imgHash) => {
-        const found = imageHashMap[imgHash]
+        const found = asset.images[imgHash]
         if (found) return resolve({ imgHash }) // Already have this image
 
         // Write new hash into map
-        imageHashMap[imgHash] = trimImgPath(newImgPath ?? imgPath)
+        asset.images[imgHash] = trimImgPath(newImgPath ?? imgPath)
 
         // Not need to copy anything
         if (newImgPath === undefined) return resolve({ imgHash })
@@ -95,7 +92,7 @@ export function appendImage(
   })
 }
 
-type Base = Omit<Parameters<typeof tree.add>[0], 'imgHash'>
+type Base = Omit<Parameters<typeof treeTool.add>[0], 'imgHash'>
 
 export type ImageBase = {
   /** Absolute or relative path to CWD for source image */
@@ -125,7 +122,7 @@ export async function grabImages<T>(
           : base.fileName.substring(base.source.length + 2)
         const p = appendImage(base.filePath, join(dest, newFileName), base)
         p.then((res) => {
-          tree.add({ ...base, imgHash: res.imgHash })
+          treeTool.add({ ...base, imgHash: res.imgHash })
           onAdd(!!res.isAdded, arr.length, base)
         })
         return p

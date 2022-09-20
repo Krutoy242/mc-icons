@@ -1,7 +1,6 @@
 import { resolve } from 'path'
 
-import { Tree } from './Tree'
-import { HashMap } from './tool/types'
+import type { HashMap, Tree } from './tool/types'
 
 import { loadJson } from '.'
 
