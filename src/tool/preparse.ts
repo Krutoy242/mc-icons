@@ -67,6 +67,9 @@ init()
 async function init() {
   let log = category('JEIExporter')
 
+  log('Loading items.json...')
+  tree.import(loadJson('assets/items.json'))
+
   log('Open nameMap.json...')
   const nameMap = getNameMap(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')

@@ -36,6 +36,10 @@ export class ConstituentTree {
     return undefined
   }
 
+  import(newTree: Tree) {
+    this.tree = newTree
+  }
+
   export() {
     return this.tree
     // const exportTree: any = {}

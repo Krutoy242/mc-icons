@@ -29,16 +29,22 @@ export function initOld(jsonText: string) {
   oldPathHash = {}
   const json: Record<string, string> = JSON.parse(jsonText)
 
-  Object.entries(json).forEach(([hash, img]) => {
-    ;(oldPathHash as any)[img] = hash
-  })
+  for (const [hash, img] of Object.entries(json)) {
+    imageHashMap[hash] = img
+    oldPathHash[img] = hash
+  }
 }
 
+/**
+ * Trim unuseful information from image path
+ * @param imgPath path in format `i\minecraft\dirt.png`
+ * @returns `minecraft/dirt`
+ */
 function trimImgPath(imgPath: string) {
   return imgPath
-    .replace(/^i\\/, '') // remove folder
-    .replace(/\.png$/, '') // remove ext
     .replace(/\\/g, '/') // replace path slash
+    .replace(/^i\//, '') // remove folder
+    .replace(/\.png$/, '') // remove ext
 }
 
 /**
@@ -48,7 +54,7 @@ function trimImgPath(imgPath: string) {
 export function appendImage(
   imgPath: string,
   newImgPath?: string
-): Promise<{ isAdded?: boolean; imgHash: string }> {
+): Promise<{ isAdded?: true; imgHash: string }> {
   return new Promise((resolve) => {
     let newHash: string
     let hashFnc: Promise<string> | undefined
@@ -62,14 +68,17 @@ export function appendImage(
         })
     }
 
-    ;(hashFnc ?? getHash(imgPath))
+    hashFnc ??= getHash(imgPath)
+    hashFnc
       .then((imgHash) => {
         const found = imageHashMap[imgHash]
-        if (found) return resolve({ imgHash })
+        if (found) return resolve({ imgHash }) // Already have this image
 
+        // Write new hash into map
         imageHashMap[imgHash] = trimImgPath(newImgPath ?? imgPath)
 
-        if (newImgPath === undefined || oldPathHash) return resolve({ imgHash })
+        // Not need to copy anything
+        if (newImgPath === undefined) return resolve({ imgHash })
 
         newHash = imgHash
         return copyFile(
