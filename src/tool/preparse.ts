@@ -108,9 +108,13 @@ async function init() {
   await handleJEIEFile('item')
 
   function logFileAdd(isAdded: boolean, wholeLength: number, base: ImageBase) {
-    const files = chalk.hex('#0e7182')(`${++total} / ${wholeLength}`)
-    const s_copied = `copied: ${(copied += Number(isAdded))}`
-    const s_skipped = `skipped: ${(skipped += Number(!isAdded))}`
+    total++
+    copied += Number(isAdded)
+    skipped += Number(!isAdded)
+    if (total % 100 !== 0) return
+    const files = chalk.hex('#0e7182')(`${total} / ${wholeLength}`)
+    const s_copied = `copied: ${copied}`
+    const s_skipped = `skipped: ${skipped}`
     const current = `current: ${chalk.hex('#0e8257')(base.source)}`
     log(`Files: ${files}, ${s_copied}, ${s_skipped}, ${current}`)
   }
@@ -146,6 +150,7 @@ async function init() {
     // eslint-disable-next-line require-atomic-updates
     log = category('Icon Exporter')
     log('Getting array...')
+    total = 0
     const iconExporter: ItemIcon[] = []
     let maxIter = 1000
     for (const o of iconIterator(argv.icons)) {
@@ -168,13 +173,6 @@ async function init() {
   // eslint-disable-next-line require-atomic-updates
   log = category('Export')
 
-  log('Saving modpacks data')
-  const modpacks: { [short: string]: string[] } = loadJson(
-    'assets/modpacks.json'
-  )
-  modpacks[argv.modpack] = Object.keys(tree.export())
-  saveJson('assets/modpacks.json', modpacks)
-
   log('Saving items, nbt, images ...')
   saveJson('assets/items.json', tree.export())
   saveJson('assets/nbt.json', sNbtMap)
@@ -185,6 +183,15 @@ async function init() {
   const newModNames: Record<string, string> = JSON.parse(
     fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
   ).modNames
+
+  log('Saving modpacks data')
+  const modpacks: { [short: string]: string[] } = loadJson(
+    'assets/modpacks.json'
+  )
+  modpacks[argv.modpack] = Object.keys(newModNames)
+    .filter((k) => tree.tree[k] && Object.keys(tree.tree[k]).length)
+    .sort()
+  saveJson('assets/modpacks.json', modpacks)
 
   log('Generating names ...')
   const genNames = generateNames(nameMap, oldNames.items)
