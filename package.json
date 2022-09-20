@@ -11,7 +11,8 @@
   "scripts": {
     "build": "tsc",
     "preparse": "ts-node src/tool/preparse.ts --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\"",
-    "preparse --no-overwrite": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\""
+    "preparse --no-overwrite": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\"",
+    "preparse Herodotus": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Herodotus\" --modpack=herodotus"
   },
   "engines": {
     "node": ">=14.16"

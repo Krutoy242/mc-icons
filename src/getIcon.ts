@@ -23,8 +23,15 @@ function init() {
   })
 }
 
+/**
+ * Get image path, example `minecraft/enchanted_book__0__1039e0ba`
+ * @param base base item parts
+ * @returns Shortened image path, without repo and extension
+ * @example getIcon(['minecraft', 'enchanted_book', 0, '{StoredEnchantments:[{id:57,lvl:3s}]}'])
+ * // Returns "minecraft/enchanted_book__0__1039e0ba"
+ */
 export function getIcon(
-  base: [source: string, entry: string, meta?: number, sNbt?: string]
+  base: [source: string, entry: string, meta?: number | string, sNbt?: string]
 ): string | undefined {
   init()
 
@@ -33,7 +40,7 @@ export function getIcon(
 
   if (!definition) return // No item at all
 
-  let stack = definition[meta || 0]
+  let stack: typeof definition[0] | undefined = definition[meta || 0]
   if (stack === undefined) {
     // try to find any meta
     stack = Object.values(definition)[0]

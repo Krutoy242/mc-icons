@@ -8,10 +8,16 @@ import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
 import iconIterator, { ItemIcon } from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 
-import { saveJson } from '..'
+import { loadJson, saveJson } from '..'
 import { tree } from '../Tree'
 
-import { appendImage, grabImages, imageHashMap, initOld } from './images'
+import {
+  appendImage,
+  grabImages,
+  ImageBase,
+  imageHashMap,
+  initOld,
+} from './images'
 import { category } from './log'
 import { generateNames } from './names'
 import { addNbt, sNbtMap } from './nbt'
@@ -24,11 +30,16 @@ const argv = yargs(process.argv.slice(2))
     describe: 'Path to minecraft folder',
     demandOption: true,
   })
+  .option('modpack', {
+    alias: 'p',
+    type: 'string',
+    describe: 'Modpack short ID',
+    demandOption: true,
+  })
   .option('icons', {
     alias: 'i',
     type: 'string',
-    describe: 'Path to folder with icons',
-    demandOption: true,
+    describe: 'Path to folder with icons from E2E-E-icons tool',
   })
   .option('overwrite', {
     alias: 'o',
@@ -68,6 +79,7 @@ async function init() {
 
   log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
+    if (id === 'info') return
     const [_source, _name, _meta, nbtHash] = id.split(':')
     const sNbt: string = (nameData as any)?.tag
     addNbt(nbtHash, sNbt)
@@ -103,59 +115,72 @@ async function init() {
     const folder = join(jeiePath, subfolder)
     const files = fast_glob.sync('./**/*.png', { cwd: folder }) // .slice(0, 400)
 
+    const getBase: (icon: string) => ImageBase = (file) => {
+      const name = file.replace(/\.png$/, '')
+      const base = source
+        ? {
+            source,
+            entry: !entry_filter ? name : name.replace(entry_filter, ''),
+            skipSubstr: true,
+          }
+        : parseJEIEName(name)
+      return {
+        filePath: join(folder, file),
+        fileName: file,
+        ...base,
+      }
+    }
+
+    await grabImages(files, getBase, logFileAdd)
+  }
+
+  if (argv.icons) {
+    // eslint-disable-next-line require-atomic-updates
+    log = category('Icon Exporter')
+    log('Getting array...')
+    const iconExporter: ItemIcon[] = []
+    let maxIter = 1000
+    for (const o of iconIterator(argv.icons)) {
+      iconExporter.push(o)
+      if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)
+      // if (--maxIter <= 0) break
+    }
     await grabImages(
-      files,
-      (file) => {
-        const name = file.replace(/\.png$/, '')
-        return {
-          filePath: join(folder, file),
-          fileName: file,
-          ...(source
-            ? {
-                source,
-                entry: !entry_filter ? name : name.replace(entry_filter, ''),
-                skipSubstr: true,
-              }
-            : parseJEIEName(name)),
-        }
-      },
+      iconExporter,
+      (icon) => ({
+        ...icon,
+        source: icon.namespace,
+        entry: icon.name,
+        fileName: icon.fileName + '.png',
+      }),
       logFileAdd
     )
   }
 
   // eslint-disable-next-line require-atomic-updates
-  log = category('Icon Exporter')
-  log('Getting array...')
-
-  const iconExporter: ItemIcon[] = []
-  let maxIter = 1000
-  for (const o of iconIterator(argv.icons)) {
-    iconExporter.push(o)
-    if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)
-    // if (--maxIter <= 0) break
-  }
-  await grabImages(
-    iconExporter,
-    (icon) => ({
-      ...icon,
-      source: icon.namespace,
-      entry: icon.name,
-      fileName: icon.fileName + '.png',
-    }),
-    logFileAdd
-  )
-
-  // eslint-disable-next-line require-atomic-updates
   log = category('Export')
-  log('Saving ...')
 
+  log('Saving modpacks data')
+  const modpacks: { [short: string]: string[] } = loadJson(
+    'assets/modpacks.json'
+  )
+  modpacks[argv.modpack] = Object.keys(tree.export())
+  saveJson('assets/modpacks.json', modpacks)
+
+  log('Saving items, nbt, images ...')
   saveJson('assets/items.json', tree.export())
   saveJson('assets/nbt.json', sNbtMap)
   saveJson('assets/images.json', imageHashMap)
-  fs.writeFileSync(
-    'assets/names.json',
-    generateNames(
-      fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
-    )
+
+  log('Loading mods names ...')
+  const { modNames } = JSON.parse(
+    fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
   )
+  log('Generating names ...')
+  const genNames = generateNames(nameMap)
+  log('Saving names ...')
+  saveJson('assets/names.json', {
+    mods: modNames,
+    items: genNames,
+  })
 }
