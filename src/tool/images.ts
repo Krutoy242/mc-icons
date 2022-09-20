@@ -53,14 +53,17 @@ function trimImgPath(imgPath: string) {
  */
 export function appendImage(
   imgPath: string,
-  newImgPath?: string
+  newImgPath?: string,
+  base?: Base
 ): Promise<{ isAdded?: true; imgHash: string }> {
   return new Promise((resolve) => {
     let newHash: string
 
     // Use already stored hash if item persist
     if (oldPathHash && newImgPath) {
-      const oldHash = oldPathHash[trimImgPath(newImgPath)]
+      const oldHash = base
+        ? tree.get(base.source, base.entry, base.meta, base.nbtHash)
+        : oldPathHash[trimImgPath(newImgPath)]
       if (oldHash) {
         resolve({ imgHash: oldHash })
         return
@@ -92,6 +95,8 @@ export function appendImage(
   })
 }
 
+type Base = Omit<Parameters<typeof tree.add>[0], 'imgHash'>
+
 export type ImageBase = {
   /** Absolute or relative path to CWD for source image */
   filePath: string
@@ -101,7 +106,7 @@ export type ImageBase = {
 
   /** Is skip substring */
   skipSubstr?: boolean
-} & Omit<Parameters<typeof tree.add>[0], 'imgHash'>
+} & Base
 
 export async function grabImages<T>(
   arr: T[],
@@ -118,7 +123,7 @@ export async function grabImages<T>(
         const newFileName = base.skipSubstr
           ? base.fileName
           : base.fileName.substring(base.source.length + 2)
-        const p = appendImage(base.filePath, join(dest, newFileName))
+        const p = appendImage(base.filePath, join(dest, newFileName), base)
         p.then((res) => {
           tree.add({ ...base, imgHash: res.imgHash })
           onAdd(!!res.isAdded, arr.length, base)

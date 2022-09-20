@@ -21,7 +21,7 @@ import {
 } from './images'
 import { category } from './log'
 import { generateNames } from './names'
-import { addNbt, sNbtMap } from './nbt'
+import { addNbt, appendSNbtMap, sNbtMap } from './nbt'
 
 const argv = yargs(process.argv.slice(2))
   .alias('h', 'help')
@@ -70,6 +70,9 @@ async function init() {
 
   log('Loading items.json...')
   tree.import(loadJson('assets/items.json'))
+
+  log('Loading nbt.json...')
+  appendSNbtMap(loadJson('assets/nbt.json'))
 
   log('Open nameMap.json...')
   const nameMap = getNameMap(
@@ -178,14 +181,16 @@ async function init() {
   saveJson('assets/images.json', imageHashMap)
 
   log('Loading mods names ...')
-  const { modNames } = JSON.parse(
+  const oldNames = loadJson('assets/names.json')
+  const newModNames: Record<string, string> = JSON.parse(
     fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
-  )
+  ).modNames
+
   log('Generating names ...')
-  const genNames = generateNames(nameMap)
+  const genNames = generateNames(nameMap, oldNames.items)
   log('Saving names ...')
   saveJson('assets/names.json', {
-    mods: modNames,
+    mods: _.merge(oldNames.mods, newModNames),
     items: genNames,
   })
 }

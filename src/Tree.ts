@@ -14,6 +14,15 @@ export class ConstituentTree {
   // source -> entry -> meta -> nbtHash -> imgHash
   public tree: Tree = {}
 
+  public get(
+    source: string,
+    entry: string,
+    meta?: number,
+    nbtHash?: string
+  ): string | undefined {
+    return this.tree[source]?.[entry]?.[meta ?? 0]?.[nbtHash ?? '']
+  }
+
   /**
    * Add new item entry to tree
    * @returns new imgHash if item already exist
