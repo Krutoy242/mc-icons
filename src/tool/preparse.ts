@@ -1,6 +1,7 @@
-import { existsSync, mkdirSync, readFileSync } from 'fs'
-import { join, parse } from 'path'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
+import chalk from 'chalk'
 import fast_glob from 'fast-glob'
 import * as fs from 'fs-extra'
 import _ from 'lodash'
@@ -96,18 +97,19 @@ async function init() {
   })
 
   let skipped = 0
+  let copied = 0
   let total = 0
   const jeiePath = join(argv.mc, '/exports/items')
   await handleJEIEFile('mekanism.api.gas.GasStack', 'gas', /^gas__/)
   await handleJEIEFile('fluid', 'fluid')
   await handleJEIEFile('item')
 
-  function logFileAdd(isAdded: boolean, wholeLength: number) {
-    log(
-      `Files: ${++total} / ${wholeLength}, skipped: ${
-        isAdded ? skipped : ++skipped
-      }`
-    )
+  function logFileAdd(isAdded: boolean, wholeLength: number, base: ImageBase) {
+    const files = chalk.hex('#0e7182')(`${++total} / ${wholeLength}`)
+    const s_copied = `copied: ${(copied += Number(isAdded))}`
+    const s_skipped = `skipped: ${(skipped += Number(!isAdded))}`
+    const current = `current: ${chalk.hex('#0e8257')(base.source)}`
+    log(`Files: ${files}, ${s_copied}, ${s_skipped}, ${current}`)
   }
 
   async function handleJEIEFile(

@@ -57,19 +57,17 @@ export function appendImage(
 ): Promise<{ isAdded?: true; imgHash: string }> {
   return new Promise((resolve) => {
     let newHash: string
-    let hashFnc: Promise<string> | undefined
 
     // Use already stored hash if item persist
     if (oldPathHash && newImgPath) {
       const oldHash = oldPathHash[trimImgPath(newImgPath)]
-      if (oldHash)
-        hashFnc = new Promise((resolve) => {
-          resolve(oldHash)
-        })
+      if (oldHash) {
+        resolve({ imgHash: oldHash })
+        return
+      }
     }
 
-    hashFnc ??= getHash(imgPath)
-    hashFnc
+    getHash(imgPath)
       .then((imgHash) => {
         const found = imageHashMap[imgHash]
         if (found) return resolve({ imgHash }) // Already have this image
@@ -108,7 +106,7 @@ export type ImageBase = {
 export async function grabImages<T>(
   arr: T[],
   getBase: (icon: T) => ImageBase,
-  onAdd: (isAdded: boolean, wholeLength: number) => void
+  onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void
 ) {
   for (const chunk of _.chunk(arr, 1000)) {
     await Promise.all(
@@ -123,7 +121,7 @@ export async function grabImages<T>(
         const p = appendImage(base.filePath, join(dest, newFileName))
         p.then((res) => {
           tree.add({ ...base, imgHash: res.imgHash })
-          onAdd(!!res.isAdded, arr.length)
+          onAdd(!!res.isAdded, arr.length, base)
         })
         return p
       })
