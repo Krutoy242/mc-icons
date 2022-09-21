@@ -34,10 +34,9 @@ function filterByOption(
 ): DictEntry[] {
   if (!option) return searchResult
 
-  const optNumber = Number(option)
   if (/^[0-9]+$/.test(option)) {
     // This is number
-    return searchResult.filter((d) => d.meta === optNumber)
+    return searchResult.filter((d) => d.meta === option)
   }
   // This option is mod name or Abbr
   const rgx = new RegExp(option, 'i')
@@ -46,7 +45,7 @@ function filterByOption(
     (d) =>
       rgx.test(d.modAbbr) ||
       d.modname.toLocaleLowerCase().startsWith(optLow) ||
-      d.modid.startsWith(optLow)
+      d.source.startsWith(optLow)
   )
 }
 
@@ -155,7 +154,7 @@ export async function iconizeMatch(
       return exacts[0]
     }
     // Exact one item from Minecraft - this probably what user want
-    const fromMC = exacts.filter((r) => r.modid === 'minecraft')
+    const fromMC = exacts.filter((r) => r.source === 'minecraft')
     if (fromMC.length === 1) {
       return fromMC[0]
     }

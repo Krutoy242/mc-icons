@@ -3,10 +3,9 @@ import { NameMap } from 'mc-gatherer/build/main/from/jeie/NameMap'
 
 import { getIcon } from '..'
 
-export function generateNames(
-  nameMap: NameMap,
-  oldNames: { [name: string]: string[] }
-) {
+import { asset } from './assets'
+
+export function appendNames(nameMap: NameMap) {
   // Make a tree from all Item names
   Object.entries(nameMap).forEach(([k, v]) => {
     if (k === 'info') return
@@ -20,7 +19,7 @@ export function generateNames(
       [source, entry].join(':') +
       (meta || snbt ? ':' + (meta ?? 0) : '') +
       (snbt ? ':' + snbt : '')
-    ;(oldNames[display] ??= []).push(fullId)
+    ;(asset.names[display] ??= []).push(fullId)
   })
 
   function getBase(fullId: string): Parameters<typeof getIcon>[0] {
@@ -29,13 +28,11 @@ export function generateNames(
   }
 
   // Remove duplicates
-  Object.entries(oldNames).forEach(([name, items]) => {
+  Object.entries(asset.names).forEach(([name, items]) => {
     const uniq = _.uniqBy(
       items.map((i) => ({ item: i, path: getIcon(getBase(i)) })),
       'path'
     )
-    oldNames[name] = uniq.map((u) => u.item)
+    asset.names[name] = uniq.map((u) => u.item)
   })
-
-  return oldNames
 }

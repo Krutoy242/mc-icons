@@ -1,4 +1,4 @@
-import { asset } from './tool/assets'
+import { asset } from './assets'
 
 export const treeTool = {
   get(

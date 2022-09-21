@@ -1,18 +1,15 @@
-import { resolve } from 'path'
-
 import { TrieSearch } from '@committed/trie-search'
 import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
 
-import { Base } from './Tree'
 import type { CliOpts } from './cli'
 import { getIcon } from './getIcon'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
+import { asset } from './tool/assets'
+import { Base } from './tool/types'
 import { Unclear } from './unclear'
-
-import { loadJson } from '.'
 
 const write = (s = '.') => process.stdout.write(s)
 
@@ -26,63 +23,75 @@ export interface DictEntry {
   name: string
   name_low: string
   id: string
-  modid: string
   modname: string
   modAbbr: string
-  meta: number
-  nbt: string | undefined
-  uniq_id: number
+  source: string
+  entry: string
+  meta: string
+  sNbt: string | undefined
 }
 
 const trieSearch = new TrieSearch<DictEntry>(
   ['name', 'id', 'modid', 'modname', 'meta' /* , 'nbt' */],
   {
-    /* splitOnRegEx:false,  */ idFieldOrFunction: 'uniq_id',
+    /* splitOnRegEx:false,  */ idFieldOrFunction: 'id',
   }
 )
 const nameDictionary: DictEntry[] = []
-const nameAliases: Record<string, string> = {}
 const lookupTree: {
-  [modid: string]: {
+  [source: string]: {
     [definition: string]: {
       [meta: string]: DictEntry
     }
   }
 } = {}
 
-let parsed_names: [name: string, id: string, n_meta?: number, nbt?: string][]
-
-function initTrie() {
-  if (trieSearch.size || parsed_names) return
+async function initTrie(argv: CliOpts) {
+  if (trieSearch.size) return
   write(' Init dictionary...')
-  parsed_names = loadJson(resolve(__dirname, '../assets/names.json'))
-  parsed_names.forEach(([name, id, n_meta, nbt], i) => {
-    const [modid, definition] = id.split(':')
-    if (!name || !id) return
-    if (!definition) {
-      nameAliases[modid] = name
-      return
+
+  // Make map of filtered sources
+  let modpackMap: { [source: string]: true } | undefined
+  if (argv.modpack) {
+    modpackMap = {
+      gas: true,
+      fluid: true,
+    } // TODO: Gas and fluid should not be in every modpack
+    const sourcesList = asset.modpacks[argv.modpack]
+    if (!sourcesList?.length)
+      throw new Error('This modpack didnt exist: ' + argv.modpack)
+    for (const source of sourcesList) {
+      modpackMap[source] = true
     }
-    const meta = n_meta ?? 0
-    const modname = nameAliases[modid]
+    }
+
+  // Init unique names
+  for (const [name, list] of Object.entries(asset.names)) {
+    for (const id of list) {
+      let [source, entry, meta, ...rest] = id.split(':')
+      if (modpackMap && !modpackMap[source]) continue
+      meta ??= ''
+      const sNbt = rest.join(':')
+      const modname = asset.mods[source] || source
 
     const newEntry: DictEntry = {
       name,
       id,
       meta,
-      nbt,
-      modid,
+        sNbt,
+        source,
+        entry,
       modname,
       name_low: name.toLowerCase(),
       modAbbr: abbr1(modname),
-      uniq_id: i,
     }
     nameDictionary.push(newEntry)
 
-    const oldEntry = ((lookupTree[modid] ??= {})[definition] ??= {})[meta]
-    if (!oldEntry || oldEntry.nbt)
-      lookupTree[modid][definition][meta] = newEntry
-  })
+      const oldEntry = ((lookupTree[source] ??= {})[entry] ??= {})[meta]
+      if (!oldEntry || oldEntry.sNbt) lookupTree[source][entry][meta] = newEntry
+    }
+  }
+
   write(' Map Trie...')
   trieSearch.addAll(nameDictionary)
   write(' done.\n')
@@ -150,7 +159,7 @@ export async function bracketsSearch(
   write('Looking for Item names ')
 
   for (const match of md.matchAll(capture_rgx)) {
-    initTrie()
+    await initTrie(argv)
     write()
     const result = await iconizeMatch(
       match as RgxExecIconMatch,
@@ -167,7 +176,7 @@ export async function bracketsSearch(
     replaces.push({
       to: dicts.map((de) => ({
         name: de.name,
-        base: [...de.id.split(':'), de.meta, de.nbt] as unknown as Base,
+        base: [de.source, de.entry, de.meta, de.sNbt] as Base,
       })),
       from: match[0],
     })

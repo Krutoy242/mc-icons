@@ -1,26 +1,4 @@
-import { resolve } from 'path'
-
-import type { HashMap, Tree } from './tool/types'
-
-import { loadJson } from '.'
-
-let assetsItems: Tree
-let assetsImages: HashMap
-const nbtHashMap: { [sNbt: string]: string } = {}
-
-let initialized = false
-function init() {
-  if (initialized) return
-  initialized = true
-
-  assetsItems ??= loadJson(resolve(__dirname, '../assets/items.json'))
-  assetsImages ??= loadJson(resolve(__dirname, '../assets/images.json'))
-  const assetsNbt: HashMap = loadJson(resolve(__dirname, '../assets/nbt.json'))
-
-  Object.entries(assetsNbt).forEach(([nbtHash, sNbt]) => {
-    nbtHashMap[sNbt] ??= nbtHash
-  })
-}
+import { asset } from './tool/assets'
 
 /**
  * Get image path, example `minecraft/enchanted_book__0__1039e0ba`
@@ -32,24 +10,21 @@ function init() {
 export function getIcon(
   base: [source: string, entry: string, meta?: number | string, sNbt?: string]
 ): string | undefined {
-  init()
-
   const [source, entry, meta, sNbt] = base
-  const definition = assetsItems[source]?.[entry]
+  const definition = asset.items[source]?.[entry]
 
   if (!definition) return // No item at all
 
   let stack: typeof definition[0] | undefined = definition[meta || 0]
-  if (stack === undefined) {
-    // try to find any meta
-    stack = Object.values(definition)[0]
-  }
+
+  // try to find any meta
+  if (!stack) stack = Object.values(definition)[0]
 
   const getReport = (reason: string) =>
     `Looking for item ${source}:${entry}:${meta}:${sNbt}, ` +
     `but ${reason}. This could only happen if .json file generated wrongly`
 
-  if (stack === undefined)
+  if (!stack)
     throw new Error(getReport('definition for this item doesnt have any metas'))
 
   let imageHash: string
@@ -57,14 +32,14 @@ export function getIcon(
   if (!sNbt) {
     imageHash = stack[''] ?? Object.values(stack)[0]
   } else {
-    nbtHash = nbtHashMap[sNbt]
+    nbtHash = asset.nbtHash[sNbt]
     imageHash = stack[nbtHash ?? ''] ?? Object.values(stack)[0]
   }
 
-  if (imageHash === undefined)
+  if (!imageHash)
     throw new Error(getReport('stack for this item doesnt have any nbts'))
 
-  const result = assetsImages[imageHash]
+  const result = asset.images[imageHash]
 
   if (!result)
     throw new Error(getReport('we found image hash with no corresponding path'))

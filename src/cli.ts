@@ -24,11 +24,22 @@ const yargsOpts = {
     describe: 'Repository to make short links to',
     default: 'https://github.com/Krutoy242/mc-icons/raw/master/i/',
   },
+  modpack: {
+    alias: 'm',
+    type: 'string',
+    describe: 'Modpack shortand to filter icons, "e2ee" for example',
+  },
   silent: { alias: 's', type: 'boolean', describe: 'Do not any prompt' },
 } as const
 
+interface OptsTypes {
+  string: string
+  boolean: boolean
+  number: number
+}
+
 export type CliOpts = {
-  [key in keyof typeof yargsOpts]: string | number
+  [K in keyof typeof yargsOpts]: OptsTypes[typeof yargsOpts[K]['type']]
 }
 
 const argv = yargs(process.argv.slice(2))
@@ -38,8 +49,6 @@ const argv = yargs(process.argv.slice(2))
   .wrap(null)
   .parseSync()
 
-bracketsSearch(
-  argv as unknown as CliOpts,
-  readFileSync(argv.input, 'utf8'),
-  (replaced) => writeFileSync(argv.input, replaced)
+bracketsSearch(argv as CliOpts, readFileSync(argv.input, 'utf8'), (replaced) =>
+  writeFileSync(argv.input, replaced)
 )

@@ -10,6 +10,7 @@
   "keywords": [],
   "scripts": {
     "build": "tsc",
+    "test run": "ts-node src/cli.ts",
     "preparse": "ts-node src/tool/preparse.ts --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\" --modpack=e2ee",
     "preparse --no-overwrite": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\" --modpack=e2ee",
     "preparse Herodotus": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Herodotus\" --modpack=herodotus"

@@ -6,9 +6,8 @@ import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
 
-import { treeTool } from '../Tree'
-
 import { asset } from './assets'
+import { treeTool } from './treeTool'
 
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -23,11 +22,10 @@ function getHash(filePath: string): Promise<string> {
 
 let oldPathHash: { [newImgPath: string]: string } | undefined
 
-export function initOld(images: typeof asset.images) {
+export function initOld() {
   oldPathHash = {}
 
-  for (const [hash, img] of Object.entries(images)) {
-    asset.images[hash] = img
+  for (const [hash, img] of Object.entries(asset.images)) {
     oldPathHash[img] = hash
   }
 }

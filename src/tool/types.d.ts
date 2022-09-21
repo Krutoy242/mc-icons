@@ -12,4 +12,4 @@ export interface Tree {
   }
 }
 
-export type Base = [string, string, number, string]
+export type Base = [string, string, string, string]

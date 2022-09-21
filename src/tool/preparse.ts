@@ -9,12 +9,10 @@ import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
 import iconIterator, { ItemIcon } from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 
-import { loadJson, saveJson } from '..'
-
-import { asset, loadAssets, saveAssets } from './assets'
+import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, ImageBase, initOld } from './images'
 import { category } from './log'
-import { generateNames } from './names'
+import { appendNames } from './names'
 import { addNbt } from './nbt'
 
 const argv = yargs(process.argv.slice(2))
@@ -62,13 +60,9 @@ init()
 async function init() {
   let log = category('JEIExporter')
 
-  log('Importing JSON assets...')
-  await loadAssets()
-
-  log('Loading assets...')
   if (!argv.overwrite) {
     log('Skipping overwriting...')
-    initOld(asset.images)
+    initOld()
   }
 
   log('Open JEIExporter nameMap.json...')
@@ -166,7 +160,7 @@ async function init() {
   log = category('Export')
 
   log('Generating item names ...')
-  asset.names = generateNames(nameMap, asset.names)
+  appendNames(nameMap)
 
   log('Generating modpacks data')
   asset.modpacks[argv.modpack] = Object.keys(asset.mods)
@@ -177,7 +171,9 @@ async function init() {
   const newModNames: Record<string, string> = JSON.parse(
     fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
   ).modNames
-  asset.mods = _.merge(asset.mods, newModNames)
+  for (const [id, name] of Object.entries(newModNames)) {
+    asset.mods[id] = name
+  }
 
   log('Saving assets ...')
   await saveAssets()

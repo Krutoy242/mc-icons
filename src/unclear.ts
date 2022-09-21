@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import _ from 'lodash'
 import { terminal as term } from 'terminal-kit'
 
+import { CliOpts } from './cli'
 import { RgxExecIconMatch } from './iconizeMatch'
 import { DictEntry } from './searcher'
 
@@ -41,7 +42,7 @@ function gridMenuBuilder(itemArr: DictEntry[]) {
 export class Unclear {
   private unfounds: string[] = []
 
-  constructor(private argv: { [flag: string]: string | number }) {}
+  constructor(private argv: CliOpts) {}
 
   print(): void {
     if (this.argv.silent) return
@@ -90,7 +91,7 @@ export class Unclear {
     return gridMenu(
       (d) =>
         chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.id}:${d.meta}}>` +
-        nbtToString(d.nbt)
+        nbtToString(d.sNbt)
     )
   }
 
@@ -149,7 +150,7 @@ export class Unclear {
     return gridMenu(
       (d) =>
         chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.id}:${d.meta}}>` +
-        nbtToString(d.nbt)
+        nbtToString(d.sNbt)
     )
   }
 }
