@@ -1,13 +1,15 @@
 import { asset } from './assets'
 
-export const treeTool = {
+export const tree = {
   get(
     source: string,
     entry: string,
-    meta?: number,
+    meta?: number | string,
     nbtHash?: string
   ): string | undefined {
-    return asset.items[source]?.[entry]?.[meta ?? 0]?.[nbtHash ?? '']
+    return asset.items[source]?.[entry]?.[
+      !meta || meta === '32767' ? 0 : meta
+    ]?.[nbtHash || '']
   },
 
   /**

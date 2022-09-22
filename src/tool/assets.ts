@@ -2,6 +2,7 @@
 
 import { readFileSync, writeFile } from 'fs-extra'
 
+import { tree } from './tree'
 import { Tree } from './types'
 
 const store = {
@@ -63,7 +64,7 @@ class Asset implements AssetStorage {
   // --------------------------------------------
 
   private _nbtHash!: { [sNbt: string]: string }
-  public get nbtHash(): AssetStorage['nbt'] {
+  public get nbtHash(): { [sNbt: string]: string } {
     if (this._nbtHash) return this._nbtHash
 
     this._nbtHash = {}
@@ -71,32 +72,62 @@ class Asset implements AssetStorage {
       this._nbtHash[sNbt] = nbtHash
     })
     return this._nbtHash
-}
+  }
 
-const keys = Object.keys(asset) as (keyof typeof asset)[]
+  private _names_low!: { [name_low: string]: string }
+  public get names_low() {
+    if (this._names_low) return this._names_low
 
-export async function loadAssets() {
-  const list = await Promise.all(
-    keys.map((key) => import(`../../assets/${key}.json`))
-  )
-  keys.forEach((key, i) => (asset[key] = list[i].default))
+    this._names_low = {}
+    Object.keys(this.names).forEach((name) => {
+      this._names_low[name.toLowerCase()] = name
+    })
+    return this._names_low
+  }
 }
 
 export const asset = new Asset()
 
-const lenNaturalSort = (a: string, b: string) =>
-  a.length - b.length ||
+const naturalSort = (a: string, b: string) =>
   a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+
+const lenNaturalSort = (a: string, b: string) =>
+  a.length - b.length || naturalSort(a, b)
 
 export async function saveAssets() {
   // Sort names
   if (store.names) {
     const newNames: typeof store.names = {}
     const sortedKeys = Object.keys(store.names).sort(lenNaturalSort)
-  for (const name of sortedKeys) {
-      newNames[name] = store.names[name].sort()
-  }
+    for (const name of sortedKeys) {
+      newNames[name] = store.names[name].sort(naturalSort)
+    }
     store.names = newNames
+  }
+
+  // Filter names without images and same images
+  if (store.names) {
+    for (const name of Object.keys(store.names)) {
+      const list = store.names[name]
+      const imgPaths = list.map((id) => {
+        const [source, entry, meta, ...rest] = id.split(':')
+        if (meta === '32767') return undefined
+        const nbtHash = asset.nbtHash[rest.join(':')]
+        const hash = tree.get(source, entry, meta, nbtHash)
+        if (!hash) return undefined
+        const imgPath = asset.images[hash]
+        return imgPath === 'placeholder/null' ? undefined : imgPath
+      })
+      const arr = list.filter((_id, j) => {
+        if (imgPaths[j] === undefined) return false
+        for (let i = 0; i < j; i++) {
+          if (imgPaths[i] === imgPaths[j]) return false
+        }
+        return true
+      })
+      if (arr.length) store.names[name] = arr
+      else delete store.names[name]
+    }
   }
 
   await Promise.all(
@@ -104,6 +135,6 @@ export async function saveAssets() {
       .filter(Boolean)
       .map((key) =>
         writeFile(`assets/${key}.json`, JSON.stringify(store[key], null, 2))
-    )
+      )
   )
 }

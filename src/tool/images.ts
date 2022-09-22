@@ -7,7 +7,7 @@ import hash from 'object-hash'
 import { PNG } from 'pngjs'
 
 import { asset } from './assets'
-import { treeTool } from './treeTool'
+import { tree } from './tree'
 
 function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
@@ -57,7 +57,7 @@ export function appendImage(
     // Use already stored hash if item persist
     if (oldPathHash && newImgPath) {
       const oldHash = base
-        ? treeTool.get(base.source, base.entry, base.meta, base.nbtHash)
+        ? tree.get(base.source, base.entry, base.meta, base.nbtHash)
         : oldPathHash[trimImgPath(newImgPath)]
       if (oldHash) {
         resolve({ imgHash: oldHash })
@@ -90,7 +90,7 @@ export function appendImage(
   })
 }
 
-type Base = Omit<Parameters<typeof treeTool.add>[0], 'imgHash'>
+type Base = Omit<Parameters<typeof tree.add>[0], 'imgHash'>
 
 export type ImageBase = {
   /** Absolute or relative path to CWD for source image */
@@ -120,7 +120,7 @@ export async function grabImages<T>(
           : base.fileName.substring(base.source.length + 2)
         const p = appendImage(base.filePath, join(dest, newFileName), base)
         p.then((res) => {
-          treeTool.add({ ...base, imgHash: res.imgHash })
+          tree.add({ ...base, imgHash: res.imgHash })
           onAdd(!!res.isAdded, arr.length, base)
         })
         return p
