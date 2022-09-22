@@ -10,7 +10,7 @@
   "keywords": [],
   "scripts": {
     "build": "tsc",
-    "test run": "ts-node src/cli.ts",
+    "test run": "ts-node src/cli.ts README.md",
     "preparse": "ts-node src/tool/preparse.ts --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\" --modpack=e2ee",
     "preparse --no-overwrite": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Enigmatica2Expert - Extended\" --icons=\"E:/dev/E2E-E-icons/x32\" --modpack=e2ee",
     "preparse Herodotus": "ts-node src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Herodotus\" --modpack=herodotus"
@@ -25,6 +25,7 @@
     "fs-extra": "^10.0.1",
     "lodash": "^4.17.21",
     "terminal-kit": "^2.4.0",
+    "typescript-memoize": "^1.1.1",
     "yargs": "^17.4.0"
   },
   "devDependencies": {

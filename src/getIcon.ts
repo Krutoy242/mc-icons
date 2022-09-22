@@ -8,9 +8,18 @@ import { asset } from './tool/assets'
  * // Returns "minecraft/enchanted_book__0__1039e0ba"
  */
 export function getIcon(
-  base: [source: string, entry: string, meta?: number | string, sNbt?: string]
+  base:
+    | [source: string, entry: string, meta?: number | string, sNbt?: string]
+    | { source: string; entry: string; meta?: number | string; sNbt?: string }
 ): string | undefined {
-  const [source, entry, meta, sNbt] = base
+  let source: string
+  let entry: string
+  let meta: number | string | undefined
+  let sNbt: string | undefined
+
+  if (Array.isArray(base)) [source, entry, meta, sNbt] = base
+  else ({ source, entry, meta, sNbt } = base)
+
   const definition = asset.items[source]?.[entry]
 
   if (!definition) return // No item at all

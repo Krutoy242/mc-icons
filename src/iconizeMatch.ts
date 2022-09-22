@@ -1,12 +1,12 @@
-import { Reducer, TrieSearch } from '@committed/trie-search'
 import _ from 'lodash'
 
-import { CommandStrGroups, DictEntry } from './searcher'
+import { getIcon } from './getIcon'
+import { refine } from './modifiers'
+import { DictEntry } from './searcher'
+import { asset } from './tool/assets'
 import { Unclear } from './unclear'
 
-function escapeRegex(s: string): string {
-  return s.replace(/[/\\^$*+?.()|[\]{}]/g, '\\$&')
-}
+type Promisable<T> = T | Promise<T>
 
 export interface RgxExecIconMatch extends RegExpMatchArray {
   index: number
@@ -21,71 +21,36 @@ export interface RgxExecIconMatch extends RegExpMatchArray {
 export const capture_rgx =
   /\[(?<capture>[^\][]+)\](?!\()(?<tail>\s+\((?<option>[^)]+)\))?/gim
 
-function getTrieSearch(s: string, subTrie: TrieSearch<DictEntry>): DictEntry[] {
-  return subTrie.get(
-    s.split(/\s/),
-    TrieSearch.UNION_REDUCER as unknown as Reducer<DictEntry>
-  )
-}
+function filterByOption(result: DictEntry[], option?: string): DictEntry[] {
+  if (!option) return result
 
-function filterByOption(
-  searchResult: DictEntry[],
-  option?: string
-): DictEntry[] {
-  if (!option) return searchResult
-
+  // This is number
   if (/^[0-9]+$/.test(option)) {
-    // This is number
-    return searchResult.filter((d) => d.meta === option)
+    return result.filter((d) => d.meta === option)
   }
+
   // This option is mod name or Abbr
-  const rgx = new RegExp(option, 'i')
-  const optLow = option.toLocaleLowerCase()
-  return searchResult.filter(
+  const option_low = option.toLocaleLowerCase()
+  return result.filter(
     (d) =>
-      rgx.test(d.modAbbr) ||
-      d.modname.toLocaleLowerCase().startsWith(optLow) ||
-      d.source.startsWith(optLow)
+      d.modAbbr.startsWith(option_low) ||
+      d.modname.toLocaleLowerCase().startsWith(option_low) ||
+      d.source.startsWith(option_low)
   )
 }
-
-type DictEntriesFilter = (dictEntries: DictEntry[]) => DictEntry[]
-
-function createModifier(replaceRegex: RegExp, takeCallback: DictEntriesFilter) {
-  return (capture: string) => {
-    let isMatch = false
-    const unmodifiedCapture = capture
-      .replace(replaceRegex, () => ((isMatch = true), ' '))
-      .trim()
-
-    const unmodRgx = new RegExp(escapeRegex(unmodifiedCapture), 'i')
-    return {
-      unmodifiedCapture,
-      filter: !isMatch
-        ? undefined
-        : (dictEntries: DictEntry[]) =>
-            takeCallback(dictEntries.filter((d) => unmodRgx.test(d.name))),
-    }
-  }
-}
-
-const modsList = [
-  createModifier(/\s*\(Every\)\s*/gi, (d: DictEntry[]) => d),
-  createModifier(/\s*\(Any\)\s*/gi, (d: DictEntry[]) => [d[0]]),
-]
 
 export async function iconizeMatch(
   match: RgxExecIconMatch,
-  trieSearch: TrieSearch<DictEntry>,
+  trieSearch: (s: string) => DictEntry[],
   unclear: Unclear,
-  levinshteinResolver: (capture: string) => Promise<DictEntry | DictEntry[]>,
-  getCommandStringSearch: (groups?: CommandStrGroups) => DictEntry[] | undefined
-): Promise<DictEntry | DictEntry[] | undefined> {
+  levinshteinResolver: (capture: string) => DictEntry[],
+  getByCommandString: (capture: string) => DictEntry[] | undefined,
+  getByID: (id: string) => DictEntry[] | undefined
+): Promise<DictEntry[] | undefined> {
   /**
-   * Capture inside []
-   * @example [Capture] (option)
+   * Full capture inside [] and without changes, like (Every)
    */
-  let { capture } = match.groups
+  const rawCapture = match.groups.capture
 
   /**
    * Options that comes after capture
@@ -93,130 +58,69 @@ export async function iconizeMatch(
    */
   const { option } = match.groups
 
-  /**
-   * Full capture inside [] and without changes, like (Every)
-   */
-  const rawCapture = capture
-
   // Skip if empty (or Markdown list)
-  if (!capture.trim() || /^x$/i.test(capture)) return
+  if (!rawCapture.trim() || /^x$/i.test(rawCapture)) return
 
-  // Remove wildcards
-  const modifierFilters = modsList
-    .map((m) => {
-      const modif = m(capture)
-      capture = modif.unmodifiedCapture
-      return modif.filter
-    })
-    .filter((m) => m) as DictEntriesFilter[]
+  /**
+   * Capture inside [], removed wildcards
+   * @example [Capture] (option)
+   */
+  const { capture, modifierFilter } = refine(rawCapture)
 
-  const commandGroups = getCommandStringSearch(
-    capture.match(/^<(?<id>[^:]+:[^:]+)(:(?<meta>\d+))?>$/)
-      ?.groups as unknown as CommandStrGroups | undefined
-  )
+  // Filters that could help reduce result variants
+  const filterSteps: ((
+    d: DictEntry[]
+  ) => Promisable<[DictEntry[], boolean | undefined]>)[] = [
+    (d) => [d, false],
+    (d) => [filterByOption(d, option), false],
+    (d) => [[...new Map(d.map((e) => [getIcon(e), e])).values()], false], // Same image filter
+    (d) => modifierFilter(d),
+  ]
 
-  const unfilteredSearchResult: DictEntry[] =
-    commandGroups ?? getTrieSearch(capture, trieSearch)
+  let result: DictEntry[] = []
+  for await (const list of attempts()) {
+    if (!list?.length) continue
 
-  const filteredSearchResult = filterByOption(unfilteredSearchResult, option)
-
-  const searchResult =
-    unfilteredSearchResult.length === filteredSearchResult.length
-      ? unfilteredSearchResult
-      : filteredSearchResult
-
-  // Simple Match
-  let result = handleSingleMatch(searchResult)
-  if (result) return result
-
-  function handleSingleMatch(
-    result: DictEntry[]
-  ): DictEntry | DictEntry[] | undefined {
-    // Only one match
-    if (result.length === 1) {
-      return result[0]
+    result = list
+    let final
+    for (const filter of filterSteps) {
+      ;[result, final] = await filter(result)
+      if (result.length === 1 || final) return result
     }
 
-    // We have modifiers - return them first
+    // Attempts found items, but we still have too many
     if (result.length > 1) {
-      for (const mFilter of modifierFilters) {
-        // eslint-disable-next-line no-param-reassign
-        result = mFilter(result)
-        if (result) return result
-      }
+      const resolved = await unclear.resolve(rawCapture, result, match)
+      return resolved ? [resolved] : undefined
     }
-
-    // Many matches, but only one is exact
-    const exacts = result.filter(
-      (r) => r.name.toLowerCase() === capture.toLowerCase()
-    )
-    if (exacts.length === 1) {
-      return exacts[0]
-    }
-    // Exact one item from Minecraft - this probably what user want
-    const fromMC = exacts.filter((r) => r.source === 'minecraft')
-    if (fromMC.length === 1) {
-      return fromMC[0]
-    }
-
-    // We have Tank with same name. This is fluid
-    const fluidTank = result.filter(
-      (r) => r.name.toLowerCase() === capture.toLowerCase() + ' tank'
-    )
-    if (fluidTank.length === 1) {
-      return fluidTank[0]
-      // TODO: Fix fluid tank custom name
-      // (de) => de.name.replace(/ Tank$/, '')
-    }
-
-    // Many matches, but they all same item with different NBT
-    if (
-      _(result)
-        .map((d) => _(d).pick(['name', 'id', 'meta']))
-        .uniqWith(_.isEqual)
-        .value().length === 1
-    ) {
-      return result[0]
-    }
-    return undefined
   }
 
-  // MANY Matches
-  if (searchResult.length > 1) {
-    let reducedSearchResult = searchResult
-    const reduceMagic = (a: DictEntry[]) =>
-      a.length > 1 ? (reducedSearchResult = a) : a
-    if (option) {
-      // Option with Abbreviatures
-      const abbrSearch = new TrieSearch<DictEntry>(['modAbbr'], {
-        splitOnRegEx: undefined,
-        idFieldOrFunction: 'uniq_id',
-      })
-      abbrSearch.addAll(searchResult)
-      result = handleSingleMatch(reduceMagic(getTrieSearch(option, abbrSearch)))
-      if (result) return result
-
-      // Option lookup
-      const subSearch = new TrieSearch<DictEntry>(
-        ['modid', 'modname', 'meta' /* , 'nbt' */],
-        { splitOnRegEx: undefined, idFieldOrFunction: 'uniq_id' }
-      )
-      subSearch.addAll(searchResult)
-      result = handleSingleMatch(reduceMagic(getTrieSearch(option, subSearch)))
-      if (result) return result
-    }
-
-    return await unclear.resolve(rawCapture, reducedSearchResult, match)
-  }
-
-  // No matches, try do_you_mean
-  if (!searchResult.length) {
-    const levResult = await levinshteinResolver(capture)
-    return Array.isArray(levResult)
-      ? await unclear.doYouMean(rawCapture, levResult, match)
-      : levResult
-  }
-
-  unclear.cantBeFound(rawCapture)
+  // result.length === 0
   return undefined
+
+  async function* attempts() {
+    // Command string [<minecraft:coal>]
+    yield getByCommandString(capture)
+
+    // Exact lowercase name [Coal]
+    const capture_low = capture.toLowerCase()
+    const exactName = asset.names_low[capture_low]
+    if (exactName) {
+      const exacts = asset.names[exactName]
+        .map(getByID)
+        .filter((d): d is DictEntry[] => !!d)
+        .flat()
+
+      // Exact one item from Minecraft - this probably what user want
+      const fromMC = exacts.filter((r) => r.source === 'minecraft')
+      if (fromMC.length === 1) yield fromMC
+      yield exacts
+    }
+
+    // Trie search [NanoSuit]
+    // Ends here if result have members
+    yield trieSearch(capture)
+
+    yield levinshteinResolver(capture)
+  }
 }

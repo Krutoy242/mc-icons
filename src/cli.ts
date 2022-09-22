@@ -1,17 +1,11 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs-extra'
+import { existsSync, readFileSync, writeFileSync } from 'fs-extra'
 import yargs from 'yargs'
 
 import { bracketsSearch } from './searcher'
 
 const yargsOpts = {
-  input: {
-    alias: 'i',
-    type: 'string',
-    describe: 'Input file path',
-    default: 'README.md',
-  },
   treshold: {
     alias: 't',
     type: 'number',
@@ -44,11 +38,30 @@ export type CliOpts = {
 
 const argv = yargs(process.argv.slice(2))
   .options(yargsOpts)
+  .command('<input>', 'input file to mutate', (yargs) => {
+    yargs.positional('input', {
+      describe: 'input file to mutate',
+      type: 'string',
+    })
+  })
   .version(false)
   .help('help')
   .wrap(null)
   .parseSync()
 
-bracketsSearch(argv as CliOpts, readFileSync(argv.input, 'utf8'), (replaced) =>
-  writeFileSync(argv.input, replaced)
+const filePath = argv._[0] as string
+
+if (!filePath) {
+  console.error(`File path must be provided`)
+  process.exit(1)
+}
+if (!existsSync(filePath)) {
+  console.error(`File ${filePath} doesn\'t exist`)
+  process.exit(1)
+}
+
+bracketsSearch(
+  argv as CliOpts,
+  readFileSync(filePath as string, 'utf8'),
+  (replaced) => writeFileSync(filePath as string, replaced)
 )

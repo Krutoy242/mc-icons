@@ -8,58 +8,30 @@ This TS-Node CLI app designed to automatically turn text in Markdown files into 
 
 Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/modpacks/enigmatica-2-expert-extended) using this tool for [changelogs](https://github.com/Krutoy242/Enigmatica2Expert-Extended/blob/master/CHANGELOG.md).
 
-| This string                           | Turns into this                                                                                                     |
-| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| [Iron Ingot] [Anvil] [Triple Battery] | ![](https://git.io/JLjca 'Iron Ingot') ![](https://git.io/JLjcu 'Anvil') ![](https://git.io/JP66y 'Triple Battery') |
 
-### Other examples
+| Description                                          | Capture                                                | Result                                                                                               |
+|------------------------------------------------------|--------------------------------------------------------|------------------------------------------------------------------------------------------------------|
+| Items with exact match                               | [Beacon]                                               | ![](https://is.gd/oiTLv6 "Beacon")                                                                   |
+| Item from **Minecraft** picked first                 | [Glass]                                                | ![](https://is.gd/bggvW5 "Glass")                                                                    |
+| Add `(every)` inside get all items                   | [Mossy Wall (every)]                                   | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")![](https://is.gd/wiuAOR "Mossy Stone Brick Wall") |
+| Add `(any)` inside to pick only one                  | [Mossy Wall (any)]                                     | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")                                                   |
+| Specify mod in parenth                               | [Green wall] (Actually Additions)                      | ![](https://is.gd/wxi3cX "Ethetic Green Wall")                                                       |
+| You can use mod **shortand**<br/>or **abbreviature** | [Green wall] (actual)<br/>[Green wall] (EM)            | ![](https://is.gd/wxi3cX "Ethetic Green Wall")![](https://is.gd/PR2MS1 "Green Alabaster Wall")       |
+| Use `(fluid)` postfix to get fluid                   | [Enriched Lava] (fluid)                                | ![](https://is.gd/XPxBoQ "Enriched Lava")                                                            |
+| Use numbers `(4)` as metadata                        | [Futura Block] (4)<br/>[Futura Block] (5)              | ![](https://is.gd/eGPYzG "Futura Block")![](https://git.io/JLjsJ 'Futura Block')                     |
+| Capture by id **[&lt;mod:name:meta:{tag}>]**         | `[<tconstruct:large_plate:0:{Material:"fierymetal"}>]` | ![](https://is.gd/Zza0WL "Fiery Large Plate")                                                        |
+| Output first items if all have same icon             | [Advanced Pocket] (CC)                                 | ![](https://is.gd/m64erK "Advanced Pocket Computer")                                                 |
 
-Note that we can mark different `mods` or `metas` for same names
-
-<table>
-<tr><td>
-<strong>Before iconification:</strong>
-</td><td>
-<strong>After iconification:</strong>
-</td></tr>
-<td>
-
-[Amber] (Biomes O' Plenty)  
-[Lens] (AA)  
-[Futura Block] (5)  
-
----
-
-[Basalt] (advancedrocketry)  
-[Basalt] (Chisel)  
-[Basalt] (EM)  
-
-</td>
-<td>
-
-![](https://git.io/Jw3pq 'Amber')  
-![](https://git.io/JLhj8 'Lens')  
-![](https://git.io/JLjsJ 'Futura Block')  
-
----
-
-![](https://git.io/JLjsf 'Basalt Sediment')  
-![](https://git.io/JP66S 'Basalt')  
-![](https://git.io/JLjnZ 'Basalt')  
-
-</td>
-</tr>
-</table>
 
 ## Usage
 
 1. Install latest **NodeJS** for [Windows](https://nodejs.org/en/download/current/) or [Unix](https://nodejs.org/en/download/package-manager/)
 
-2. Create Markdown file with strings of form `[Item Name] (optional_mod_name)`
+2. Create Markdown file with strings of form `[Item Name] (options)`
 
 3. Run `mc-icons` with input file path
     ```sh
-    > npx mc-icons --input=README.md
+    > npx mc-icons README.md
     ```
 4. Input file would be changed in place
 
@@ -68,29 +40,14 @@ Note that we can mark different `mods` or `metas` for same names
 `> npx mc-icons --help` output:
 
 ```
--i, --input     Input file path
+    --help      Show help
 -t, --treshold  Levenshtein name mistake treshold
 -s, --silent    Do not any prompt
-    --help      Show help
+-m, --modpack   Modpack shortand to filter icons, "e2ee" for example
 
 -r, --repo      Repository to make short links to
-                default "https://github.com/Krutoy242/E2E-E-icons/raw/main/x32/"
+                default "https://github.com/Krutoy242/mc-icons/raw/master/i/"
 ```
-
-## Contributing
-
-Some 1.12 Minecraft modpacks in addition to `E2E-E` have items that are not on the list.  
-You need to add these icons in the folder `./x32/` and update the `.json` files.
-
-1. Fork this repo on local machine, install dependensies `> npm install`
-2. Launch your Minecraft with [IconExporter](https://www.curseforge.com/minecraft/mc-mods/iconexporter) mod. Join world, run command to generate all icons:
-  ```sh
-  /iconexporter export 32
-  ```
-3. Move all created icons to folder `./x32/` without replacing
-4. Run `> npm run preparse` to generate `.json` mapping files
-5. Add, commit, push.
-6. Create PullRequest to main repo, to enlarge item dictionary. If you dont want to wait before PR would be accepted, use `--repo=` option to your fork.
 
 ## Author
 

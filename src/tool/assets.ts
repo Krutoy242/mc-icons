@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 
 import { readFileSync, writeFile } from 'fs-extra'
+import { Memoize } from 'typescript-memoize'
 
 import { tree } from './tree'
 import { Tree } from './types'
@@ -10,7 +11,7 @@ const store = {
   images: <{ [imgHash: string]: string } | undefined>undefined,
 
   /** Tree of items and their image hashes */
-  items: <Tree | undefined>undefined,
+  items: <Tree<string> | undefined>undefined,
 
   /** Mods that have items in specified modpack */
   modpacks: <{ [modShortand: string]: string[] } | undefined>undefined,
@@ -63,26 +64,16 @@ class Asset implements AssetStorage {
   // Other Fields
   // --------------------------------------------
 
-  private _nbtHash!: { [sNbt: string]: string }
+  @Memoize()
   public get nbtHash(): { [sNbt: string]: string } {
-    if (this._nbtHash) return this._nbtHash
-
-    this._nbtHash = {}
-    Object.entries(this.nbt).forEach(([nbtHash, sNbt]) => {
-      this._nbtHash[sNbt] = nbtHash
-    })
-    return this._nbtHash
+    return Object.fromEntries(Object.entries(this.nbt).map(([k, v]) => [v, k]))
   }
 
-  private _names_low!: { [name_low: string]: string }
+  @Memoize()
   public get names_low() {
-    if (this._names_low) return this._names_low
-
-    this._names_low = {}
-    Object.keys(this.names).forEach((name) => {
-      this._names_low[name.toLowerCase()] = name
-    })
-    return this._names_low
+    return Object.fromEntries(
+      Object.entries(this.names).map(([k]) => [k.toLowerCase(), k])
+    )
   }
 }
 

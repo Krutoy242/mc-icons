@@ -2,11 +2,11 @@ export interface HashMap {
   [hash: string]: string
 }
 
-export interface Tree {
+export interface Tree<T> {
   [source: string]: {
     [entry: string]: {
       [meta: string]: {
-        [nbtHash: string]: string /** Image hash */
+        [key: string]: T /** Image hash */
       }
     }
   }

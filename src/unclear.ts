@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import _ from 'lodash'
+import _, { escapeRegExp } from 'lodash'
 import { terminal as term } from 'terminal-kit'
 
 import { CliOpts } from './cli'
@@ -74,27 +74,6 @@ export class Unclear {
     this.unfounds.push(capture)
   }
 
-  async doYouMean(
-    capture: string,
-    dictEntries: DictEntry[],
-    match: RgxExecIconMatch
-  ): Promise<DictEntry | undefined> {
-    if (this.argv.silent) return
-
-    const inLine = linesOfMatch(match)
-
-    const gridMenu = gridMenuBuilder(dictEntries)
-
-    term`\n❗ can't be found: [`.bgGreen.black(capture)(
-      `]` + inLine
-    )`\nDo you mean (ESC - skip):\n`
-    return gridMenu(
-      (d) =>
-        chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.id}:${d.meta}}>` +
-        nbtToString(d.sNbt)
-    )
-  }
-
   async resolve(
     capture: string,
     full_itemArr: DictEntry[],
@@ -105,20 +84,26 @@ export class Unclear {
     )
     const itemArr = exactArr.length > 1 ? exactArr : full_itemArr
 
+    const rgx = new RegExp(escapeRegExp(capture), 'i')
+    itemArr.sort((a, b) => Number(rgx.test(b.name)) - Number(rgx.test(a.name)))
+
     // Conditions
     if (!itemArr.length || this.argv.silent)
       return this.cantBeFound(capture), undefined
 
     const is_allItemsHasUniqNames =
       itemArr.length === _.uniqBy(itemArr, 'name').length
+
     const is_allModsAreDifferent = _(itemArr)
       .countBy('modid')
       .every((v) => v === 1)
+
     const is_sameMod_metasDifferent =
       _.uniqBy(itemArr, 'modid').length === 1 &&
       _(itemArr)
         .countBy('meta')
         .every((v) => v === 1)
+
     const gridMenu = gridMenuBuilder(itemArr)
     const inLine = linesOfMatch(match)
 
@@ -149,8 +134,9 @@ export class Unclear {
     )`\nSelect Any variant:\n`
     return gridMenu(
       (d) =>
-        chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.id}:${d.meta}}>` +
-        nbtToString(d.sNbt)
+        chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.source}:${d.entry}:${
+          d.meta || 0
+        }}>` + nbtToString(d.sNbt)
     )
   }
 }

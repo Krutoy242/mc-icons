@@ -3,12 +3,14 @@ import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
 
+import { AssetEx } from './assetEx'
 import type { CliOpts } from './cli'
 import { getIcon } from './getIcon'
 import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
 import { asset } from './tool/assets'
 import { Base } from './tool/types'
+import { getTrieSearch } from './trie'
 import { Unclear } from './unclear'
 
 const write = (s = '.') => process.stdout.write(s)
@@ -32,77 +34,23 @@ export interface DictEntry {
 }
 
 const trieSearch = new TrieSearch<DictEntry>(
-  ['name', 'id', 'modid', 'modname', 'meta' /* , 'nbt' */],
+  ['name' /* , 'id', 'modid', 'modname', 'meta' */ /* , 'nbt' */],
   {
     /* splitOnRegEx:false,  */ idFieldOrFunction: 'id',
   }
 )
-const nameDictionary: DictEntry[] = []
-const lookupTree: {
-  [source: string]: {
-    [definition: string]: {
-      [meta: string]: DictEntry
-    }
+
+function getGlobalTrieSearch(assetEx: AssetEx) {
+  return (s: string) => {
+    if (!trieSearch.size) initTrie(assetEx)
+    return getTrieSearch(s, trieSearch)
   }
-} = {}
-
-async function initTrie(argv: CliOpts) {
-  if (trieSearch.size) return
-  write(' Init dictionary...')
-
-  // Make map of filtered sources
-  let modpackMap: { [source: string]: true } | undefined
-  if (argv.modpack) {
-    modpackMap = {
-      gas: true,
-      fluid: true,
-    } // TODO: Gas and fluid should not be in every modpack
-    const sourcesList = asset.modpacks[argv.modpack]
-    if (!sourcesList?.length)
-      throw new Error('This modpack didnt exist: ' + argv.modpack)
-    for (const source of sourcesList) {
-      modpackMap[source] = true
-    }
-    }
-
-  // Init unique names
-  for (const [name, list] of Object.entries(asset.names)) {
-    for (const id of list) {
-      let [source, entry, meta, ...rest] = id.split(':')
-      if (modpackMap && !modpackMap[source]) continue
-      meta ??= ''
-      const sNbt = rest.join(':')
-      const modname = asset.mods[source] || source
-
-    const newEntry: DictEntry = {
-      name,
-      id,
-      meta,
-        sNbt,
-        source,
-        entry,
-      modname,
-      name_low: name.toLowerCase(),
-      modAbbr: abbr1(modname),
-    }
-    nameDictionary.push(newEntry)
-
-      const oldEntry = ((lookupTree[source] ??= {})[entry] ??= {})[meta]
-      if (!oldEntry || oldEntry.sNbt) lookupTree[source][entry][meta] = newEntry
-    }
-  }
-
-  write(' Map Trie...')
-  trieSearch.addAll(nameDictionary)
-  write(' done.\n')
 }
 
-function abbr1(str: string) {
-  return str
-    .replace(/[^\w ]/, '') // Remove special chars
-    .split(' ')
-    .map((s) => s[0])
-    .join('') // First letter of each word
+function initTrie(assetEx: AssetEx) {
+  write(` Map Trie [${assetEx.nameDictionary.length}]...`)
+  trieSearch.addAll(assetEx.nameDictionary)
+  write(' done.\n')
 }
 
 export interface CommandStrGroups {
@@ -110,33 +58,35 @@ export interface CommandStrGroups {
   meta?: `${number}`
 }
 
-function getCommandStringSearch(
-  groups?: CommandStrGroups
-): DictEntry[] | undefined {
-  if (!groups) return
-  const [modid, definition] = groups.id.split(':')
-  const meta = Number(groups.meta) || 0
-  const result = lookupTree[modid]?.[definition]?.[meta]
+function getByID(assetEx: AssetEx, id: string): DictEntry[] | undefined {
+  const result = assetEx.getById(id)
   return result ? [result] : undefined
 }
 
-export type LevDict = [number, DictEntry]
-function doYouMean(capture: string): LevDict[] {
-  const capture_low = capture.toLowerCase()
-  const lev = nameDictionary.map(
-    (o) => [levenshtein.get(o.name_low, capture_low), o] as LevDict
-  )
-  return _.sortBy(lev, 0)
+function getByCommandString(
+  assetEx: AssetEx,
+  capture: string
+): DictEntry[] | undefined {
+  const id = capture.match(/^<(.+)>$/)?.[1]
+  return id ? getByID(assetEx, id) : undefined
 }
 
-function createLevinshteinResolver(treshold: number) {
-  return async (capture: string) => {
-    const levDict = doYouMean(capture)
-    const t1 = levDict[0][0]
-    const t2 = levDict[1][0]
-    const isTresholdPass = t1 < t2 && t1 <= treshold
-    return isTresholdPass ? levDict[0][1] : levDict.map((o) => o[1])
-  }
+type LevDict = [number, DictEntry]
+
+function levinshteinResolver(
+  assetEx: AssetEx,
+  treshold: number,
+  capture: string
+) {
+  const capture_low = capture.toLowerCase()
+  const lev = assetEx.nameDictionary.map(
+    (o) => [levenshtein.get(o.name_low, capture_low), o] as LevDict
+  )
+  const levDict = _.sortBy(lev, 0)
+  const t1 = levDict[0][0]
+  const t2 = levDict[1][0]
+  const isTresholdPass = t1 < t2 && t1 <= treshold
+  return isTresholdPass ? [levDict[0][1]] : levDict.map((o) => o[1])
 }
 
 // ##################################################################
@@ -151,27 +101,27 @@ function createLevinshteinResolver(treshold: number) {
 export async function bracketsSearch(
   argv: CliOpts,
   md: string,
-  callback: (replaced: string) => void
+  replaceCB: (replaced: string) => void
 ): Promise<void> {
   const replaces: { from: string; to: { base: Base; name: string }[] }[] = []
   const unclear = new Unclear(argv)
+  const assetEx = new AssetEx(argv)
+  const trieSearchFn = getGlobalTrieSearch(assetEx)
 
   write('Looking for Item names ')
 
   for (const match of md.matchAll(capture_rgx)) {
-    await initTrie(argv)
     write()
-    const result = await iconizeMatch(
+    const dicts = await iconizeMatch(
       match as RgxExecIconMatch,
-      trieSearch,
+      trieSearchFn,
       unclear,
-      createLevinshteinResolver(Number(argv.treshold) || 0),
-      getCommandStringSearch
+      (s) => levinshteinResolver(assetEx, argv.treshold || 0, s),
+      (s) => getByCommandString(assetEx, s),
+      (s) => getByID(assetEx, s)
     )
 
-    if (!result) continue
-    const dicts = (Array.isArray(result) ? result : [result]).filter(Boolean)
-    if (!dicts.length) continue
+    if (!dicts?.length) continue
 
     replaces.push({
       to: dicts.map((de) => ({
@@ -231,11 +181,11 @@ export async function bracketsSearch(
     })
   }
 
+  tmpMd = md
   Promise.all(shortURL_promises).then((shortURLs) => {
     let k = 0
     actualReplaces.forEach((repl) => {
-      // eslint-disable-next-line no-param-reassign
-      md = md.replace(repl.from, (...args) =>
+      tmpMd = tmpMd.replace(repl.from, (...args) =>
         repl.to
           .map(
             (item) =>
@@ -245,7 +195,7 @@ export async function bracketsSearch(
       )
     })
 
-    callback(md)
+    replaceCB(tmpMd)
     console.log(' done')
     process.exit(0)
   })

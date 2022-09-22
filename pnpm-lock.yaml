@@ -34,6 +34,7 @@ specifiers:
   terminal-kit: ^2.4.0
   ts-node: ^10.7.0
   typescript: ^4.6.3
+  typescript-memoize: ^1.1.1
   yargs: ^17.4.0
 
 dependencies:
@@ -43,6 +44,7 @@ dependencies:
   fs-extra: 10.1.0
   lodash: 4.17.21
   terminal-kit: 2.5.1
+  typescript-memoize: 1.1.1
   yargs: 17.5.1
 
 devDependencies:
@@ -2682,7 +2684,7 @@ packages:
       reflect-metadata: 0.1.13
       release-it: 15.3.0
       terminal-kit: 2.5.1
-      typescript-memoize: 1.1.0
+      typescript-memoize: 1.1.1
       yargs: 17.5.1
     transitivePeerDependencies:
       - encoding
@@ -3863,9 +3865,8 @@ packages:
       is-typedarray: 1.0.0
     dev: true
 
-  /typescript-memoize/1.1.0:
-    resolution: {integrity: sha512-LQPKVXK8QrBBkL/zclE6YgSWn0I8ew5m0Lf+XL00IwMhlotqRLlzHV+BRrljVQIc+NohUAuQP7mg4HQwrx5Xbg==}
-    dev: true
+  /typescript-memoize/1.1.1:
+    resolution: {integrity: sha512-GQ90TcKpIH4XxYTI2F98yEQYZgjNMOGPpOgdjIBhaLaWji5HPWlRnZ4AeA1hfBxtY7bCGDJsqDDHk/KaHOl5bA==}
 
   /typescript/4.7.4:
     resolution: {integrity: sha512-C0WQT0gezHuw6AdY1M2jxUO83Rjf0HP7Sk1DtXj6j1EwkQNZrHAg2XPWlq62oqEhYvONq5pkC2Y9oPljWToLmQ==}
