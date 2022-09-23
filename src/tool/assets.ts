@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-assertions */
 
+import { resolve } from 'path'
+
 import { readFileSync, writeFile } from 'fs-extra'
 import { Memoize } from 'typescript-memoize'
 
@@ -29,7 +31,9 @@ const store = {
 type AssetKey = keyof typeof store
 
 function loadAsset(key: AssetKey) {
-  return JSON.parse(readFileSync(`assets/${key}.json`, 'utf8'))
+  return JSON.parse(
+    readFileSync(resolve(__dirname, `../../assets/${key}.json`), 'utf8')
+  )
 }
 
 type NoUndefinedField<T> = { [P in keyof T]-?: NonNullable<T[P]> }
