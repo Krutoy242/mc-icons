@@ -190,7 +190,16 @@
     "wpt",
     "xnet",
     "xtones",
-    "zerocore"
+    "zerocore",
+    "bithop",
+    "modularui",
+    "bogosorter",
+    "integrated_proxy",
+    "searedladder",
+    "tweakedlib",
+    "tweakedexcavation",
+    "universaltweaks",
+    "ic2_tweaker"
   ],
   "herodotus": [
     "actuallyadditions",
