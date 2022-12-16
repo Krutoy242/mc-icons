@@ -13,6 +13,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.16.0
   '@typescript-eslint/parser': ^5.16.0
   boxen: 5.1.2
+  canvas: ^2.10.2
   chalk: ^4.1.2
   eslint: ^8.12.0
   eslint-config-alloy: ^4.6.2
@@ -59,6 +60,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.33.0_njno5y7ry2l2lcmiu4tywxkwnq
   '@typescript-eslint/parser': 5.33.0_qugx7qdu5zevzvxaiqyxfiwquq
   boxen: 5.1.2
+  canvas: 2.10.2
   eslint: 8.21.0
   eslint-config-alloy: 4.6.2_zpy2q2sxuxfuhekccmu6x3qxa4
   eslint-config-prettier: 8.5.0_eslint@8.21.0
@@ -879,13 +881,13 @@ packages:
     engines: {node: '>=14.16'}
     dev: true
 
-  /canvas/2.9.3:
-    resolution: {integrity: sha512-WOUM7ghii5TV2rbhaZkh1youv/vW1/Canev6Yx6BG2W+1S07w8jKZqKkPnbiPpQEDsnJdN8ouDd7OvQEGXDcUw==}
+  /canvas/2.10.2:
+    resolution: {integrity: sha512-FSmlsip0nZ0U4Zcfht0qBJqDhlfGuevTZKE8h+dBOYrJjGvY3iqMGSzzbvkaFhvMXiVxfcMaPHS/kge++T5SKg==}
     engines: {node: '>=6'}
     requiresBuild: true
     dependencies:
       '@mapbox/node-pre-gyp': 1.0.9
-      nan: 2.16.0
+      nan: 2.17.0
       simple-get: 3.1.1
     transitivePeerDependencies:
       - encoding
@@ -2673,7 +2675,7 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
     dependencies:
-      canvas: 2.9.3
+      canvas: 2.10.2
       cli-progress: 3.11.2
       csv-parse: 5.3.0
       glob: 7.2.3
@@ -2799,8 +2801,8 @@ packages:
     resolution: {integrity: sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA==}
     dev: true
 
-  /nan/2.16.0:
-    resolution: {integrity: sha512-UdAqHyFngu7TfQKsCBgAA6pWDkT8MAO7d0jyOecVhN5354xbLqdn8mV9Tat9gepAupm0bt2DbeaSC8vS52MuFA==}
+  /nan/2.17.0:
+    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
     dev: true
 
   /natural-compare/1.4.0:

@@ -14,6 +14,7 @@ import { appendImage, grabImages, ImageBase, initOld } from './images'
 import { category } from './log'
 import { appendNames } from './names'
 import { addNbt } from './nbt'
+import { generatePlaceholders } from './placeholder'
 
 const argv = yargs(process.argv.slice(2))
   .alias('h', 'help')
@@ -63,6 +64,9 @@ async function init() {
   if (!argv.overwrite) {
     log('Skipping overwriting...')
     initOld()
+  } else {
+    log('Generating placeholders...')
+    await generatePlaceholders()
   }
 
   log('Open JEIExporter nameMap.json...')
