@@ -49,6 +49,18 @@ Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/m
                 default "https://github.com/Krutoy242/mc-icons/raw/master/i/"
 ```
 
+## Developing
+
+To generate icons into repo:
+
+1. Install mods [IconExporter](https://www.curseforge.com/minecraft/mc-mods/iconexporter) and [JEIExporter](https://github.com/friendlyhj/JEIExporter).
+2. Run from game `/iconexporter export 64`. Note [this issue](https://github.com/CyclopsMC/IconExporter/issues/7) and the fact that when MC window resized, it could output icons in 32x32 format despite `64` in argument.
+3. Export JEI data (default `ctrl+J` hotkey, see controls).
+4. Run
+  ```sh
+  ts-node src/tool/preparse.ts --mc=path/to/modpack --icons=icon-exports-x64 --modpack=modpack_shortand
+  ```
+
 ## Author
 
 * https://github.com/Krutoy242
