@@ -24,6 +24,12 @@ const yargsOpts = {
     describe: 'Modpack shortand to filter icons, "e2ee" for example',
   },
   silent: { alias: 's', type: 'boolean', describe: 'Do not any prompt' },
+  short: {
+    alias: 'h',
+    type: 'boolean',
+    describe: 'Shorten long links with is.gd',
+    default: true,
+  },
 } as const
 
 interface OptsTypes {

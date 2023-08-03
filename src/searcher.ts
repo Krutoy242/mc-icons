@@ -171,7 +171,8 @@ export async function bracketsSearch(
         actualReplaces.push(repl)
 
         for (const ser of serialized) {
-          const p = isgd(`${argv.repo}${ser}.png`)
+          const full = `${argv.repo}${ser}.png`
+          const p = argv.short ? isgd(full) : Promise.resolve(full)
           p.then(() => write())
           shortURL_promises.push(p)
         }
