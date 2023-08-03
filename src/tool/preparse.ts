@@ -166,11 +166,6 @@ async function init() {
   log('Generating item names ...')
   appendNames(nameMap)
 
-  log('Generating modpacks data')
-  asset.modpacks[argv.modpack] = Object.keys(asset.mods)
-    .filter((k) => asset.items[k] && Object.keys(asset.items[k]).length)
-    .sort()
-
   log('Generating mod names ...')
   const newModNames: Record<string, string> = JSON.parse(
     fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
@@ -178,6 +173,11 @@ async function init() {
   for (const [id, name] of Object.entries(newModNames)) {
     asset.mods[id] = name
   }
+
+  log('Generating modpacks data')
+  asset.modpacks[argv.modpack] = Object.keys(newModNames)
+    .filter((k) => asset.items[k] && Object.keys(asset.items[k]).length)
+    .sort()
 
   log('Saving assets ...')
   await saveAssets()
