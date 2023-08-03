@@ -67,7 +67,7 @@ export class AssetEx {
 
     // TODO: Gas and fluid should not be in every modpack
     return Object.fromEntries(
-      sourcesList.concat(['gas', 'fluid']).map((s) => [s, true])
+      sourcesList.concat(['gas', 'fluid', 'placeholder']).map((s) => [s, true])
     )
   }
 
