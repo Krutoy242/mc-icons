@@ -190,7 +190,9 @@ export async function bracketsSearch(
         repl.to
           .map(
             (item) =>
-              `${args.pop()?.prefix ?? ''}![](${shortURLs[k++]} "${item.name}")`
+              `${args.pop()?.prefix ?? ''}![](${
+                shortURLs[k++]
+              } "${item.name.replace(/"/g, '\\"')}")`
           )
           .join('')
       )
