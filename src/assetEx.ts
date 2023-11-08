@@ -22,7 +22,14 @@ export class AssetEx {
   public getById(id: string): DictEntry | undefined {
     if (!this.lookupTree) this.initDict()
     const [source, entry, meta, sNbt] = baseFromID(id)
-    return this.lookupTree[source]?.[entry]?.[meta ?? '']?.[sNbt ?? '']
+    const def = this.lookupTree[source]?.[entry]
+    if (!def) return undefined
+    const dm =
+      meta && meta !== '*' && meta !== '32767'
+        ? def[meta]
+        : def[''] ?? def[0] ?? def['0'] ?? def['*'] ?? Object.values(def)[0]
+    if (!dm) return undefined
+    return sNbt ? dm[sNbt] : dm[''] ?? dm['{}'] ?? Object.values(dm)[0]
   }
 
   private initDict() {
