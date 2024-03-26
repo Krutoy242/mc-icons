@@ -93,6 +93,7 @@ async function init() {
   let copied = 0
   let total = 0
   const jeiePath = join(argv.mc, '/exports/items')
+  await handleJEIEFile('thaumcraft.api.aspects.AspectList', 'aspect')
   await handleJEIEFile('mekanism.api.gas.GasStack', 'gas', /^gas__/)
   await handleJEIEFile('fluid', 'fluid')
   await handleJEIEFile('item')
