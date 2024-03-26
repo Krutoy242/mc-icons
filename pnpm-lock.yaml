@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@committed/trie-search':
     specifier: ^0.1.0
@@ -61,8 +65,8 @@ devDependencies:
     specifier: 5.1.2
     version: 5.1.2
   canvas:
-    specifier: ^2.10.2
-    version: 2.10.2
+    specifier: ^2.11.2
+    version: 2.11.2
   eslint:
     specifier: ^8.46.0
     version: 8.46.0
@@ -714,19 +718,6 @@ packages:
   /camelcase@6.3.0:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
-    dev: true
-
-  /canvas@2.10.2:
-    resolution: {integrity: sha512-FSmlsip0nZ0U4Zcfht0qBJqDhlfGuevTZKE8h+dBOYrJjGvY3iqMGSzzbvkaFhvMXiVxfcMaPHS/kge++T5SKg==}
-    engines: {node: '>=6'}
-    requiresBuild: true
-    dependencies:
-      '@mapbox/node-pre-gyp': 1.0.9
-      nan: 2.17.0
-      simple-get: 3.1.1
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
     dev: true
 
   /canvas@2.11.2:

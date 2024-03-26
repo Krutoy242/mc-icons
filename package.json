@@ -41,7 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^6.2.1",
     "@typescript-eslint/parser": "^6.2.1",
     "boxen": "5.1.2",
-    "canvas": "^2.10.2",
+    "canvas": "^2.11.2",
     "eslint": "^8.46.0",
     "eslint-config-alloy": "^5.1.0",
     "eslint-config-prettier": "^8.10.0",

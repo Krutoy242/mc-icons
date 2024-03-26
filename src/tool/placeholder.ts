@@ -2,6 +2,9 @@ import fs from 'fs'
 
 import { createCanvas, loadImage } from 'canvas'
 
+import { getHash } from './images'
+import { tree } from './tree'
+
 const possibleToolTypes = {
   pickaxe: 'i/minecraft/stone_pickaxe__0.png',
   axe: 'i/minecraft/stone_axe__0.png',
@@ -12,17 +15,17 @@ const possibleToolTypes = {
 }
 
 export async function generatePlaceholders() {
-  const range = new Array(16).fill(0).map((_, i) => i)
-
-  await Promise.all(
-    range.map((level) =>
-      Promise.all(
-        Object.entries(possibleToolTypes).map(([toolType, imagePath]) =>
-          drawMiningLevel(imagePath, toolType, level)
-        )
-      )
-    )
-  )
+  for (let level = 0; level < 16; level++) {
+    for (const [toolType, imagePath] of Object.entries(possibleToolTypes)) {
+      const imgPath = await drawMiningLevel(imagePath, toolType, level)
+      tree.add({
+        source: 'placeholder',
+        entry: toolType,
+        meta: level,
+        imgHash: await getHash(imgPath)
+      })
+    }
+  }
 }
 
 async function drawMiningLevel(
@@ -33,7 +36,7 @@ async function drawMiningLevel(
   const canvas = createCanvas(32, 32)
   const ctx = canvas.getContext('2d')
 
-  ctx.filter = 'contrast(1.4) sepia(1)'
+  // ctx.filter = 'contrast(1.4) sepia(1)'
   ctx.drawImage(await loadImage(imagePath), 0, 0, 32, 32)
 
   // Dim the icon
@@ -53,8 +56,7 @@ async function drawMiningLevel(
   ctx.stroke()
   ctx.fill()
 
-  fs.writeFileSync(
-    `i/placeholder/${toolType}__${level}.png`,
-    canvas.toBuffer('image/png')
-  )
+  const imgPath = `i/placeholder/${toolType}__${level}.png`
+  fs.writeFileSync(imgPath, canvas.toBuffer('image/png'))
+  return imgPath
 }

@@ -9,7 +9,7 @@ import { PNG } from 'pngjs'
 import { asset } from './assets'
 import { tree } from './tree'
 
-function getHash(filePath: string): Promise<string> {
+export function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
     createReadStream(filePath)
       .pipe(new PNG({ filterType: 4 }))
