@@ -46,7 +46,6 @@
     "@types/terminal-kit": "^2.5.6",
     "@types/yargs": "^17.0.33",
     "boxen": "5.1.2",
-    "canvas": "^2.11.2",
     "eslint": "^9.10.0",
     "fast-glob": "^3.3.2",
     "log-update": "^6.1.0",
@@ -54,6 +53,7 @@
     "mc-iexporter-iterator": "^1.0.1",
     "object-hash": "^3.0.0",
     "pngjs": "^7.0.0",
+    "skia-canvas": "^1.0.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   }

@@ -1,6 +1,6 @@
 import fs from 'node:fs'
 
-import { createCanvas, loadImage } from 'canvas'
+import { Canvas, loadImage } from 'skia-canvas'
 
 import { getHash } from './images'
 import { tree } from './tree'
@@ -33,7 +33,7 @@ async function drawMiningLevel(
   toolType: string,
   level: number,
 ) {
-  const canvas = createCanvas(32, 32)
+  const canvas = new Canvas(32, 32)
   const ctx = canvas.getContext('2d')
 
   // ctx.filter = 'contrast(1.4) sepia(1)'
@@ -57,6 +57,6 @@ async function drawMiningLevel(
   ctx.fill()
 
   const imgPath = `i/placeholder/${toolType}__${level}.png`
-  fs.writeFileSync(imgPath, canvas.toBuffer('image/png'))
+  fs.writeFileSync(imgPath, await canvas.toBuffer('png'))
   return imgPath
 }
