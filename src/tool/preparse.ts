@@ -1,14 +1,15 @@
 import type { ItemIcon } from 'mc-iexporter-iterator'
 import type { ImageBase } from './images'
 
-import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
+import process from 'node:process'
 import chalk from 'chalk'
 import fast_glob from 'fast-glob'
 import * as fs from 'fs-extra'
+import fse from 'fs-extra'
 import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
-import iconIterator from 'mc-iexporter-iterator'
 
+import iconIterator from 'mc-iexporter-iterator'
 import yargs from 'yargs'
 import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, initOld } from './images'
@@ -16,6 +17,8 @@ import { category } from './log'
 import { appendNames } from './names'
 import { addNbt } from './nbt'
 import { generatePlaceholders } from './placeholder'
+
+const { readFileSync } = fse
 
 const argv = yargs(process.argv.slice(2))
   .alias('h', 'help')
@@ -46,6 +49,7 @@ const argv = yargs(process.argv.slice(2))
 
 function parseJEIEName(fileName: string) {
   const groups = fileName.match(
+    // eslint-disable-next-line regexp/no-super-linear-backtracking
     /(?<source>.+?)__(?<entry>.+?)__(?<meta>\d+)(__(?<hash>.+))?/,
   )?.groups
 
@@ -73,7 +77,8 @@ async function init() {
   }
 
   log('Open JEIExporter nameMap.json...')
-  const nameMap = getNameMap(
+  // @ts-expect-error module
+  const nameMap = ((getNameMap.default ?? getNameMap) as typeof getNameMap)(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'),
   )
 
@@ -147,8 +152,9 @@ async function init() {
     log('Getting array...')
     total = 0
     const iconExporter: ItemIcon[] = []
-    const maxIter = 1000
-    for (const o of iconIterator(argv.icons)) {
+    // const maxIter = 1000
+    // @ts-expect-error module
+    for (const o of ((iconIterator.default ?? iconIterator) as typeof iconIterator)(argv.icons)) {
       iconExporter.push(o)
       if (o.sNbt && o.sNbt !== '{}')
         addNbt(o.hash, o.sNbt)
@@ -173,7 +179,7 @@ async function init() {
 
   log('Generating mod names ...')
   const newModNames: Record<string, string> = JSON.parse(
-    fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8'),
+    readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8'),
   ).modNames
   for (const [id, name] of Object.entries(newModNames)) {
     asset.mods[id] = name

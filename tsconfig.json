@@ -1,19 +1,23 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "commonjs",
 
     "incremental": true,
-    "outDir": "build",
+    "target": "ESNext",
+    "lib": ["ESNext"],
+    "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
+    /* Experimental Options */
+    // "noImplicitOverride": true,
+    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     "rootDir": "src",
+    "module": "ESNext",
     "moduleResolution": "node",
-    "declaration": true,
-    "inlineSourceMap": true,
-    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
     "resolveJsonModule": true /* Include modules imported with .json extension. */,
 
+    "typeRoots": ["./src/types"],
     "strict": true /* Enable all strict type-checking options. */,
 
+    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
+    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
     /* Strict Type-Checking Options */
     // "noImplicitAny": true /* Raise error on expressions and declarations with an implied 'any' type. */,
     // "strictNullChecks": true /* Enable strict null checks. */,
@@ -25,22 +29,16 @@
     /* Additional Checks */
     "noUnusedLocals": false /* Report errors on unused locals. */,
     "noUnusedParameters": true /* Report errors on unused parameters. */,
-    "noImplicitReturns": true /* Report error when not all code paths in function return a value. */,
-    "noFallthroughCasesInSwitch": true /* Report errors for fallthrough cases in switch statement. */,
+    "declaration": true,
+    "inlineSourceMap": true,
+    "outDir": "build",
+    "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
 
     /* Debugging Options */
     "traceResolution": false /* Report module resolution log messages. */,
     "listEmittedFiles": false /* Print names of generated files part of the compilation. */,
     "listFiles": false /* Print names of files part of the compilation. */,
-    "pretty": true /* Stylize errors and messages using color and context. */,
-
-    /* Experimental Options */
-    // "noImplicitOverride": true,
-    "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
-    "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
-
-    "lib": ["es2017"],
-    "typeRoots": ["./src/types"]
+    "pretty": true /* Stylize errors and messages using color and context. */
   },
   "ts-node": {
     "files": true

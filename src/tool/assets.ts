@@ -1,12 +1,14 @@
-/* eslint-disable @typescript-eslint/consistent-type-assertions */
-
 import type { Tree } from './types'
 
-import { resolve } from 'node:path'
-import { readFileSync, writeFile } from 'fs-extra'
+import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+import fse from 'fs-extra'
 import { Memoize } from 'typescript-memoize'
+
 import { tree } from './tree'
+
+const { readFileSync, writeFile } = fse
 
 const store = {
   /** Map of `imgHash: source/entry__meta` */
@@ -32,7 +34,10 @@ type AssetKey = keyof typeof store
 
 function loadAsset(key: AssetKey) {
   return JSON.parse(
-    readFileSync(resolve(__dirname, `../../assets/${key}.json`), 'utf8'),
+    readFileSync(
+      resolve(dirname(fileURLToPath(import.meta.url)), `../../assets/${key}.json`)
+      , 'utf8',
+    ),
   )
 }
 

@@ -1,20 +1,20 @@
 import fs, { createReadStream, existsSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
 
-import { copyFile } from 'fs-extra'
+import fse from 'fs-extra'
 import _ from 'lodash'
 import hash from 'object-hash'
 import { PNG } from 'pngjs'
-
 import { asset } from './assets'
 import { tree } from './tree'
+
+const { copyFile } = fse
 
 export function getHash(filePath: string): Promise<string> {
   return new Promise<string>((resolve) => {
     createReadStream(filePath)
       .pipe(new PNG({ filterType: 4 }))
       .on('parsed', function () {
-        // eslint-disable-next-line @typescript-eslint/no-invalid-this
         resolve(hash([...this.data]))
       })
   })
