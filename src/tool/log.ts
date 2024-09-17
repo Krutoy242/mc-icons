@@ -13,9 +13,9 @@ export function category(category: string) {
   logUpdate.done()
   return (...args: any[]) =>
     logUpdate(
-      boxen(args.map((v) => chalk.hex('#1d728f')(String(v))).join(' '), {
+      boxen(args.map(v => chalk.hex('#1d728f')(String(v))).join(' '), {
         ...defBoxStyle,
         title: chalk.hex('#0f5066')(category),
-      })
+      }),
     )
 }

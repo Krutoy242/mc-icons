@@ -1,5 +1,5 @@
-import fs, { createReadStream, existsSync, mkdirSync } from 'fs'
-import { join } from 'path'
+import fs, { createReadStream, existsSync, mkdirSync } from 'node:fs'
+import { join } from 'node:path'
 
 import { copyFile } from 'fs-extra'
 import _ from 'lodash'
@@ -49,8 +49,8 @@ function trimImgPath(imgPath: string) {
 export function appendImage(
   imgPath: string,
   newImgPath?: string,
-  base?: Base
-): Promise<{ isAdded?: true; imgHash: string }> {
+  base?: Base,
+): Promise<{ isAdded?: true, imgHash: string }> {
   return new Promise((resolve) => {
     let newHash: string
 
@@ -68,19 +68,21 @@ export function appendImage(
     getHash(imgPath)
       .then((imgHash) => {
         const found = asset.images[imgHash]
-        if (found) return resolve({ imgHash }) // Already have this image
+        if (found)
+          return resolve({ imgHash }) // Already have this image
 
         // Write new hash into map
         asset.images[imgHash] = trimImgPath(newImgPath ?? imgPath)
 
         // Not need to copy anything
-        if (newImgPath === undefined) return resolve({ imgHash })
+        if (newImgPath === undefined)
+          return resolve({ imgHash })
 
         newHash = imgHash
         return copyFile(
           imgPath,
           newImgPath,
-          oldPathHash ? fs.constants.COPYFILE_EXCL : undefined
+          oldPathHash ? fs.constants.COPYFILE_EXCL : undefined,
         )
       })
       .catch(() => resolve({ imgHash: newHash }))
@@ -106,7 +108,7 @@ export type ImageBase = {
 export async function grabImages<T>(
   arr: T[],
   getBase: (icon: T) => ImageBase,
-  onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void
+  onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void,
 ) {
   for (const chunk of _.chunk(arr, 1000)) {
     await Promise.all(
@@ -114,7 +116,8 @@ export async function grabImages<T>(
         const base = getBase(icon)
 
         const dest = join('i', base.source)
-        if (!existsSync(dest)) mkdirSync(dest)
+        if (!existsSync(dest))
+          mkdirSync(dest)
         const newFileName = base.skipSubstr
           ? base.fileName
           : base.fileName.substring(base.source.length + 2)
@@ -124,7 +127,7 @@ export async function grabImages<T>(
           onAdd(!!res.isAdded, arr.length, base)
         })
         return p
-      })
+      }),
     )
   }
 }

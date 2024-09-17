@@ -8,6 +8,5 @@ src/**.js
 coverage
 *.log
 yarn.lock
-.vscode
 *.tsbuildinfo
 i

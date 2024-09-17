@@ -5,7 +5,7 @@ export const tree = {
     source: string,
     entry: string,
     meta?: number | string,
-    nbtHash?: string
+    nbtHash?: string,
   ): string | undefined {
     return asset.items[source]?.[entry]?.[
       !meta || meta === '32767' ? 0 : meta
@@ -28,9 +28,10 @@ export const tree = {
     nbtHash ??= ''
 
     const imgHash = asset.items[source]?.[entry]?.[meta]?.[nbtHash]
-    if (imgHash) return imgHash
-    ;(((asset.items[source] ??= {})[entry] ??= {})[meta] ??= {})[nbtHash] =
-      item.imgHash
+    if (imgHash) {
+      return imgHash
+    }(((asset.items[source] ??= {})[entry] ??= {})[meta] ??= {})[nbtHash]
+      = item.imgHash
     return undefined
   },
 }

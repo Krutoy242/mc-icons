@@ -1,15 +1,15 @@
+import type { CliOpts } from './cli'
+import type { RgxExecIconMatch } from './iconizeMatch'
+import type { Base } from './tool/types'
 import { TrieSearch } from '@committed/trie-search'
+
 import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
-
 import { AssetEx } from './assetEx'
-import type { CliOpts } from './cli'
 import { getIcon } from './getIcon'
-import { capture_rgx, iconizeMatch, RgxExecIconMatch } from './iconizeMatch'
+import { capture_rgx, iconizeMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
-import { asset } from './tool/assets'
-import { Base } from './tool/types'
 import { getTrieSearch } from './trie'
 import { Unclear } from './unclear'
 
@@ -34,15 +34,16 @@ export interface DictEntry {
 }
 
 const trieSearch = new TrieSearch<DictEntry>(
-  ['name' /* , 'id', 'modid', 'modname', 'meta' */ /* , 'nbt' */],
+  ['name'],
   {
     /* splitOnRegEx:false,  */ idFieldOrFunction: 'id',
-  }
+  },
 )
 
 function getGlobalTrieSearch(assetEx: AssetEx) {
   return (s: string) => {
-    if (!trieSearch.size) initTrie(assetEx)
+    if (!trieSearch.size)
+      initTrie(assetEx)
     return getTrieSearch(s, trieSearch)
   }
 }
@@ -53,11 +54,6 @@ function initTrie(assetEx: AssetEx) {
   write(' done.\n')
 }
 
-export interface CommandStrGroups {
-  id: `${string}:${string}`
-  meta?: `${number}`
-}
-
 function getByID(assetEx: AssetEx, id: string): DictEntry[] | undefined {
   const result = assetEx.getById(id)
   return result ? [result] : undefined
@@ -65,7 +61,7 @@ function getByID(assetEx: AssetEx, id: string): DictEntry[] | undefined {
 
 function getByCommandString(
   assetEx: AssetEx,
-  capture: string
+  capture: string,
 ): DictEntry[] | undefined {
   const id = capture.match(/^<(.+)>$/)?.[1]
   return id ? getByID(assetEx, id) : undefined
@@ -76,17 +72,17 @@ type LevDict = [number, DictEntry]
 function levinshteinResolver(
   assetEx: AssetEx,
   treshold: number,
-  capture: string
+  capture: string,
 ) {
   const capture_low = capture.toLowerCase()
   const lev = assetEx.nameDictionary.map(
-    (o) => [levenshtein.get(o.name_low, capture_low), o] as LevDict
+    o => [levenshtein.get(o.name_low, capture_low), o] as LevDict,
   )
   const levDict = _.sortBy(lev, 0)
   const t1 = levDict[0][0]
   const t2 = levDict[1][0]
   const isTresholdPass = t1 < t2 && t1 <= treshold
-  return isTresholdPass ? [levDict[0][1]] : levDict.map((o) => o[1])
+  return isTresholdPass ? [levDict[0][1]] : levDict.map(o => o[1])
 }
 
 // ##################################################################
@@ -101,9 +97,9 @@ function levinshteinResolver(
 export async function bracketsSearch(
   argv: CliOpts,
   md: string,
-  replaceCB: (replaced: string) => void
+  replaceCB: (replaced: string) => void,
 ): Promise<void> {
-  const replaces: { from: string; to: { base: Base; name: string }[] }[] = []
+  const replaces: { from: string, to: { base: Base, name: string }[] }[] = []
   const unclear = new Unclear(argv)
   const assetEx = new AssetEx(argv)
   const trieSearchFn = getGlobalTrieSearch(assetEx)
@@ -116,15 +112,16 @@ export async function bracketsSearch(
       match as RgxExecIconMatch,
       trieSearchFn,
       unclear,
-      (s) => levinshteinResolver(assetEx, argv.treshold || 0, s),
-      (s) => getByCommandString(assetEx, s),
-      (s) => getByID(assetEx, s)
+      s => levinshteinResolver(assetEx, argv.treshold || 0, s),
+      s => getByCommandString(assetEx, s),
+      s => getByID(assetEx, s),
     )
 
-    if (!dicts?.length) continue
+    if (!dicts?.length)
+      continue
 
     replaces.push({
-      to: dicts.map((de) => ({
+      to: dicts.map(de => ({
         name: de.name,
         base: [de.source, de.entry, de.meta, de.sNbt] as Base,
       })),
@@ -145,7 +142,8 @@ export async function bracketsSearch(
 
   if (replaces.length) {
     console.log('found names: ', chalk`{bold.yellow ${replaces.length}}`)
-  } else {
+  }
+  else {
     console.log('No replacables found.')
     process.exit(0)
   }
@@ -189,13 +187,12 @@ export async function bracketsSearch(
       tmpMd = tmpMd.replace(repl.from, (...args) =>
         repl.to
           .map(
-            (item) =>
+            item =>
               `${args.pop()?.prefix ?? ''}![](${
                 shortURLs[k++]
-              } "${item.name.replace(/"/g, '\\"')}")`
+              } "${item.name.replace(/"/g, '\\"')}")`,
           )
-          .join('')
-      )
+          .join(''))
     })
 
     replaceCB(tmpMd)

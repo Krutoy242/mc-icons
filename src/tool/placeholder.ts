@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 
 import { createCanvas, loadImage } from 'canvas'
 
@@ -22,7 +22,7 @@ export async function generatePlaceholders() {
         source: 'placeholder',
         entry: toolType,
         meta: level,
-        imgHash: await getHash(imgPath)
+        imgHash: await getHash(imgPath),
       })
     }
   }
@@ -31,7 +31,7 @@ export async function generatePlaceholders() {
 async function drawMiningLevel(
   imagePath: string,
   toolType: string,
-  level: number
+  level: number,
 ) {
   const canvas = createCanvas(32, 32)
   const ctx = canvas.getContext('2d')

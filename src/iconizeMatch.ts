@@ -1,10 +1,8 @@
-import _ from 'lodash'
-
+import type { DictEntry } from './searcher'
+import type { Unclear } from './unclear'
 import { getIcon } from './getIcon'
 import { refine } from './modifiers'
-import { DictEntry } from './searcher'
 import { asset } from './tool/assets'
-import { Unclear } from './unclear'
 
 type Promisable<T> = T | Promise<T>
 
@@ -18,24 +16,25 @@ export interface RgxExecIconMatch extends RegExpMatchArray {
   }
 }
 
-export const capture_rgx =
-  /\[(?<capture>[^\][]+)\](?!\()(?<tail>\s+\((?<option>[^)]+)\))?/gim
+export const capture_rgx
+  = /\[(?<capture>[^\][]+)\](?!\()(?<tail>\s+\((?<option>[^)]+)\))?/g
 
 function filterByOption(result: DictEntry[], option?: string): DictEntry[] {
-  if (!option) return result
+  if (!option)
+    return result
 
   // This is number
-  if (/^[0-9]+$/.test(option)) {
-    return result.filter((d) => d.meta === option)
+  if (/^\d+$/.test(option)) {
+    return result.filter(d => d.meta === option)
   }
 
   // This option is mod name or Abbr
   const option_low = option.toLocaleLowerCase()
   return result.filter(
-    (d) =>
-      d.modAbbr.startsWith(option_low) ||
-      d.modname.toLocaleLowerCase().startsWith(option_low) ||
-      d.source.startsWith(option_low)
+    d =>
+      d.modAbbr.startsWith(option_low)
+      || d.modname.toLocaleLowerCase().startsWith(option_low)
+      || d.source.startsWith(option_low),
   )
 }
 
@@ -45,7 +44,7 @@ export async function iconizeMatch(
   unclear: Unclear,
   levinshteinResolver: (capture: string) => DictEntry[],
   getByCommandString: (capture: string) => DictEntry[] | undefined,
-  getByID: (id: string) => DictEntry[] | undefined
+  getByID: (id: string) => DictEntry[] | undefined,
 ): Promise<DictEntry[] | undefined> {
   /**
    * Full capture inside [] and without changes, like (Every)
@@ -59,7 +58,8 @@ export async function iconizeMatch(
   const { option } = match.groups
 
   // Skip if empty (or Markdown list)
-  if (!rawCapture.trim() || /^x$/i.test(rawCapture)) return
+  if (!rawCapture.trim() || /^x$/i.test(rawCapture))
+    return
 
   /**
    * Capture inside [], removed wildcards
@@ -71,21 +71,23 @@ export async function iconizeMatch(
   const filterSteps: ((
     d: DictEntry[]
   ) => Promisable<[DictEntry[], boolean | undefined]>)[] = [
-    (d) => [d, false],
-    (d) => [filterByOption(d, option), false],
-    (d) => [[...new Map(d.map((e) => [getIcon(e), e])).values()], false], // Same image filter
-    (d) => modifierFilter(d),
+    d => [d, false],
+    d => [filterByOption(d, option), false],
+    d => [[...new Map(d.map(e => [getIcon(e), e])).values()], false], // Same image filter
+    d => modifierFilter(d),
   ]
 
   let result: DictEntry[] = []
   for await (const list of attempts()) {
-    if (!list?.length) continue
+    if (!list?.length)
+      continue
 
     result = list
     let final
     for (const filter of filterSteps) {
       ;[result, final] = await filter(result)
-      if (result.length === 1 || final) return result
+      if (result.length === 1 || final)
+        return result
     }
 
     // Attempts found items, but we still have too many
@@ -112,8 +114,9 @@ export async function iconizeMatch(
         .flat()
 
       // Exact one item from Minecraft - this probably what user want
-      const fromMC = exacts.filter((r) => r.source === 'minecraft')
-      if (fromMC.length === 1) yield fromMC
+      const fromMC = exacts.filter(r => r.source === 'minecraft')
+      if (fromMC.length === 1)
+        yield fromMC
       yield exacts
     }
 

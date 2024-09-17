@@ -1,10 +1,10 @@
+import type { CliOpts } from './cli'
+import type { RgxExecIconMatch } from './iconizeMatch'
+import type { DictEntry } from './searcher'
+
 import chalk from 'chalk'
 import _, { escapeRegExp } from 'lodash'
 import { terminal as term } from 'terminal-kit'
-
-import { CliOpts } from './cli'
-import { RgxExecIconMatch } from './iconizeMatch'
-import { DictEntry } from './searcher'
 
 type NonEmptyArray<T> = [T, ...T[]]
 
@@ -17,13 +17,14 @@ function linesOfMatch(match: RgxExecIconMatch, lines = 0): string {
   let end = match.index
   while (match.input.length > ++end && (match.input[end] !== '\n' || k--));
 
-  return ` in line:\n` + chalk.gray(match.input.substring(start, end)) + `\n`
+  return ` in line:\n${chalk.gray(match.input.substring(start, end))}\n`
 }
 
 function nbtToString(nbt?: string): string {
-  if (!nbt) return ''
+  if (!nbt)
+    return ''
   return chalk` {rgb(33,173,204) ${
-    nbt.length > 50 ? nbt.substring(0, 49) + '…' : nbt
+    nbt.length > 50 ? `${nbt.substring(0, 49)}…` : nbt
   }}`
 }
 
@@ -31,7 +32,8 @@ function gridMenuBuilder(itemArr: DictEntry[]) {
   return async (cb: (d: DictEntry) => string) => {
     const trimedArr = itemArr.slice(0, term.height - 8).map(cb)
     const diff = itemArr.length - trimedArr.length
-    if (diff) trimedArr.push(`{and other ${diff} variants}`)
+    if (diff)
+      trimedArr.push(`{and other ${diff} variants}`)
     return itemArr[
       (await term.singleColumnMenu(trimedArr, { cancelable: true }).promise)
         .selectedIndex
@@ -45,27 +47,28 @@ export class Unclear {
   constructor(private argv: CliOpts) {}
 
   print(): void {
-    if (this.argv.silent) return
+    if (this.argv.silent)
+      return
 
     if (this.unfounds.length) {
       const unfounds = this.unfounds as NonEmptyArray<string>
       console.log(chalk`{bgGrey.black ❌ can't be found:}`)
 
       const maxLen = unfounds
-        .map((s) => s.length)
+        .map(s => s.length)
         .sort()
         .pop() as number
       const width = process.stdout.columns
       const columns = (width / (maxLen + 4)) | 0 || 1
       console.log(
-        _.chunk(
+        `${_.chunk(
           unfounds.map(
-            (s) => '[' + (chalk.bgGreen.black(s) + ']').padEnd(maxLen)
+            s => `[${(`${chalk.bgGreen.black(s)}]`).padEnd(maxLen)}`,
           ),
-          columns
+          columns,
         )
-          .map((r) => r.join('  '))
-          .join('\n') + '\n'
+          .map(r => r.join('  '))
+          .join('\n')}\n`,
       )
     }
   }
@@ -77,10 +80,10 @@ export class Unclear {
   async resolve(
     capture: string,
     full_itemArr: DictEntry[],
-    match: RgxExecIconMatch
+    match: RgxExecIconMatch,
   ): Promise<DictEntry | undefined> {
     const exactArr = full_itemArr.filter(
-      (r) => r.name.toLowerCase() === capture.toLowerCase()
+      r => r.name.toLowerCase() === capture.toLowerCase(),
     )
     const itemArr = exactArr.length > 1 ? exactArr : full_itemArr
 
@@ -91,52 +94,47 @@ export class Unclear {
     if (!itemArr.length || this.argv.silent)
       return this.cantBeFound(capture), undefined
 
-    const is_allItemsHasUniqNames =
-      itemArr.length === _.uniqBy(itemArr, 'name').length
+    const is_allItemsHasUniqNames
+      = itemArr.length === _.uniqBy(itemArr, 'name').length
 
     const is_allModsAreDifferent = _(itemArr)
       .countBy('modid')
-      .every((v) => v === 1)
+      .every(v => v === 1)
 
-    const is_sameMod_metasDifferent =
-      _.uniqBy(itemArr, 'modid').length === 1 &&
-      _(itemArr)
+    const is_sameMod_metasDifferent
+      = _.uniqBy(itemArr, 'modid').length === 1
+      && _(itemArr)
         .countBy('meta')
-        .every((v) => v === 1)
+        .every(v => v === 1)
 
     const gridMenu = gridMenuBuilder(itemArr)
     const inLine = linesOfMatch(match)
 
     if (is_allItemsHasUniqNames) {
       term`\nSelect full name of [`.bgGreen.black(capture).styleReset()(
-        `]` + inLine
+        `]${inLine}`,
       )
-      return gridMenu((d) => chalk`[{green ${d.name}}]`)
+      return gridMenu(d => chalk`[{green ${d.name}}]`)
     }
 
     if (is_allModsAreDifferent) {
-      term`\nSelect `.bgColorRgb(0, 98, 143)
-        .black`mod`.styleReset()` for [`.bgGreen
-        .black(capture)
-        .styleReset()(`]` + inLine)
-      return gridMenu((d) => chalk`({rgb(0, 98, 143) ${d.modname}})`)
+      term`\nSelect `.bgColorRgb(0, 98, 143).black`mod`.styleReset()` for [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
+      return gridMenu(d => chalk`({rgb(0, 98, 143) ${d.modname}})`)
     }
 
     if (is_sameMod_metasDifferent) {
-      term`\nSelect `.bgCyan.black(`meta`).styleReset()` of [`.bgGreen
-        .black(capture)
-        .styleReset()(`]` + inLine)
-      return gridMenu((d) => chalk`({cyan ${d.meta}})`)
+      term`\nSelect `.bgCyan.black(`meta`).styleReset()` of [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
+      return gridMenu(d => chalk`({cyan ${d.meta}})`)
     }
 
     term`\nHave no clue what you looking for [`.bgGreen.black(capture)(
-      `]` + inLine
+      `]${inLine}`,
     )`\nSelect Any variant:\n`
     return gridMenu(
-      (d) =>
+      d =>
         chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.source}:${d.entry}:${
           d.meta || 0
-        }}>` + nbtToString(d.sNbt)
+        }}>` + nbtToString(d.sNbt),
     )
   }
 }

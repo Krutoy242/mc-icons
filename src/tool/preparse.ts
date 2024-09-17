@@ -1,16 +1,17 @@
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import type { ItemIcon } from 'mc-iexporter-iterator'
+import type { ImageBase } from './images'
 
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import chalk from 'chalk'
 import fast_glob from 'fast-glob'
 import * as fs from 'fs-extra'
-import _ from 'lodash'
 import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
-import iconIterator, { ItemIcon } from 'mc-iexporter-iterator'
-import yargs from 'yargs'
+import iconIterator from 'mc-iexporter-iterator'
 
+import yargs from 'yargs'
 import { asset, saveAssets } from './assets'
-import { appendImage, grabImages, ImageBase, initOld } from './images'
+import { appendImage, grabImages, initOld } from './images'
 import { category } from './log'
 import { appendNames } from './names'
 import { addNbt } from './nbt'
@@ -45,10 +46,11 @@ const argv = yargs(process.argv.slice(2))
 
 function parseJEIEName(fileName: string) {
   const groups = fileName.match(
-    /(?<source>.+?)__(?<entry>.+?)__(?<meta>\d+)(__(?<hash>.+))?/
+    /(?<source>.+?)__(?<entry>.+?)__(?<meta>\d+)(__(?<hash>.+))?/,
   )?.groups
 
-  if (!groups) throw new Error('File Name cannot be parsed: ' + fileName)
+  if (!groups)
+    throw new Error(`File Name cannot be parsed: ${fileName}`)
   return {
     source: groups.source,
     entry: groups.entry,
@@ -64,19 +66,21 @@ async function init() {
   if (!argv.overwrite) {
     log('Skipping overwriting...')
     initOld()
-  } else {
+  }
+  else {
     log('Generating placeholders...')
     await generatePlaceholders()
   }
 
   log('Open JEIExporter nameMap.json...')
   const nameMap = getNameMap(
-    readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8')
+    readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'),
   )
 
   log('Generating nbt hash map...')
   Object.entries(nameMap).forEach(([id, nameData]) => {
-    if (id === 'info') return
+    if (id === 'info')
+      return
     const [_source, _name, _meta, nbtHash] = id.split(':')
     const sNbt: string = (nameData as any)?.tag
     addNbt(nbtHash, sNbt)
@@ -102,7 +106,8 @@ async function init() {
     total++
     copied += Number(isAdded)
     skipped += Number(!isAdded)
-    if (total % 100 !== 0) return
+    if (total % 100 !== 0)
+      return
     const files = chalk.hex('#0e7182')(`${total} / ${wholeLength}`)
     const s_copied = `copied: ${copied}`
     const s_skipped = `skipped: ${skipped}`
@@ -113,7 +118,7 @@ async function init() {
   async function handleJEIEFile(
     subfolder: string,
     source?: string,
-    entry_filter?: RegExp
+    entry_filter?: RegExp,
   ) {
     const folder = join(jeiePath, subfolder)
     const files = fast_glob.sync('./**/*.png', { cwd: folder }) // .slice(0, 400)
@@ -138,30 +143,29 @@ async function init() {
   }
 
   if (argv.icons) {
-    // eslint-disable-next-line require-atomic-updates
     log = category('Icon Exporter')
     log('Getting array...')
     total = 0
     const iconExporter: ItemIcon[] = []
-    let maxIter = 1000
+    const maxIter = 1000
     for (const o of iconIterator(argv.icons)) {
       iconExporter.push(o)
-      if (o.sNbt && o.sNbt !== '{}') addNbt(o.hash, o.sNbt)
+      if (o.sNbt && o.sNbt !== '{}')
+        addNbt(o.hash, o.sNbt)
       // if (--maxIter <= 0) break
     }
     await grabImages(
       iconExporter,
-      (icon) => ({
+      icon => ({
         ...icon,
         source: icon.namespace,
         entry: icon.name,
-        fileName: icon.fileName + '.png',
+        fileName: `${icon.fileName}.png`,
       }),
-      logFileAdd
+      logFileAdd,
     )
   }
 
-  // eslint-disable-next-line require-atomic-updates
   log = category('Export')
 
   log('Generating item names ...')
@@ -169,7 +173,7 @@ async function init() {
 
   log('Generating mod names ...')
   const newModNames: Record<string, string> = JSON.parse(
-    fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8')
+    fs.readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8'),
   ).modNames
   for (const [id, name] of Object.entries(newModNames)) {
     asset.mods[id] = name
@@ -177,7 +181,7 @@ async function init() {
 
   log('Generating modpacks data')
   asset.modpacks[argv.modpack] = Object.keys(newModNames)
-    .filter((k) => asset.items[k] && Object.keys(asset.items[k]).length)
+    .filter(k => asset.items[k] && Object.keys(asset.items[k]).length)
     .sort()
 
   log('Saving assets ...')

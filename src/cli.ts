@@ -69,5 +69,5 @@ if (!existsSync(filePath)) {
 bracketsSearch(
   argv as CliOpts,
   readFileSync(filePath as string, 'utf8'),
-  (replaced) => writeFileSync(filePath as string, replaced)
+  replaced => writeFileSync(filePath as string, replaced),
 )

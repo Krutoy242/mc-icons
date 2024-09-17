@@ -1,4 +1,4 @@
-import { DictEntry } from './searcher'
+import type { DictEntry } from './searcher'
 
 type DictTuple = [d: DictEntry[], isFinal: boolean | undefined]
 type DictEntriesFilter = (dictEntries: DictEntry[]) => DictTuple
@@ -10,14 +10,15 @@ function createModifier(replaceRegex: RegExp, filter: DictEntriesFilter) {
       .replace(replaceRegex, () => ((isMatch = true), ' '))
       .trim()
 
-    if (!isMatch) return { refinedCapture }
+    if (!isMatch)
+      return { refinedCapture }
     return { refinedCapture, filter }
   }
 }
 
 const modifiersList = [
-  createModifier(/\s*\(Every\)\s*/gi, (d) => [d, !!d.length]),
-  createModifier(/\s*\(Any\)\s*/gi, (d) => [[d[0]], !!d.length]),
+  createModifier(/\s*\(Every\)\s*/gi, d => [d, !!d.length]),
+  createModifier(/\s*\(Any\)\s*/gi, d => [[d[0]], !!d.length]),
 ]
 
 export function refine(rawCapture: string) {
@@ -38,7 +39,7 @@ export function refine(rawCapture: string) {
           const [arr, f] = filter(acc[0])
           return [arr, f || acc[1]] as DictTuple
         },
-        [d, false] as DictTuple
+        [d, false] as DictTuple,
       ),
   }
 }

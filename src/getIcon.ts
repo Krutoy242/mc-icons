@@ -10,28 +10,31 @@ import { asset } from './tool/assets'
 export function getIcon(
   base:
     | [source: string, entry: string, meta?: number | string, sNbt?: string]
-    | { source: string; entry: string; meta?: number | string; sNbt?: string }
+    | { source: string, entry: string, meta?: number | string, sNbt?: string },
 ): string | undefined {
   let source: string
   let entry: string
   let meta: number | string | undefined
   let sNbt: string | undefined
 
-  if (Array.isArray(base)) [source, entry, meta, sNbt] = base
+  if (Array.isArray(base))
+    [source, entry, meta, sNbt] = base
   else ({ source, entry, meta, sNbt } = base)
 
   const definition = asset.items[source]?.[entry]
 
-  if (!definition) return // No item at all
+  if (!definition)
+    return // No item at all
 
   let stack: typeof definition[0] | undefined = definition[meta || 0]
 
   // try to find any meta
-  if (!stack) stack = Object.values(definition)[0]
+  if (!stack)
+    stack = Object.values(definition)[0]
 
   const getReport = (reason: string) =>
-    `Looking for item ${source}:${entry}:${meta}:${sNbt}, ` +
-    `but ${reason}. This could only happen if .json file generated wrongly`
+    `Looking for item ${source}:${entry}:${meta}:${sNbt}, `
+    + `but ${reason}. This could only happen if .json file generated wrongly`
 
   if (!stack)
     throw new Error(getReport('definition for this item doesnt have any metas'))
@@ -40,7 +43,8 @@ export function getIcon(
   let nbtHash: string | undefined
   if (!sNbt) {
     imageHash = stack[''] ?? Object.values(stack)[0]
-  } else {
+  }
+  else {
     nbtHash = asset.nbtHash[sNbt]
     imageHash = stack[nbtHash ?? ''] ?? Object.values(stack)[0]
   }
