@@ -33047,6 +33047,9 @@
   "Pistachio Butter": [
     "harvestcraft:pistachiobutteritem:0"
   ],
+  "Placeholder null": [
+    "placeholder:null"
+  ],
   "Pladium Axe Head": [
     "tconstruct:axe_head:0:{Material:\"pladium\"}"
   ],
@@ -37744,6 +37747,36 @@
   "Pistachio Sapling": [
     "harvestcraft:pistachio_sapling:0"
   ],
+  "Placeholder axe:0": [
+    "placeholder:axe:0"
+  ],
+  "Placeholder axe:1": [
+    "placeholder:axe:1"
+  ],
+  "Placeholder axe:2": [
+    "placeholder:axe:2"
+  ],
+  "Placeholder axe:3": [
+    "placeholder:axe:3"
+  ],
+  "Placeholder axe:4": [
+    "placeholder:axe:4"
+  ],
+  "Placeholder axe:5": [
+    "placeholder:axe:5"
+  ],
+  "Placeholder axe:6": [
+    "placeholder:axe:6"
+  ],
+  "Placeholder axe:7": [
+    "placeholder:axe:7"
+  ],
+  "Placeholder axe:8": [
+    "placeholder:axe:8"
+  ],
+  "Placeholder axe:9": [
+    "placeholder:axe:9"
+  ],
   "Pladium Kama Head": [
     "tconstruct:kama_head:0:{Material:\"pladium\"}"
   ],
@@ -42318,6 +42351,24 @@
   ],
   "Pink Tallow Candle": [
     "thaumcraft:candle_pink:0"
+  ],
+  "Placeholder axe:10": [
+    "placeholder:axe:10"
+  ],
+  "Placeholder axe:11": [
+    "placeholder:axe:11"
+  ],
+  "Placeholder axe:12": [
+    "placeholder:axe:12"
+  ],
+  "Placeholder axe:13": [
+    "placeholder:axe:13"
+  ],
+  "Placeholder axe:14": [
+    "placeholder:axe:14"
+  ],
+  "Placeholder axe:15": [
+    "placeholder:axe:15"
   ],
   "Pladium Armor Trim": [
     "conarm:armor_trim:0:{Material:\"pladium\"}"
@@ -47297,6 +47348,36 @@
   "Pistachio Ice Cream": [
     "harvestcraft:pistachioicecreamitem:0"
   ],
+  "Placeholder scoop:0": [
+    "placeholder:scoop:0"
+  ],
+  "Placeholder scoop:1": [
+    "placeholder:scoop:1"
+  ],
+  "Placeholder scoop:2": [
+    "placeholder:scoop:2"
+  ],
+  "Placeholder scoop:3": [
+    "placeholder:scoop:3"
+  ],
+  "Placeholder scoop:4": [
+    "placeholder:scoop:4"
+  ],
+  "Placeholder scoop:5": [
+    "placeholder:scoop:5"
+  ],
+  "Placeholder scoop:6": [
+    "placeholder:scoop:6"
+  ],
+  "Placeholder scoop:7": [
+    "placeholder:scoop:7"
+  ],
+  "Placeholder scoop:8": [
+    "placeholder:scoop:8"
+  ],
+  "Placeholder scoop:9": [
+    "placeholder:scoop:9"
+  ],
   "Pladium Chisel Head": [
     "tcomplement:chisel_head:0:{Material:\"pladium\"}"
   ],
@@ -51970,6 +52051,84 @@
   "Pixie Dust Collector": [
     "mia:pixie_dust_extractor:0"
   ],
+  "Placeholder scoop:10": [
+    "placeholder:scoop:10"
+  ],
+  "Placeholder scoop:11": [
+    "placeholder:scoop:11"
+  ],
+  "Placeholder scoop:12": [
+    "placeholder:scoop:12"
+  ],
+  "Placeholder scoop:13": [
+    "placeholder:scoop:13"
+  ],
+  "Placeholder scoop:14": [
+    "placeholder:scoop:14"
+  ],
+  "Placeholder scoop:15": [
+    "placeholder:scoop:15"
+  ],
+  "Placeholder shears:0": [
+    "placeholder:shears:0"
+  ],
+  "Placeholder shears:1": [
+    "placeholder:shears:1"
+  ],
+  "Placeholder shears:2": [
+    "placeholder:shears:2"
+  ],
+  "Placeholder shears:3": [
+    "placeholder:shears:3"
+  ],
+  "Placeholder shears:4": [
+    "placeholder:shears:4"
+  ],
+  "Placeholder shears:5": [
+    "placeholder:shears:5"
+  ],
+  "Placeholder shears:6": [
+    "placeholder:shears:6"
+  ],
+  "Placeholder shears:7": [
+    "placeholder:shears:7"
+  ],
+  "Placeholder shears:8": [
+    "placeholder:shears:8"
+  ],
+  "Placeholder shears:9": [
+    "placeholder:shears:9"
+  ],
+  "Placeholder shovel:0": [
+    "placeholder:shovel:0"
+  ],
+  "Placeholder shovel:1": [
+    "placeholder:shovel:1"
+  ],
+  "Placeholder shovel:2": [
+    "placeholder:shovel:2"
+  ],
+  "Placeholder shovel:3": [
+    "placeholder:shovel:3"
+  ],
+  "Placeholder shovel:4": [
+    "placeholder:shovel:4"
+  ],
+  "Placeholder shovel:5": [
+    "placeholder:shovel:5"
+  ],
+  "Placeholder shovel:6": [
+    "placeholder:shovel:6"
+  ],
+  "Placeholder shovel:7": [
+    "placeholder:shovel:7"
+  ],
+  "Placeholder shovel:8": [
+    "placeholder:shovel:8"
+  ],
+  "Placeholder shovel:9": [
+    "placeholder:shovel:9"
+  ],
   "Pladium Arcane Focus": [
     "tconevo:part_arcane_focus:0:{Material:\"pladium\"}"
   ],
@@ -56484,6 +56643,72 @@
   "Pipe Piece of the End": [
     "plustic:pipe_piece:0:{Material:\"end_steel\"}"
   ],
+  "Placeholder pickaxe:0": [
+    "placeholder:pickaxe:0"
+  ],
+  "Placeholder pickaxe:1": [
+    "placeholder:pickaxe:1"
+  ],
+  "Placeholder pickaxe:2": [
+    "placeholder:pickaxe:2"
+  ],
+  "Placeholder pickaxe:3": [
+    "placeholder:pickaxe:3"
+  ],
+  "Placeholder pickaxe:4": [
+    "placeholder:pickaxe:4"
+  ],
+  "Placeholder pickaxe:5": [
+    "placeholder:pickaxe:5"
+  ],
+  "Placeholder pickaxe:6": [
+    "placeholder:pickaxe:6"
+  ],
+  "Placeholder pickaxe:7": [
+    "placeholder:pickaxe:7"
+  ],
+  "Placeholder pickaxe:8": [
+    "placeholder:pickaxe:8"
+  ],
+  "Placeholder pickaxe:9": [
+    "placeholder:pickaxe:9"
+  ],
+  "Placeholder shears:10": [
+    "placeholder:shears:10"
+  ],
+  "Placeholder shears:11": [
+    "placeholder:shears:11"
+  ],
+  "Placeholder shears:12": [
+    "placeholder:shears:12"
+  ],
+  "Placeholder shears:13": [
+    "placeholder:shears:13"
+  ],
+  "Placeholder shears:14": [
+    "placeholder:shears:14"
+  ],
+  "Placeholder shears:15": [
+    "placeholder:shears:15"
+  ],
+  "Placeholder shovel:10": [
+    "placeholder:shovel:10"
+  ],
+  "Placeholder shovel:11": [
+    "placeholder:shovel:11"
+  ],
+  "Placeholder shovel:12": [
+    "placeholder:shovel:12"
+  ],
+  "Placeholder shovel:13": [
+    "placeholder:shovel:13"
+  ],
+  "Placeholder shovel:14": [
+    "placeholder:shovel:14"
+  ],
+  "Placeholder shovel:15": [
+    "placeholder:shovel:15"
+  ],
   "Pladium Leggings Core": [
     "conarm:leggings_core:0:{Material:\"pladium\"}"
   ],
@@ -60391,6 +60616,24 @@
   ],
   "Pitiful Fuel Generator": [
     "industrialforegoing:pitiful_fuel_generator:0"
+  ],
+  "Placeholder pickaxe:10": [
+    "placeholder:pickaxe:10"
+  ],
+  "Placeholder pickaxe:11": [
+    "placeholder:pickaxe:11"
+  ],
+  "Placeholder pickaxe:12": [
+    "placeholder:pickaxe:12"
+  ],
+  "Placeholder pickaxe:13": [
+    "placeholder:pickaxe:13"
+  ],
+  "Placeholder pickaxe:14": [
+    "placeholder:pickaxe:14"
+  ],
+  "Placeholder pickaxe:15": [
+    "placeholder:pickaxe:15"
   ],
   "Pladium Broad Axe Head": [
     "tconstruct:broad_axe_head:0:{Material:\"pladium\"}"
@@ -67095,6 +67338,36 @@
   "Pink Slick Plastic Block": [
     "mekanism:slickplasticblock:9"
   ],
+  "Placeholder jackhammer:0": [
+    "placeholder:jackhammer:0"
+  ],
+  "Placeholder jackhammer:1": [
+    "placeholder:jackhammer:1"
+  ],
+  "Placeholder jackhammer:2": [
+    "placeholder:jackhammer:2"
+  ],
+  "Placeholder jackhammer:3": [
+    "placeholder:jackhammer:3"
+  ],
+  "Placeholder jackhammer:4": [
+    "placeholder:jackhammer:4"
+  ],
+  "Placeholder jackhammer:5": [
+    "placeholder:jackhammer:5"
+  ],
+  "Placeholder jackhammer:6": [
+    "placeholder:jackhammer:6"
+  ],
+  "Placeholder jackhammer:7": [
+    "placeholder:jackhammer:7"
+  ],
+  "Placeholder jackhammer:8": [
+    "placeholder:jackhammer:8"
+  ],
+  "Placeholder jackhammer:9": [
+    "placeholder:jackhammer:9"
+  ],
   "Plague Metal Chisel Head": [
     "tcomplement:chisel_head:0:{Material:\"plague_metal\"}"
   ],
@@ -69688,6 +69961,24 @@
   ],
   "Pink Obsidian Shulker Box": [
     "ironchest:iron_shulker_box_pink:6"
+  ],
+  "Placeholder jackhammer:10": [
+    "placeholder:jackhammer:10"
+  ],
+  "Placeholder jackhammer:11": [
+    "placeholder:jackhammer:11"
+  ],
+  "Placeholder jackhammer:12": [
+    "placeholder:jackhammer:12"
+  ],
+  "Placeholder jackhammer:13": [
+    "placeholder:jackhammer:13"
+  ],
+  "Placeholder jackhammer:14": [
+    "placeholder:jackhammer:14"
+  ],
+  "Placeholder jackhammer:15": [
+    "placeholder:jackhammer:15"
   ],
   "Pladium Large Sword Blade": [
     "tconstruct:large_sword_blade:0:{Material:\"pladium\"}"

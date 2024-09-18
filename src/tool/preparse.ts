@@ -16,7 +16,7 @@ import { parseJEIEFiles } from './jeie'
 import { category } from './log'
 import { appendNames } from './names'
 import { addNbt } from './nbt'
-import { generatePlaceholders } from './placeholder'
+import { generatePlaceholders, registerPlaceholders } from './placeholder'
 
 const { readFileSync } = fse
 
@@ -58,6 +58,7 @@ async function init() {
   else {
     const label = 'Skipping overwriting, init present icons...'
     log(label)
+    await registerPlaceholders()
     await initOld((current, total, skipped) => log(
       `${label}\n${chalk.green(current)} / ${chalk.hex('#007700')(total)} ${chalk.gray('skipped:')} ${chalk.hex('#888888')(skipped)}`,
     ))

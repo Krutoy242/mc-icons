@@ -1,7 +1,9 @@
 import fs from 'node:fs'
 
-import { Canvas, loadImage } from 'skia-canvas'
+import FastGlob from 'fast-glob'
 
+import { Canvas, loadImage } from 'skia-canvas'
+import { asset } from './assets'
 import { getHash } from './images'
 import { tree } from './tree'
 
@@ -15,17 +17,38 @@ const possibleToolTypes = {
 }
 
 export async function generatePlaceholders() {
-  for (let level = 0; level < 16; level++) {
-    for (const [toolType, imagePath] of Object.entries(possibleToolTypes)) {
-      const imgPath = await drawMiningLevel(imagePath, toolType, level)
+  for (let meta = 0; meta < 16; meta++) {
+    for (const [entry, imagePath] of Object.entries(possibleToolTypes)) {
+      const imgPath = await drawMiningLevel(imagePath, entry, meta)
       tree.add({
         source: 'placeholder',
-        entry: toolType,
-        meta: level,
+        entry,
+        meta,
         imgHash: await getHash(imgPath),
       })
+      addName(entry, meta)
     }
   }
+}
+
+export async function registerPlaceholders() {
+  for (const imgPath of FastGlob.sync('i/placeholder/*.png')) {
+    const [source, entry, meta, nbtHash] = imgPath.substring(2, imgPath.length - 4).split(/__|\/|\./)
+    tree.add({
+      source,
+      entry,
+      meta: meta ? Number(meta) : undefined,
+      nbtHash,
+      imgHash: await getHash(imgPath),
+    })
+    addName(entry, meta)
+  }
+}
+
+function addName(entry: string, meta?: string | number) {
+  const id = `${entry}${meta ? `:${String(meta)}` : ''}`
+    ;(asset.names[`Placeholder ${id}`] ??= [])
+    .push(`placeholder:${id}`)
 }
 
 async function drawMiningLevel(

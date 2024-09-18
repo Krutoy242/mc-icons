@@ -109,13 +109,25 @@ export async function saveAssets() {
       const list = store.names[name]
       const imgPaths = list.map((id) => {
         const [source, entry, meta, ...rest] = id.split(':')
+
+        // Skip wildcards
         if (meta === '32767')
           return undefined
+
         const nbtHash = asset.nbtHash[rest.join(':')]
         const hash = tree.get(source, entry, meta, nbtHash)
+
+        // Item name+id doesnt have image
         if (!hash)
           return undefined
+
+        // Do not store any items without texture
         const imgPath = asset.images[hash]
+
+        // exception for null itself
+        if (id === 'placeholder:null')
+          return imgPath
+
         return imgPath === 'placeholder/null' ? undefined : imgPath
       })
       const arr = list.filter((_id, j) => {

@@ -6,6 +6,9 @@ import { Memoize } from 'typescript-memoize'
 import { baseFromID } from './base'
 import { asset } from './tool/assets'
 
+// TODO: Gas and fluid should not be in every modpack
+const whitelistSources = ['gas', 'fluid', 'placeholder']
+
 function abbr1(str: string) {
   return str
     .replace(/ ([a-z])/g, (_, r) => r.toUpperCase()) // Capitalize first letter
@@ -43,8 +46,9 @@ export class AssetEx {
     for (const [name, list] of Object.entries(asset.names)) {
       for (const id of list) {
         let [source, entry, meta, ...rest] = id.split(':')
-        if (this.modpackMap && !this.modpackMap[source])
+        if (!whitelistSources.includes(source) && this.modpackMap && !this.modpackMap[source])
           continue
+
         meta ??= ''
         const sNbt = rest.join(':')
         const modname = asset.mods[source] || source
@@ -77,9 +81,8 @@ export class AssetEx {
     if (!sourcesList?.length)
       throw new Error(`This modpack didnt exist: ${this.argv.modpack}`)
 
-    // TODO: Gas and fluid should not be in every modpack
     return Object.fromEntries(
-      sourcesList.concat(['gas', 'fluid', 'placeholder']).map(s => [s, true]),
+      sourcesList.map(s => [s, true]),
     )
   }
 
