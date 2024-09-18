@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
-import { existsSync, readFileSync, writeFileSync } from 'fs-extra'
+import process from 'node:process'
+import fse from 'fs-extra'
 import yargs from 'yargs'
-
 import { bracketsSearch } from './searcher'
+
+const { existsSync, readFileSync, writeFileSync } = fse
 
 const yargsOpts = {
   treshold: {

@@ -8,7 +8,7 @@ import { Memoize } from 'typescript-memoize'
 
 import { tree } from './tree'
 
-const { readFileSync, writeFile } = fse
+const { readFileSync, writeFile, existsSync } = fse
 
 const store = {
   /** Map of `imgHash: source/entry__meta` */
@@ -33,12 +33,10 @@ const store = {
 type AssetKey = keyof typeof store
 
 function loadAsset(key: AssetKey) {
-  return JSON.parse(
-    readFileSync(
-      resolve(dirname(fileURLToPath(import.meta.url)), `../../assets/${key}.json`)
-      , 'utf8',
-    ),
-  )
+  const fPath = resolve(dirname(fileURLToPath(import.meta.url)), `../../assets/${key}.json`)
+  if (!existsSync(fPath))
+    return {}
+  return JSON.parse(readFileSync(fPath, 'utf8'))
 }
 
 type NoUndefinedField<T> = { [P in keyof T]-?: NonNullable<T[P]> }

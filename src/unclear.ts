@@ -2,9 +2,12 @@ import type { CliOpts } from './cli'
 import type { RgxExecIconMatch } from './iconizeMatch'
 import type { DictEntry } from './searcher'
 
+import process from 'node:process'
 import chalk from 'chalk'
-import _, { escapeRegExp } from 'lodash'
-import { terminal as term } from 'terminal-kit'
+import _ from 'lodash'
+import terminalKit from 'terminal-kit'
+
+const { terminal: term } = terminalKit
 
 type NonEmptyArray<T> = [T, ...T[]]
 
@@ -52,7 +55,7 @@ export class Unclear {
 
     if (this.unfounds.length) {
       const unfounds = this.unfounds as NonEmptyArray<string>
-      console.log(chalk`{bgGrey.black ❌ can't be found:}`)
+      console.log(chalk.bgGrey.black('❌ can\'t be found:'))
 
       const maxLen = unfounds
         .map(s => s.length)
@@ -87,7 +90,7 @@ export class Unclear {
     )
     const itemArr = exactArr.length > 1 ? exactArr : full_itemArr
 
-    const rgx = new RegExp(escapeRegExp(capture), 'i')
+    const rgx = new RegExp(_.escapeRegExp(capture), 'i')
     itemArr.sort((a, b) => Number(rgx.test(b.name)) - Number(rgx.test(a.name)))
 
     // Conditions

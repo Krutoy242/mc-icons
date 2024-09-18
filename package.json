@@ -18,12 +18,11 @@
     "node": ">=14.16"
   },
   "scripts": {
-    "add-new-images": "git add -fv ./i/",
+    "add-new-images": "git add -fv i",
     "release": "tsc && release-it",
-    "test run": "tsx src/cli.ts README.md",
+    "test run": "tsx src/cli.ts README.md --no-short",
     "preparse": "tsx src/tool/preparse.ts --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
-    "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
-    "preparse Herodotus": "tsx src/tool/preparse.ts --no-overwrite --mc=\"D:/mc_client/Instances/Herodotus\" --modpack=herodotus"
+    "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee"
   },
   "dependencies": {
     "@committed/trie-search": "^0.1.0",
@@ -49,11 +48,12 @@
     "eslint": "^9.10.0",
     "fast-glob": "^3.3.2",
     "log-update": "^6.1.0",
-    "mc-gatherer": "^1.4.0",
     "mc-iexporter-iterator": "^1.0.1",
+    "mc-jeiexporter": "^1.0.0",
     "object-hash": "^3.0.0",
     "pngjs": "^7.0.0",
     "skia-canvas": "^1.0.2",
+    "terminal-image": "^3.0.0",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   }

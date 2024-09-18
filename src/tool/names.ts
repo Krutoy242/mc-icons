@@ -1,4 +1,4 @@
-import type { NameMap } from 'mc-gatherer/build/main/from/jeie/NameMap'
+import type { NameMap } from 'mc-jeiexporter/build/NameMap'
 import _ from 'lodash'
 
 import { getIcon } from '..'

@@ -5,11 +5,10 @@ import { join } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import fast_glob from 'fast-glob'
-import * as fs from 'fs-extra'
 import fse from 'fs-extra'
-import getNameMap from 'mc-gatherer/build/main/from/jeie/NameMap'
-
 import iconIterator from 'mc-iexporter-iterator'
+
+import getNameMap from 'mc-jeiexporter/build/NameMap'
 import yargs from 'yargs'
 import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, initOld } from './images'
@@ -67,18 +66,17 @@ init()
 async function init() {
   let log = category('JEIExporter')
 
-  if (!argv.overwrite) {
-    log('Skipping overwriting...')
-    initOld()
-  }
-  else {
+  if (argv.overwrite) {
     log('Generating placeholders...')
     await generatePlaceholders()
   }
+  else {
+    log('Skipping overwriting...')
+    initOld()
+  }
 
   log('Open JEIExporter nameMap.json...')
-  // @ts-expect-error module
-  const nameMap = ((getNameMap.default ?? getNameMap) as typeof getNameMap)(
+  const nameMap = getNameMap(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'),
   )
 

@@ -1,8 +1,9 @@
 import type { CliOpts } from './cli'
 import type { RgxExecIconMatch } from './iconizeMatch'
 import type { Base } from './tool/types'
-import { TrieSearch } from '@committed/trie-search'
+import process from 'node:process'
 
+import { TrieSearch } from '@committed/trie-search'
 import chalk from 'chalk'
 import levenshtein from 'fast-levenshtein'
 import _ from 'lodash'
@@ -11,6 +12,7 @@ import { getIcon } from './getIcon'
 import { capture_rgx, iconizeMatch } from './iconizeMatch'
 import isgd from './lib/isgd'
 import { getTrieSearch } from './trie'
+
 import { Unclear } from './unclear'
 
 const write = (s = '.') => process.stdout.write(s)
@@ -141,7 +143,7 @@ export async function bracketsSearch(
   unclear.print()
 
   if (replaces.length) {
-    console.log('found names: ', chalk`{bold.yellow ${replaces.length}}`)
+    console.log('found names: ', chalk.bold.yellow(replaces.length))
   }
   else {
     console.log('No replacables found.')
