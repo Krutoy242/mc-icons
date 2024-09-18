@@ -75,6 +75,7 @@ function levinshteinResolver(
   assetEx: AssetEx,
   treshold: number,
   capture: string,
+  max: number,
 ) {
   const capture_low = capture.toLowerCase()
   const lev = assetEx.nameDictionary.map(
@@ -84,7 +85,7 @@ function levinshteinResolver(
   const t1 = levDict[0][0]
   const t2 = levDict[1][0]
   const isTresholdPass = t1 < t2 && t1 <= treshold
-  return isTresholdPass ? [levDict[0][1]] : levDict.map(o => o[1])
+  return isTresholdPass ? [levDict[0][1]] : levDict.map(o => o[1]).slice(0, max)
 }
 
 // ##################################################################
@@ -114,7 +115,7 @@ export async function bracketsSearch(
       match as RgxExecIconMatch,
       trieSearchFn,
       unclear,
-      s => levinshteinResolver(assetEx, argv.treshold || 0, s),
+      s => levinshteinResolver(assetEx, argv.treshold || 0, s, argv.max),
       s => getByCommandString(assetEx, s),
       s => getByID(assetEx, s),
     )

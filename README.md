@@ -21,7 +21,7 @@ Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/m
 | Capture by id **&#91;&lt;mod:name:meta:{tag}>]**                | [<tconstruct:large_plate:0:{Material:"fierymetal"}>] | ![](https://is.gd/Zza0WL "Fiery Large Plate")                                                        |
 | Output first items if all have same icon                        |                               [Advanced Pocket] (CC) | ![](https://is.gd/m64erK "Advanced Pocket Computer")                                                 |
 | With mod defined only subset will be picked (if no exact match) |                         [Basalt Sla (every)] (Quark) | ![](https://github.com/Krutoy242/mc-icons/raw/master/i/quark/stone_basalt_slab__0.png "Basalt Slab") |
-| ⚠️TODO: Fix list too big                                        |                                  [Bucket of (every)] |                                                                                                      |
+| Big lists (not all names available)                             |                              [Molten Bucket (every)] |                                                                                                      |
 
 ## Usage
 
@@ -40,13 +40,12 @@ Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/m
 `> npx mc-icons --help` output:
 
 ```
-    --help      Show help
--t, --treshold  Levenshtein name mistake treshold
--s, --silent    Do not any prompt
--m, --modpack   Modpack shortand to filter icons, "e2ee" for example
-
--r, --repo      Repository to make short links to
-                default "https://github.com/Krutoy242/mc-icons/raw/master/i/"
+-t, --treshold    Levenshtein name mistake treshold  [number] [default: 0]
+-x, --max         Maximum amount of icons in multiple results  [number] [default: 64]
+-r, --repo        Repository to make short links to  [string] [default: "https://github.com/Krutoy242/mc-icons/raw/master/i/"]
+-m, --modpack     Modpack shortand to filter icons, "e2ee" for example  [string]
+-s, --silent      Do not any prompt  [boolean]
+-o, --short       Shorten long links with is.gd  [boolean] [default: true]
 ```
 
 ## Developing

@@ -14,6 +14,12 @@ const yargsOpts = {
     describe: 'Levenshtein name mistake treshold',
     default: 0,
   },
+  max: {
+    alias: 'x',
+    type: 'number',
+    describe: 'Maximum amount of icons in multiple results',
+    default: 64,
+  },
   repo: {
     alias: 'r',
     type: 'string',
@@ -25,9 +31,13 @@ const yargsOpts = {
     type: 'string',
     describe: 'Modpack shortand to filter icons, "e2ee" for example',
   },
-  silent: { alias: 's', type: 'boolean', describe: 'Do not any prompt' },
+  silent: {
+    alias: 's',
+    type: 'boolean',
+    describe: 'Do not any prompt',
+  },
   short: {
-    alias: 'h',
+    alias: 'o',
     type: 'boolean',
     describe: 'Shorten long links with is.gd',
     default: true,
