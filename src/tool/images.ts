@@ -1,33 +1,44 @@
-import fs, { createReadStream, existsSync, mkdirSync } from 'node:fs'
+import { constants, createReadStream } from 'node:fs'
 import { join } from 'node:path'
 
+import FastGlob from 'fast-glob'
 import fse from 'fs-extra'
+import { imageHash } from 'image-hash'
 import _ from 'lodash'
-import hash from 'object-hash'
-import { PNG } from 'pngjs'
 import { asset } from './assets'
 import { tree } from './tree'
 
-const { copyFile } = fse
+const { copyFile, mkdirSync } = fse
 
 export function getHash(filePath: string): Promise<string> {
-  return new Promise<string>((resolve) => {
-    createReadStream(filePath)
-      .pipe(new PNG({ filterType: 4 }))
-      .on('parsed', function () {
-        resolve(hash([...this.data]))
-      })
+  return new Promise<string>((resolve, reject) => {
+    imageHash(filePath, 16, true, (err: any, data: any) => err ? reject(err) : resolve(data))
   })
 }
 
 let oldPathHash: { [newImgPath: string]: string } | undefined
 
-export function initOld() {
+export async function initOld(log: (current: number, total: number, skipped: number) => void) {
   oldPathHash = {}
 
-  for (const [hash, img] of Object.entries(asset.images)) {
-    oldPathHash[img] = hash
+  const allEntries = Object.entries(asset.images)
+  const allImages = new Set(FastGlob.sync('i/*/*.png'))
+  let skipped = 0
+  let i = 0
+
+  for (const [hash, img] of allEntries) {
+    if (allImages.has(`i/${img}.png`)) {
+      oldPathHash[img] = hash
+    }
+    else {
+      delete asset.images[hash]
+      skipped++
+    }
+    if (++i % 1000 === 0)
+      log(i, allEntries.length, skipped)
   }
+
+  log(allEntries.length, allEntries.length, skipped)
 }
 
 /**
@@ -82,7 +93,7 @@ export function appendImage(
         return copyFile(
           imgPath,
           newImgPath,
-          oldPathHash ? fs.constants.COPYFILE_EXCL : undefined,
+          oldPathHash ? constants.COPYFILE_EXCL : undefined,
         )
       })
       .catch(() => resolve({ imgHash: newHash }))
@@ -110,17 +121,22 @@ export async function grabImages<T>(
   getBase: (icon: T) => ImageBase,
   onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void,
 ) {
+  const existedDirs = new Set(FastGlob.sync('i/*', { onlyDirectories: true }))
   for (const chunk of _.chunk(arr, 1000)) {
     await Promise.all(
       chunk.map((icon) => {
         const base = getBase(icon)
 
-        const dest = join('i', base.source)
-        if (!existsSync(dest))
+        const dest = `i/${base.source}`
+        if (!existedDirs.has(dest)) {
           mkdirSync(dest)
+          existedDirs.add(dest)
+        }
+
         const newFileName = base.skipSubstr
           ? base.fileName
           : base.fileName.substring(base.source.length + 2)
+
         const p = appendImage(base.filePath, join(dest, newFileName), base)
         p.then((res) => {
           tree.add({ ...base, imgHash: res.imgHash })

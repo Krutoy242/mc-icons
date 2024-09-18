@@ -12,6 +12,7 @@ import getNameMap from 'mc-jeiexporter/build/NameMap'
 import yargs from 'yargs'
 import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, initOld } from './images'
+import { parseJEIEFiles } from './jeie'
 import { category } from './log'
 import { appendNames } from './names'
 import { addNbt } from './nbt'
@@ -46,35 +47,23 @@ const argv = yargs(process.argv.slice(2))
   })
   .parseSync()
 
-function parseJEIEName(fileName: string) {
-  const groups = fileName.match(
-    // eslint-disable-next-line regexp/no-super-linear-backtracking
-    /(?<source>.+?)__(?<entry>.+?)__(?<meta>\d+)(__(?<hash>.+))?/,
-  )?.groups
-
-  if (!groups)
-    throw new Error(`File Name cannot be parsed: ${fileName}`)
-  return {
-    source: groups.source,
-    entry: groups.entry,
-    meta: Number(groups.meta) || 0,
-    nbtHash: groups.hash,
-  }
-}
-
 init()
 async function init() {
-  let log = category('JEIExporter')
+  let log = category('Preparation')
 
   if (argv.overwrite) {
     log('Generating placeholders...')
     await generatePlaceholders()
   }
   else {
-    log('Skipping overwriting...')
-    initOld()
+    const label = 'Skipping overwriting, init present icons...'
+    log(label)
+    await initOld((current, total, skipped) => log(
+      `${label}\n${chalk.green(current)} / ${chalk.hex('#007700')(total)} ${chalk.gray('skipped:')} ${chalk.hex('#888888')(skipped)}`,
+    ))
   }
 
+  log = category('JEIExporter')
   log('Open JEIExporter nameMap.json...')
   const nameMap = getNameMap(
     readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'),
@@ -98,61 +87,38 @@ async function init() {
 
   let skipped = 0
   let copied = 0
-  let total = 0
-  const jeiePath = join(argv.mc, '/exports/items')
-  await handleJEIEFile('thaumcraft.api.aspects.AspectList', 'aspect')
-  await handleJEIEFile('mekanism.api.gas.GasStack', 'gas', /^gas__/)
-  await handleJEIEFile('fluid', 'fluid')
-  await handleJEIEFile('item')
+  let processed = 0
 
   function logFileAdd(isAdded: boolean, wholeLength: number, base: ImageBase) {
-    total++
+    processed++
     copied += Number(isAdded)
     skipped += Number(!isAdded)
-    if (total % 100 !== 0)
+    if (processed % 100 !== 0)
       return
-    const files = chalk.hex('#0e7182')(`${total} / ${wholeLength}`)
+    const files = chalk.hex('#0e7182')(`${processed} / ${wholeLength}`)
     const s_copied = `copied: ${copied}`
     const s_skipped = `skipped: ${skipped}`
     const current = `current: ${chalk.hex('#0e8257')(base.source)}`
     log(`Files: ${files}, ${s_copied}, ${s_skipped}, ${current}`)
   }
 
-  async function handleJEIEFile(
-    subfolder: string,
-    source?: string,
-    entry_filter?: RegExp,
-  ) {
-    const folder = join(jeiePath, subfolder)
-    const files = fast_glob.sync('./**/*.png', { cwd: folder }) // .slice(0, 400)
-
-    const getBase: (icon: string) => ImageBase = (file) => {
-      const name = file.replace(/\.png$/, '')
-      const base = source
-        ? {
-            source,
-            entry: !entry_filter ? name : name.replace(entry_filter, ''),
-            skipSubstr: true,
-          }
-        : parseJEIEName(name)
-      return {
-        filePath: join(folder, file),
-        fileName: file,
-        ...base,
-      }
-    }
-
-    await grabImages(files, getBase, logFileAdd)
-  }
+  await parseJEIEFiles([
+    ['thaumcraft.api.aspects.AspectList', 'aspect'],
+    ['mekanism.api.gas.GasStack', 'gas', /^gas__/],
+    ['fluid', 'fluid'],
+    ['item'],
+  ], argv.mc, logFileAdd)
 
   if (argv.icons) {
     log = category('Icon Exporter')
     log('Getting array...')
-    total = 0
+    processed = 0
     const iconExporter: ItemIcon[] = []
     // const maxIter = 1000
     // @ts-expect-error module
-    for (const o of ((iconIterator.default ?? iconIterator) as typeof iconIterator)(argv.icons)) {
+    for (const o of ((iconIterator.default ?? iconIterator) as typeof iconIterator)(
+      join(argv.mc, argv.icons),
+    )) {
       iconExporter.push(o)
       if (o.sNbt && o.sNbt !== '{}')
         addNbt(o.hash, o.sNbt)
@@ -171,7 +137,6 @@ async function init() {
   }
 
   log = category('Export')
-
   log('Generating item names ...')
   appendNames(nameMap)
 
