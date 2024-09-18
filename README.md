@@ -8,20 +8,20 @@ This TS-Node CLI app designed to automatically turn text in Markdown files into 
 
 Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/modpacks/enigmatica-2-expert-extended) using this tool for [changelogs](https://github.com/Krutoy242/Enigmatica2Expert-Extended/blob/master/CHANGELOG.md).
 
-|                                                     Description | Capture                                              | Result                                                                                               |
-|----------------------------------------------------------------:|------------------------------------------------------|------------------------------------------------------------------------------------------------------|
-|                                          Items with exact match | [Beacon]                                             | ![](https://is.gd/oiTLv6 "Beacon")                                                                   |
-|                            Item from **Minecraft** picked first | [Glass]                                              | ![](https://is.gd/bggvW5 "Glass")                                                                    |
-|                              Add `(every)` inside get all items | [Mossy Wall (every)]                                 | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")![](https://is.gd/wiuAOR "Mossy Stone Brick Wall") |
-|                             Add `(any)` inside to pick only one | [Mossy Wall (any)]                                   | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")                                                   |
-|                                          Specify mod in parenth | [Green wall] (Actually Additions)                    | ![](https://is.gd/wxi3cX "Ethetic Green Wall")                                                       |
-|            You can use mod **shortand**<br/>or **abbreviature** | [Green wall] (actual)<br/>[Green wall] (EM)          | ![](https://is.gd/wxi3cX "Ethetic Green Wall")![](https://is.gd/PR2MS1 "Green Alabaster Wall")       |
-|                              Use `(fluid)` postfix to get fluid | [Enriched Lava] (fluid)                              | ![](https://is.gd/XPxBoQ "Enriched Lava")                                                            |
-|                                   Use numbers `(4)` as metadata | [Futura Block] (4)<br/>[Futura Block] (5)            | ![](https://is.gd/eGPYzG "Futura Block")![](https://git.io/JLjsJ 'Futura Block')                     |
-|                Capture by id **&#91;&lt;mod:name:meta:{tag}>]** | [<tconstruct:large_plate:0:{Material:"fierymetal"}>] | ![](https://is.gd/Zza0WL "Fiery Large Plate")                                                        |
-|                        Output first items if all have same icon | [Advanced Pocket] (CC)                               | ![](https://is.gd/m64erK "Advanced Pocket Computer")                                                 |
-| With mod defined only subset will be picked (if no exact match) | [Basalt Sla (every)] (Quark)                         | ![](https://github.com/Krutoy242/mc-icons/raw/master/i/quark/stone_basalt_slab__0.png "Basalt Slab") |
-|                                        ⚠️TODO: Fix list too big | [Bucket of (every)]                                  |                                                                                                      |
+| Description                                                     |                                              Capture | Result                                                                                               |
+|-----------------------------------------------------------------|-----------------------------------------------------:|------------------------------------------------------------------------------------------------------|
+| Items with exact match                                          |                                             [Beacon] | ![](https://is.gd/oiTLv6 "Beacon")                                                                   |
+| Item from **Minecraft** picked first                            |                                              [Glass] | ![](https://is.gd/bggvW5 "Glass")                                                                    |
+| Add `(every)` inside get all items                              |                                 [Mossy Wall (every)] | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")![](https://is.gd/wiuAOR "Mossy Stone Brick Wall") |
+| Add `(any)` inside to pick only one                             |                                   [Mossy Wall (any)] | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")                                                   |
+| Specify mod in parenth                                          |                    [Green wall] (Actually Additions) | ![](https://is.gd/wxi3cX "Ethetic Green Wall")                                                       |
+| You can use mod **shortand**<br/>or **abbreviature**            |          [Green wall] (actual)<br/>[Green wall] (EM) | ![](https://is.gd/wxi3cX "Ethetic Green Wall")![](https://is.gd/PR2MS1 "Green Alabaster Wall")       |
+| Use `(fluid)` postfix to get fluid                              |                              [Enriched Lava] (fluid) | ![](https://is.gd/XPxBoQ "Enriched Lava")                                                            |
+| Use numbers `(4)` as metadata                                   |            [Futura Block] (4)<br/>[Futura Block] (5) | ![](https://is.gd/eGPYzG "Futura Block")![](https://git.io/JLjsJ 'Futura Block')                     |
+| Capture by id **&#91;&lt;mod:name:meta:{tag}>]**                | [<tconstruct:large_plate:0:{Material:"fierymetal"}>] | ![](https://is.gd/Zza0WL "Fiery Large Plate")                                                        |
+| Output first items if all have same icon                        |                               [Advanced Pocket] (CC) | ![](https://is.gd/m64erK "Advanced Pocket Computer")                                                 |
+| With mod defined only subset will be picked (if no exact match) |                         [Basalt Sla (every)] (Quark) | ![](https://github.com/Krutoy242/mc-icons/raw/master/i/quark/stone_basalt_slab__0.png "Basalt Slab") |
+| ⚠️TODO: Fix list too big                                        |                                  [Bucket of (every)] |                                                                                                      |
 
 ## Usage
 

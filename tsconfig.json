@@ -40,9 +40,6 @@
     "listFiles": false /* Print names of files part of the compilation. */,
     "pretty": true /* Stylize errors and messages using color and context. */
   },
-  "ts-node": {
-    "files": true
-  },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules/**"],
   "compileOnSave": false

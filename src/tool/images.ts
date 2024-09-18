@@ -1,18 +1,25 @@
+import crypto from 'node:crypto'
 import { constants, createReadStream } from 'node:fs'
-import { join } from 'node:path'
 
+import { join } from 'node:path'
 import FastGlob from 'fast-glob'
 import fse from 'fs-extra'
-import { imageHash } from 'image-hash'
 import _ from 'lodash'
+import sharp from 'sharp'
 import { asset } from './assets'
 import { tree } from './tree'
 
 const { copyFile, mkdirSync } = fse
 
-export function getHash(filePath: string): Promise<string> {
+export function getHash(filePath: string) {
   return new Promise<string>((resolve, reject) => {
-    imageHash(filePath, 16, true, (err: any, data: any) => err ? reject(err) : resolve(data))
+    sharp(filePath)
+      .resize(16, 16)
+      .toBuffer()
+      .then((data) => {
+        resolve(crypto.createHash('md5').update(data).digest('hex'))
+      })
+      .catch(reject)
   })
 }
 
@@ -78,8 +85,7 @@ export function appendImage(
 
     getHash(imgPath)
       .then((imgHash) => {
-        const found = asset.images[imgHash]
-        if (found)
+        if (asset.images[imgHash])
           return resolve({ imgHash }) // Already have this image
 
         // Write new hash into map
