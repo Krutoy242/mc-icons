@@ -22,7 +22,8 @@
     "release": "rm -rf build && tsc && release-it",
     "test run": "tsx src/cli.ts README.md --no-short --repo=i/",
     "preparse": "tsx src/tool/preparse.ts --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
-    "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee"
+    "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc_client/Instances/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
+    "sprite:create": "tsx src/tool/sprite.ts"
   },
   "dependencies": {
     "@committed/trie-search": "^0.1.0",
