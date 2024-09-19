@@ -1,8 +1,13 @@
+import type { Buffer } from 'node:buffer'
 import type { Image } from 'skia-canvas'
 import process from 'node:process'
 import fse from 'fs-extra'
+import imagemin from 'imagemin'
+import imageminOptipng from 'imagemin-optipng'
+import imageminPngquant from 'imagemin-pngquant'
 import { Canvas, loadImage } from 'skia-canvas'
 import terminalImage from 'terminal-image'
+
 import terminalKit from 'terminal-kit'
 import { getSpriteImages } from '../lib/sprite'
 
@@ -48,8 +53,31 @@ export default async function createSprite() {
     }
   }
 
-  console.log('\nSawing sprite...')
-  writeFileSync('i/sprite.png', await canvas.toBuffer('png'))
+  console.log('\nMinify...')
+  // writeFileSync('i/sprite.png', await canvas.toBuffer('png'))
+
+  const oldBuffer = await canvas.toBuffer('png')
+  const newBuffer = await optimize(oldBuffer)
+
+  console.log(
+    '  Minified',
+    oldBuffer.length,
+    '=>',
+    newBuffer.length,
+    '(',
+    (((newBuffer.length / oldBuffer.length) * 1000) | 0) / 1000,
+    ')',
+  )
+  writeFileSync('i/sprite.png', newBuffer)
+}
+
+function optimize(buffer: Buffer) {
+  return imagemin.buffer(buffer, {
+    plugins: [
+      imageminPngquant({ quality: [0.6, 0.8] }), // Lossy compression with pngquant
+      imageminOptipng({ optimizationLevel: 3 }), // Lossless compression with optipng
+    ],
+  })
 }
 
 let cursorX = 0
