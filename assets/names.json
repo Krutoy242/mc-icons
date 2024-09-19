@@ -56930,6 +56930,12 @@
   "Purple Stained Bricks": [
     "randomthings:stainedbrick:10"
   ],
+  "qmd.particle.eta.name": [
+    "particle:eta"
+  ],
+  "qmd.particle.tau.name": [
+    "particle:tau"
+  ],
   "QuantumSuit Bodyarmor": [
     "ic2:quantum_chestplate:0"
   ],
@@ -60818,6 +60824,9 @@
     "reccomplex:inventory_generation_single_tag:0:{itemCollectionKey:\"PyramidGraveGoodsCheap\"}",
     "reccomplex:inventory_generation_tag:0:{itemCollectionKey:\"PyramidGraveGoodsCheap\"}"
   ],
+  "qmd.particle.muon.name": [
+    "particle:muon"
+  ],
   "Quantum Entangloporter": [
     "mekanism:machineblock3:0",
     "mekanism:machineblock3:0:{mekData:{}}"
@@ -64370,6 +64379,9 @@
   "Purple Terracotta Block": [
     "cathedral:roofing_block_purple:0"
   ],
+  "qmd.particle.alpha.name": [
+    "particle:alpha"
+  ],
   "Quad Fuel Rod (Uranium)": [
     "ic2:quad_uranium_fuel_rod:0"
   ],
@@ -67524,6 +67536,18 @@
   "Purpur Fission Heat Sink": [
     "nuclearcraft:solid_fission_sink:12"
   ],
+  "qmd.particle.helion.name": [
+    "particle:helion"
+  ],
+  "qmd.particle.photon.name": [
+    "particle:photon"
+  ],
+  "qmd.particle.proton.name": [
+    "particle:proton"
+  ],
+  "qmd.particle.triton.name": [
+    "particle:triton"
+  ],
   "quark:entities/stoneling": [
     "reccomplex:inventory_generation_single_tag:0:{itemCollectionKey:\"quark:entities/stoneling\"}",
     "reccomplex:inventory_generation_tag:0:{itemCollectionKey:\"quark:entities/stoneling\"}"
@@ -70102,6 +70126,15 @@
   "Purpur Accelerator Cooler": [
     "qmd:accelerator_cooler1:12"
   ],
+  "qmd.particle.antitau.name": [
+    "particle:antitau"
+  ],
+  "qmd.particle.neutron.name": [
+    "particle:neutron"
+  ],
+  "qmd.particle.z_boson.name": [
+    "particle:z_boson"
+  ],
   "Quadruple Compressed Clay": [
     "additionalcompression:clay_compressed:3"
   ],
@@ -72326,6 +72359,21 @@
   "Purple Slick Plastic Block": [
     "mekanism:slickplasticblock:5"
   ],
+  "qmd.particle.antimuon.name": [
+    "particle:antimuon"
+  ],
+  "qmd.particle.deuteron.name": [
+    "particle:deuteron"
+  ],
+  "qmd.particle.electron.name": [
+    "particle:electron"
+  ],
+  "qmd.particle.glueball.name": [
+    "particle:glueball"
+  ],
+  "qmd.particle.positron.name": [
+    "particle:positron"
+  ],
   "Quadruple Compressed Stone": [
     "additionalcompression:stone_compressed:3"
   ],
@@ -74287,6 +74335,21 @@
   "Purple Obsidian Shulker Box": [
     "ironchest:iron_shulker_box_purple:6"
   ],
+  "qmd.particle.antialpha.name": [
+    "particle:antialpha"
+  ],
+  "qmd.particle.boron_ion.name": [
+    "particle:boron_ion"
+  ],
+  "qmd.particle.eta_prime.name": [
+    "particle:eta_prime"
+  ],
+  "qmd.particle.kaon_plus.name": [
+    "particle:kaon_plus"
+  ],
+  "qmd.particle.pion_plus.name": [
+    "particle:pion_plus"
+  ],
   "Quadruple Compressed Gravel": [
     "additionalcompression:gravel_compressed:3"
   ],
@@ -76045,6 +76108,27 @@
   "Purple Laser Lens (Inverted)": [
     "industrialforegoing:laser_lens_inverted:10"
   ],
+  "qmd.particle.antihelion.name": [
+    "particle:antihelion"
+  ],
+  "qmd.particle.antiproton.name": [
+    "particle:antiproton"
+  ],
+  "qmd.particle.antitriton.name": [
+    "particle:antitriton"
+  ],
+  "qmd.particle.bottom_eta.name": [
+    "particle:bottom_eta"
+  ],
+  "qmd.particle.kaon_minus.name": [
+    "particle:kaon_minus"
+  ],
+  "qmd.particle.pion_minus.name": [
+    "particle:pion_minus"
+  ],
+  "qmd.particle.sigma_plus.name": [
+    "particle:sigma_plus"
+  ],
   "Quad Fuel Rod (Depleted MOX)": [
     "ic2:nuclear:16"
   ],
@@ -77512,6 +77596,27 @@
   "Purpur Fission Coolant Heater": [
     "nuclearcraft:salt_fission_heater:12"
   ],
+  "qmd.particle.antineutron.name": [
+    "particle:antineutron"
+  ],
+  "qmd.particle.charmed_eta.name": [
+    "particle:charmed_eta"
+  ],
+  "qmd.particle.delta_minus.name": [
+    "particle:delta_minus"
+  ],
+  "qmd.particle.higgs_boson.name": [
+    "particle:higgs_boson"
+  ],
+  "qmd.particle.kaon_naught.name": [
+    "particle:kaon_naught"
+  ],
+  "qmd.particle.pion_naught.name": [
+    "particle:pion_naught"
+  ],
+  "qmd.particle.sigma_minus.name": [
+    "particle:sigma_minus"
+  ],
   "Quantum Entangled Singularity": [
     "appliedenergistics2:material:48"
   ],
@@ -78831,6 +78936,15 @@
   "Purified Crushed Magnesium Ore": [
     "jaopca:item_crushedpurifiedmagnesium:0"
   ],
+  "qmd.particle.antideuteron.name": [
+    "particle:antideuteron"
+  ],
+  "qmd.particle.tau_neutrino.name": [
+    "particle:tau_neutrino"
+  ],
+  "qmd.particle.w_plus_boson.name": [
+    "particle:w_plus_boson"
+  ],
   "Quadruple Compressed End Stone": [
     "additionalcompression:endstone_compressed:3"
   ],
@@ -79921,6 +80035,12 @@
   "Purpur Redstone Field Converter": [
     "nuclearcraft:turbine_dynamo_coil_purpurconverter:0"
   ],
+  "qmd.particle.muon_neutrino.name": [
+    "particle:muon_neutrino"
+  ],
+  "qmd.particle.w_minus_boson.name": [
+    "particle:w_minus_boson"
+  ],
   "Quadruple Compressed Netherrack": [
     "extrautils2:compressednetherrack:3"
   ],
@@ -80913,6 +81033,12 @@
   ],
   "Purple Rimmed Black Stable Stone": [
     "sonarcore:stablestoneblackrimmed_purple:0"
+  ],
+  "qmd.particle.antisigma_plus.name": [
+    "particle:antisigma_plus"
+  ],
+  "qmd.particle.calcium_48_ion.name": [
+    "particle:calcium_48_ion"
   ],
   "Quad Fuel Rod (Depleted Uranium)": [
     "ic2:nuclear:13"
@@ -81969,6 +82095,18 @@
   "Purple Translucent Luminous Block": [
     "randomthings:translucentluminousblock:10"
   ],
+  "qmd.particle.antidelta_minus.name": [
+    "particle:antidelta_minus"
+  ],
+  "qmd.particle.antikaon_naught.name": [
+    "particle:antikaon_naught"
+  ],
+  "qmd.particle.antisigma_minus.name": [
+    "particle:antisigma_minus"
+  ],
+  "qmd.particle.delta_plus_plus.name": [
+    "particle:delta_plus_plus"
+  ],
   "Quadruple Compressed Ender Gravel": [
     "additionalcompression:gravelend_compressed:3"
   ],
@@ -82634,6 +82772,9 @@
   ],
   "Purpur Fission Coolant Heater Port": [
     "nuclearcraft:fission_heater_port:12"
+  ],
+  "qmd.particle.tau_antineutrino.name": [
+    "particle:tau_antineutrino"
   ],
   "Quadruple Compressed Nether Gravel": [
     "additionalcompression:gravelnether_compressed:3"
@@ -83311,6 +83452,12 @@
   ],
   "Prosperity Shard Sledge Hammer Head": [
     "tcomplement:sledge_head:0:{Material:\"ma.prosperity\"}"
+  ],
+  "qmd.particle.electron_neutrino.name": [
+    "particle:electron_neutrino"
+  ],
+  "qmd.particle.muon_antineutrino.name": [
+    "particle:muon_antineutrino"
   ],
   "Red Sea Serpent Scales Armor Plates": [
     "conarm:armor_plate:0:{Material:\"scaleredseaserpent\"}"
@@ -84433,6 +84580,9 @@
   "Purple Sea Serpent Scales Helmet Core": [
     "conarm:helmet_core:0:{Material:\"scalepurpleseaserpent\"}"
   ],
+  "qmd.particle.antidelta_plus_plus.name": [
+    "particle:antidelta_plus_plus"
+  ],
   "Radioisotope Thermoelectric Generator": [
     "ic2:te:6"
   ],
@@ -85114,6 +85264,9 @@
   ],
   "Purple Sea Serpent Scales Polishing Kit": [
     "conarm:polishing_kit:0:{Material:\"scalepurpleseaserpent\"}"
+  ],
+  "qmd.particle.electron_antineutrino.name": [
+    "particle:electron_antineutrino"
   ],
   "Simple Alloy Smelter (decoration block)": [
     "enderio:block_decoration3:1"

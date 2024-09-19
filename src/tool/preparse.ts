@@ -105,6 +105,7 @@ async function init() {
 
   await parseJEIEFiles([
     ['thaumcraft.api.aspects.AspectList', 'aspect'],
+    ['lach_01298.qmd.particle.ParticleStack', 'particle', /^particle__/],
     ['mekanism.api.gas.GasStack', 'gas', /^gas__/],
     ['fluid', 'fluid'],
     ['item'],
