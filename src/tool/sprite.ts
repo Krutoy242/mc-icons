@@ -9,18 +9,17 @@ import { Canvas, loadImage } from 'skia-canvas'
 import terminalImage from 'terminal-image'
 
 import terminalKit from 'terminal-kit'
-import { getSpriteImages } from '../lib/sprite'
+import { getSpriteImages, iconTextureSize, rowCount } from '../lib/sprite'
 
 const { terminal: term } = terminalKit
 
 const { writeFileSync, existsSync } = fse
 
-export default async function createSprite() {
-  const imgSize = 16
+async function createSprite() {
   const imageList = getSpriteImages()
 
-  const sideLength = Math.sqrt(imageList.length * imgSize ** 2)
-  const size = 2 ** Math.ceil(Math.log2(sideLength))
+  const rowAmount = rowCount(imageList.length)
+  const size = rowAmount * iconTextureSize
 
   const canvas = new Canvas(size, size)
   const ctx = canvas.getContext('2d')
@@ -32,23 +31,23 @@ export default async function createSprite() {
   for (const img of imageList) {
     const imgSrc = `i/${img}.png`
     const x = i % size
-    const y = ((i / size) | 0) * imgSize
+    const y = ((i / size) | 0) * iconTextureSize
     let imgObj
     if (existsSync(imgSrc)) {
       imgObj = await loadImage(imgSrc)
-      ctx.drawImage(imgObj, x, y, imgSize, imgSize)
+      ctx.drawImage(imgObj, x, y, iconTextureSize, iconTextureSize)
     }
     else {
       ctx.fillText('?', x, y)
     }
-    i += imgSize
+    i += iconTextureSize
     if (x === 0) {
       if (imgObj) {
         term.saveCursor()
-        term.moveTo(0, 0)('Images: ', i / imgSize, ' / ', imageList.length)
+        term.moveTo(0, 0)('Images: ', i / iconTextureSize, ' / ', imageList.length)
         term.restoreCursor()
 
-        await drawTerminalImage(imgObj, imgSize)
+        await drawTerminalImage(imgObj, iconTextureSize)
       }
     }
   }

@@ -11,6 +11,8 @@ const blacklistedItems = [
   /^thermaldynamics\/cover__0__\w+/,
 ] as (string | RegExp)[]
 
+export const iconTextureSize = 16
+
 export function getSpriteImages() {
   return Object.values(asset.images)
     .filter(
@@ -20,4 +22,26 @@ export function getSpriteImages() {
           : f.test(imgPath),
       ),
     )
+}
+
+let spriteMap: Record<string, string>
+export function getPos(imgPath: string) {
+  if (!spriteMap) {
+    const imageList = getSpriteImages()
+    const rowAmount = rowCount(imageList.length)
+
+    spriteMap = Object.fromEntries(
+      imageList
+        .map((imgPath, i) => [
+          imgPath,
+          `${(i % rowAmount) * iconTextureSize} ${
+            ((i / rowAmount) | 0) * iconTextureSize}`,
+        ]),
+    )
+  }
+  return spriteMap[imgPath]
+}
+
+export function rowCount(total: number) {
+  return 2 ** Math.ceil(Math.log2(Math.sqrt(total)))
 }
