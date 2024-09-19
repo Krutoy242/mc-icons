@@ -1,7 +1,7 @@
 {
   "name": "mc-icons",
   "type": "module",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "packageManager": "pnpm@9.10.0",
   "description": "Parsing markdown file to replace item names into item icons.",
   "license": "MIT",
