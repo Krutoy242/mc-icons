@@ -23,6 +23,7 @@ async function createSprite() {
 
   const canvas = new Canvas(size, size)
   const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingEnabled = false
 
   term.clear().moveTo(0, 0)
   console.log()
