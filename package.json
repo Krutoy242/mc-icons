@@ -32,7 +32,6 @@
     "fs-extra": "^11.2.0",
     "lodash": "^4.17.21",
     "terminal-kit": "^3.1.1",
-    "typescript-memoize": "^1.1.1",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

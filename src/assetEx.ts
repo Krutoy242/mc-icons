@@ -2,7 +2,6 @@ import type { CliOpts } from './cli'
 
 import type { DictEntry } from './searcher'
 import type { Tree } from './tool/types'
-import { Memoize } from 'typescript-memoize'
 import { baseFromID } from './base'
 import { asset } from './tool/assets'
 
@@ -72,16 +71,19 @@ export class AssetEx {
     }
   }
 
-  @Memoize()
-  public get modpackMap(): { [source: string]: true } | undefined {
+  private _modpackMap: { [source: string]: true } | undefined
+  public get modpackMap() {
     if (!this.argv.modpack)
       return undefined
+
+    if (this._modpackMap)
+      return this._modpackMap
 
     const sourcesList = asset.modpacks[this.argv.modpack]
     if (!sourcesList?.length)
       throw new Error(`This modpack didnt exist: ${this.argv.modpack}`)
 
-    return Object.fromEntries(
+    return this._modpackMap = Object.fromEntries(
       sourcesList.map(s => [s, true]),
     )
   }

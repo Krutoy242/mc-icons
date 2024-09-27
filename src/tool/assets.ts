@@ -4,7 +4,6 @@ import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import fse from 'fs-extra'
-import { Memoize } from 'typescript-memoize'
 
 import { tree } from './tree'
 
@@ -71,14 +70,14 @@ class Asset implements AssetStorage {
   // Other Fields
   // --------------------------------------------
 
-  @Memoize()
-  public get nbtHash(): { [sNbt: string]: string } {
-    return Object.fromEntries(Object.entries(this.nbt).map(([k, v]) => [v, k]))
+  private _nbtHash?: { [sNbt: string]: string }
+  public get nbtHash() {
+    return this._nbtHash ??= Object.fromEntries(Object.entries(this.nbt).map(([k, v]) => [v, k]))
   }
 
-  @Memoize()
+  private _names_low?: { [k: string]: string }
   public get names_low() {
-    return Object.fromEntries(
+    return this._names_low ??= Object.fromEntries(
       Object.entries(this.names).map(([k]) => [k.toLowerCase(), k]),
     )
   }
