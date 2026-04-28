@@ -26,9 +26,9 @@ function linesOfMatch(match: RgxExecIconMatch, lines = 0): string {
 function nbtToString(nbt?: string): string {
   if (!nbt)
     return ''
-  return chalk` {rgb(33,173,204) ${
-    nbt.length > 50 ? `${nbt.substring(0, 49)}…` : nbt
-  }}`
+  return ` ${chalk.rgb(33, 173, 204)(
+    nbt.length > 50 ? `${nbt.substring(0, 49)}…` : nbt,
+  )}`
 }
 
 function gridMenuBuilder(itemArr: DictEntry[]) {
@@ -117,17 +117,17 @@ export class Unclear {
       term`\nSelect full name of [`.bgGreen.black(capture).styleReset()(
         `]${inLine}`,
       )
-      return gridMenu(d => chalk`[{green ${d.name}}]`)
+      return gridMenu(d => `[${chalk.green(d.name)}]`)
     }
 
     if (is_allModsAreDifferent) {
       term`\nSelect `.bgColorRgb(0, 98, 143).black`mod`.styleReset()` for [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
-      return gridMenu(d => chalk`({rgb(0, 98, 143) ${d.modname}})`)
+      return gridMenu(d => `(${chalk.rgb(0, 98, 143)(d.modname)})`)
     }
 
     if (is_sameMod_metasDifferent) {
       term`\nSelect `.bgCyan.black(`meta`).styleReset()` of [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
-      return gridMenu(d => chalk`({cyan ${d.meta}})`)
+      return gridMenu(d => `(${chalk.cyan(d.meta)})`)
     }
 
     term`\nHave no clue what you looking for [`.bgGreen.black(capture)(
@@ -135,9 +135,9 @@ export class Unclear {
     )`\nSelect Any variant:\n`
     return gridMenu(
       d =>
-        chalk`[{green ${d.name}}] <{rgb(0,158,145) ${d.source}:${d.entry}:${
-          d.meta || 0
-        }}>` + nbtToString(d.sNbt),
+        `[${chalk.green(d.name)}] <${chalk.rgb(0, 158, 145)(
+          `${d.source}:${d.entry}:${d.meta || 0}`,
+        )}>${nbtToString(d.sNbt)}`,
     )
   }
 }
