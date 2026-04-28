@@ -10,7 +10,8 @@
     "experimentalDecorators": true /* Enables experimental support for ES7 decorators. */,
     "rootDir": "src",
     "module": "ESNext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "resolveJsonModule": true /* Include modules imported with .json extension. */,
 
     "typeRoots": ["./src/types"],
@@ -41,7 +42,7 @@
     "pretty": true, /* Stylize errors and messages using color and context. */
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules/**"],
   "compileOnSave": false
 }

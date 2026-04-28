@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { constants, createReadStream } from 'node:fs'
+import { constants } from 'node:fs'
 
 import { join } from 'node:path'
 import FastGlob from 'fast-glob'

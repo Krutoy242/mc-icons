@@ -7,7 +7,10 @@ function createModifier(replaceRegex: RegExp, filter: DictEntriesFilter) {
   return (capture: string) => {
     let isMatch = false
     const refinedCapture = capture
-      .replace(replaceRegex, () => ((isMatch = true), ' '))
+      .replace(replaceRegex, () => {
+        isMatch = true
+        return ' '
+      })
       .trim()
 
     if (!isMatch)

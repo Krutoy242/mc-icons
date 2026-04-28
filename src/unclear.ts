@@ -1,13 +1,14 @@
 import type { CliOpts } from './cli'
 import type { RgxExecIconMatch } from './iconizeMatch'
+import type { PickerOption } from './picker'
 import type { DictEntry } from './searcher'
 
+import path from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import _ from 'lodash'
-import terminalKit from 'terminal-kit'
-
-const { terminal: term } = terminalKit
+import { getIcon } from './getIcon'
+import { pick } from './picker'
 
 type NonEmptyArray<T> = [T, ...T[]]
 
@@ -20,27 +21,31 @@ function linesOfMatch(match: RgxExecIconMatch, lines = 0): string {
   let end = match.index
   while (match.input.length > ++end && (match.input[end] !== '\n' || k--));
 
-  return ` in line:\n${chalk.gray(match.input.substring(start, end))}\n`
+  return ` in line:\n${chalk.gray(match.input.substring(start, end))}`
 }
 
-function nbtToString(nbt?: string): string {
-  if (!nbt)
-    return ''
-  return ` ${chalk.rgb(33, 173, 204)(
-    nbt.length > 50 ? `${nbt.substring(0, 49)}…` : nbt,
-  )}`
+function isRemote(repo: string): boolean {
+  return /^https?:\/\//i.test(repo)
 }
 
-function gridMenuBuilder(itemArr: DictEntry[]) {
-  return async (cb: (d: DictEntry) => string) => {
-    const trimedArr = itemArr.slice(0, term.height - 8).map(cb)
-    const diff = itemArr.length - trimedArr.length
-    if (diff)
-      trimedArr.push(`{and other ${diff} variants}`)
-    return itemArr[
-      (await term.singleColumnMenu(trimedArr, { cancelable: true }).promise)
-        .selectedIndex
-    ]
+function imagePathFor(argv: CliOpts, d: DictEntry): string | undefined {
+  if (isRemote(argv.repo))
+    return undefined
+  const rel = getIcon([d.source, d.entry, d.meta, d.sNbt])
+  if (!rel)
+    return undefined
+  return path.resolve(argv.repo, `${rel}.png`)
+}
+
+function buildOption(argv: CliOpts, d: DictEntry): PickerOption {
+  return {
+    name: d.name,
+    modname: d.modname,
+    caption: `${d.source}:${d.entry}:${d.meta || 0}`,
+    footnote: d.sNbt
+      ? (d.sNbt.length > 50 ? `${d.sNbt.substring(0, 49)}…` : d.sNbt)
+      : undefined,
+    imagePath: imagePathFor(argv, d),
   }
 }
 
@@ -93,9 +98,10 @@ export class Unclear {
     const rgx = new RegExp(_.escapeRegExp(capture), 'i')
     itemArr.sort((a, b) => Number(rgx.test(b.name)) - Number(rgx.test(a.name)))
 
-    // Conditions
-    if (!itemArr.length || this.argv.silent)
-      return this.cantBeFound(capture), undefined
+    if (!itemArr.length || this.argv.silent) {
+      this.cantBeFound(capture)
+      return
+    }
 
     const is_allItemsHasUniqNames
       = itemArr.length === _.uniqBy(itemArr, 'name').length
@@ -110,34 +116,23 @@ export class Unclear {
         .countBy('meta')
         .every(v => v === 1)
 
-    const gridMenu = gridMenuBuilder(itemArr)
     const inLine = linesOfMatch(match)
+    const captureTag = chalk.bgGreen.black(` ${capture} `)
 
-    if (is_allItemsHasUniqNames) {
-      term`\nSelect full name of [`.bgGreen.black(capture).styleReset()(
-        `]${inLine}`,
-      )
-      return gridMenu(d => `[${chalk.green(d.name)}]`)
-    }
+    let prompt: string
+    if (is_allItemsHasUniqNames)
+      prompt = `Select full name of [${captureTag}]${inLine}`
+    else if (is_allModsAreDifferent)
+      prompt = `Select ${chalk.bgRgb(0, 98, 143).black(' mod ')} for [${captureTag}]${inLine}`
+    else if (is_sameMod_metasDifferent)
+      prompt = `Select ${chalk.bgCyan.black(' meta ')} of [${captureTag}]${inLine}`
+    else
+      prompt = `Have no clue what you looking for [${captureTag}]${inLine}\nSelect Any variant:`
 
-    if (is_allModsAreDifferent) {
-      term`\nSelect `.bgColorRgb(0, 98, 143).black`mod`.styleReset()` for [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
-      return gridMenu(d => `(${chalk.rgb(0, 98, 143)(d.modname)})`)
-    }
-
-    if (is_sameMod_metasDifferent) {
-      term`\nSelect `.bgCyan.black(`meta`).styleReset()` of [`.bgGreen.black(capture).styleReset()(`]${inLine}`)
-      return gridMenu(d => `(${chalk.cyan(d.meta)})`)
-    }
-
-    term`\nHave no clue what you looking for [`.bgGreen.black(capture)(
-      `]${inLine}`,
-    )`\nSelect Any variant:\n`
-    return gridMenu(
-      d =>
-        `[${chalk.green(d.name)}] <${chalk.rgb(0, 158, 145)(
-          `${d.source}:${d.entry}:${d.meta || 0}`,
-        )}>${nbtToString(d.sNbt)}`,
-    )
+    const options = itemArr.map(d => buildOption(this.argv, d))
+    const idx = await pick({ prompt, options })
+    if (idx === undefined)
+      return undefined
+    return itemArr[idx]
   }
 }
