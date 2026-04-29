@@ -30,6 +30,7 @@ export const tree = {
     const imgHash = asset.items[source]?.[entry]?.[meta]?.[nbtHash]
     if (imgHash) {
       return imgHash
+    // eslint-disable-next-line style/max-statements-per-line
     }(((asset.items[source] ??= {})[entry] ??= {})[meta] ??= {})[nbtHash]
       = item.imgHash
     return undefined
