@@ -1,5 +1,5 @@
 import { Text } from 'ink'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { PLACEHOLDER_LINES, renderImageLines } from './render'
 
 interface Props {

@@ -1,6 +1,7 @@
 import type { PickerOption } from './types'
 import chalk from 'chalk'
 import { Text } from 'ink'
+import React from 'react'
 
 interface Props {
   option: PickerOption

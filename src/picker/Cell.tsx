@@ -1,5 +1,6 @@
 import type { PickerOption } from './types'
 import { Box } from 'ink'
+import React from 'react'
 import { Card } from './Card'
 import { Image } from './Image'
 
