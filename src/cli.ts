@@ -3,6 +3,7 @@
 import process from 'node:process'
 import fse from 'fs-extra'
 import yargs from 'yargs'
+import { discordMode } from './discord'
 import { bracketsSearch } from './searcher'
 
 const { existsSync, readFileSync, writeFileSync } = fse
@@ -42,6 +43,12 @@ const yargsOpts = {
     describe: 'Shorten long links with is.gd',
     default: true,
   },
+  discord: {
+    alias: 'd',
+    type: 'boolean',
+    describe: 'Interactive picker for Discord ANSI icons',
+    default: false,
+  },
 } as const
 
 interface OptsTypes {
@@ -56,7 +63,7 @@ export type CliOpts = {
 
 const argv = yargs(process.argv.slice(2))
   .options(yargsOpts)
-  .command('<input>', 'input file to mutate', (yargs) => {
+  .command('[input]', 'input file to mutate', (yargs) => {
     yargs.positional('input', {
       describe: 'input file to mutate',
       type: 'string',
@@ -66,6 +73,11 @@ const argv = yargs(process.argv.slice(2))
   .help('help')
   .wrap(null)
   .parseSync()
+
+if (argv.discord) {
+  await discordMode(argv as CliOpts)
+  process.exit(0)
+}
 
 const filePath = argv._[0] as string
 
