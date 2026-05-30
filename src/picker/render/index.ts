@@ -35,7 +35,7 @@ export function pixelsToLines(buf: Buffer, w: number, _h: number): string[] {
 }
 
 const PLACEHOLDER_LINE = chalk.gray('░'.repeat(CELL_COLS))
-export const PLACEHOLDER_LINES: string[] = Array.from({ length: CELL_ROWS }, () => PLACEHOLDER_LINE)
+export const PLACEHOLDER_LINES: string[] = Array.from({ length: CELL_ROWS }).fill(PLACEHOLDER_LINE) as string[]
 
 export async function renderImageLines(path: string): Promise<string[]> {
   const pixels = await loadPixels(path)

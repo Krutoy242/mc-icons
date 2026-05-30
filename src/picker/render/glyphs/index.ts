@@ -133,9 +133,9 @@ export const HORIZONTAL_BARS: GlyphCandidate[] = [
 // ── Shade blocks ────────────────────────────────────────────────────────────
 // Uniform partial coverage; rendered as fg over terminal-transparent bg.
 export const SHADES: GlyphCandidate[] = [
-  { char: '░', weights: Array.from({ length: 8 }, () => 0.25), forceSingleColor: true },
-  { char: '▒', weights: Array.from({ length: 8 }, () => 0.5), forceSingleColor: true },
-  { char: '▓', weights: Array.from({ length: 8 }, () => 0.75), forceSingleColor: true },
+  { char: '░', weights: Array.from({ length: 8 }).fill(0.25) as number[], forceSingleColor: true },
+  { char: '▒', weights: Array.from({ length: 8 }).fill(0.5) as number[], forceSingleColor: true },
+  { char: '▓', weights: Array.from({ length: 8 }).fill(0.75) as number[], forceSingleColor: true },
 ]
 
 // ── Other glyphs ────────────────────────────────────────────────────────────

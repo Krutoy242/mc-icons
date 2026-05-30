@@ -69,7 +69,7 @@ export async function iconizeMatch(
 
   // Filters that could help reduce result variants
   const filterSteps: ((
-    d: DictEntry[]
+    d: DictEntry[],
   ) => Promisable<[DictEntry[], boolean | undefined]>)[] = [
     d => [d, false],
     d => [filterByOption(d, option), false],

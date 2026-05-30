@@ -37,6 +37,8 @@ export default async function prune() {
 
 // Launch file
 if (import.meta.main) {
-  await prune()
-  process.exit(0)
+  (async () => {
+    await prune()
+    process.exit(0)
+  })()
 }

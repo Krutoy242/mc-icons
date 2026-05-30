@@ -113,6 +113,8 @@ function printAtCursor(text: string) {
 
 // Launch file
 if (import.meta.main) {
-  await createSprite()
-  process.exit(0)
+  (async () => {
+    await createSprite()
+    process.exit(0)
+  })()
 }

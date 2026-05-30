@@ -1,6 +1,7 @@
+import type { ImageBase } from './images'
 import { join } from 'node:path'
 import fast_glob from 'fast-glob'
-import { grabImages, type ImageBase } from './images'
+import { grabImages } from './images'
 
 type HandleParams = [subfolder: string, source?: string, entry_filter?: RegExp]
 
