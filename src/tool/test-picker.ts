@@ -1,11 +1,12 @@
 import type { PickerOption } from '../picker'
 import fs from 'node:fs'
-import path from 'node:path'
+import { join, resolve } from 'node:path'
 import process from 'node:process'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 import { pick } from '../picker'
 import { asset } from './assets'
 
-const ROOT = path.resolve('i')
+const ROOT = resolve(PROJECT_ROOT, 'i')
 const SUBDIR_COUNT = 10
 const ICONS_PER_DIR = 3
 
@@ -40,7 +41,7 @@ function buildOption(source: string, file: string): PickerOption {
     modname,
     caption: `${source}:${entry}:${meta}`,
     footnote: hash ? `nbt#${hash}` : undefined,
-    imagePath: path.join(ROOT, source, file),
+    imagePath: join(ROOT, source, file),
   }
 }
 
@@ -52,7 +53,7 @@ const allDirs = fs
 const sources = pickRandom(allDirs, SUBDIR_COUNT)
 const fixtures: PickerOption[] = []
 for (const source of sources) {
-  const dir = path.join(ROOT, source)
+  const dir = join(ROOT, source)
   const files = fs
     .readdirSync(dir)
     .filter(f => f.toLowerCase().endsWith('.png'))

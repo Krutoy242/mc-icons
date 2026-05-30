@@ -1,19 +1,21 @@
 import fs from 'node:fs'
+import { resolve } from 'node:path'
 
 import FastGlob from 'fast-glob'
 
 import { Canvas, loadImage } from 'skia-canvas'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 import { asset } from './assets'
 import { getHash } from './images'
 import { tree } from './tree'
 
 const possibleToolTypes = {
-  pickaxe: 'i/minecraft/stone_pickaxe__0.png',
-  axe: 'i/minecraft/stone_axe__0.png',
-  shears: 'i/minecraft/shears__0.png',
-  shovel: 'i/minecraft/stone_shovel__0.png',
-  jackhammer: 'i/advancedrocketry/jackhammer__0.png',
-  scoop: 'i/forestry/scoop__0.png',
+  pickaxe: resolve(PROJECT_ROOT, 'i/minecraft/stone_pickaxe__0.png'),
+  axe: resolve(PROJECT_ROOT, 'i/minecraft/stone_axe__0.png'),
+  shears: resolve(PROJECT_ROOT, 'i/minecraft/shears__0.png'),
+  shovel: resolve(PROJECT_ROOT, 'i/minecraft/stone_shovel__0.png'),
+  jackhammer: resolve(PROJECT_ROOT, 'i/advancedrocketry/jackhammer__0.png'),
+  scoop: resolve(PROJECT_ROOT, 'i/forestry/scoop__0.png'),
 }
 
 export async function generatePlaceholders() {
@@ -32,14 +34,14 @@ export async function generatePlaceholders() {
 }
 
 export async function registerPlaceholders() {
-  for (const imgPath of FastGlob.sync('i/placeholder/*.png')) {
+  for (const imgPath of FastGlob.sync('i/placeholder/*.png', { cwd: PROJECT_ROOT })) {
     const [source, entry, meta, nbtHash] = imgPath.substring(2, imgPath.length - 4).split(/__|\/|\./)
     tree.add({
       source,
       entry,
       meta: meta ? Number(meta) : undefined,
       nbtHash,
-      imgHash: await getHash(imgPath),
+      imgHash: await getHash(resolve(PROJECT_ROOT, imgPath)),
     })
     addName(entry, meta)
   }
@@ -79,7 +81,7 @@ async function drawMiningLevel(
   ctx.stroke()
   ctx.fill()
 
-  const imgPath = `i/placeholder/${toolType}__${level}.png`
+  const imgPath = resolve(PROJECT_ROOT, `i/placeholder/${toolType}__${level}.png`)
   fs.writeFileSync(imgPath, await canvas.toBuffer('png'))
   return imgPath
 }

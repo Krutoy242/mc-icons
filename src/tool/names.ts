@@ -19,8 +19,8 @@ export function appendNames(nameMap: NameMap) {
     const display = data.name.replace(/§./g, '')
     const fullId
       = [source, entry].join(':')
-      + (meta || snbt ? `:${meta ?? 0}` : '')
-      + (snbt ? `:${snbt}` : '')
+        + (meta || snbt ? `:${meta ?? 0}` : '')
+        + (snbt ? `:${snbt}` : '')
     ;(asset.names[display] ??= []).push(fullId)
   })
 

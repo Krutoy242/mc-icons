@@ -1,7 +1,7 @@
 import type { ItemIcon } from 'mc-iexporter-iterator'
 import type { ImageBase } from './images'
 
-import { join } from 'node:path'
+import { join, resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import fast_glob from 'fast-glob'
@@ -10,6 +10,7 @@ import iconIterator from 'mc-iexporter-iterator'
 
 import getNameMap from 'mc-jeiexporter/build/NameMap'
 import yargs from 'yargs'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, initOld } from './images'
 import { parseJEIEFiles } from './jeie'
@@ -82,7 +83,7 @@ async function init() {
   log('Grabbing icons from places...')
 
   // Manually Predefined images
-  fast_glob.sync('*.png', { cwd: 'i/placeholder' }).forEach((file) => {
+  fast_glob.sync('*.png', { cwd: resolve(PROJECT_ROOT, 'i/placeholder') }).forEach((file) => {
     appendImage(join('i/placeholder', file))
   })
 

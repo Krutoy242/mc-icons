@@ -3,11 +3,12 @@ import type { RgxExecIconMatch } from './iconizeMatch'
 import type { PickerOption } from './picker'
 import type { DictEntry } from './searcher'
 
-import path from 'node:path'
+import { resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import _ from 'lodash'
 import { getIcon } from './getIcon'
+import { PROJECT_ROOT } from './lib/projectRoot'
 import { pick } from './picker'
 
 type NonEmptyArray<T> = [T, ...T[]]
@@ -34,7 +35,7 @@ function imagePathFor(argv: CliOpts, d: DictEntry): string | undefined {
   const rel = getIcon([d.source, d.entry, d.meta, d.sNbt])
   if (!rel)
     return undefined
-  return path.resolve(argv.repo, `${rel}.png`)
+  return resolve(PROJECT_ROOT, argv.repo, `${rel}.png`)
 }
 
 function buildOption(argv: CliOpts, d: DictEntry): PickerOption {
@@ -112,9 +113,9 @@ export class Unclear {
 
     const is_sameMod_metasDifferent
       = _.uniqBy(itemArr, 'modid').length === 1
-      && _(itemArr)
-        .countBy('meta')
-        .every(v => v === 1)
+        && _(itemArr)
+          .countBy('meta')
+          .every(v => v === 1)
 
     const inLine = linesOfMatch(match)
     const captureTag = chalk.bgGreen.black(` ${capture} `)

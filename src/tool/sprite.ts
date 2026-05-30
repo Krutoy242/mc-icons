@@ -1,5 +1,6 @@
 import type { Buffer } from 'node:buffer'
 import type { Image } from 'skia-canvas'
+import { resolve } from 'node:path'
 import process from 'node:process'
 import fse from 'fs-extra'
 import imagemin from 'imagemin'
@@ -9,6 +10,7 @@ import { Canvas, loadImage } from 'skia-canvas'
 import terminalImage from 'terminal-image'
 
 import terminalKit from 'terminal-kit'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 import { getSpriteImages, iconTextureSize, rowCount } from '../lib/sprite'
 
 const { terminal: term } = terminalKit
@@ -30,7 +32,7 @@ async function createSprite() {
 
   let i = 0
   for (const img of imageList) {
-    const imgSrc = `i/${img}.png`
+    const imgSrc = resolve(PROJECT_ROOT, 'i', `${img}.png`)
     const x = i % size
     const y = ((i / size) | 0) * iconTextureSize
     let imgObj
@@ -68,7 +70,7 @@ async function createSprite() {
     (((newBuffer.length / oldBuffer.length) * 1000) | 0) / 1000,
     ')',
   )
-  writeFileSync('i/sprite.png', newBuffer)
+  writeFileSync(resolve(PROJECT_ROOT, 'i/sprite.png'), newBuffer)
 }
 
 function optimize(buffer: Buffer) {
@@ -110,7 +112,7 @@ function printAtCursor(text: string) {
 }
 
 // Launch file
-if (import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) {
+if (import.meta.main) {
   await createSprite()
   process.exit(0)
 }

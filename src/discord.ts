@@ -1,11 +1,12 @@
 import type { CliOpts } from './cli'
 import type { DictEntry } from './searcher'
-import path from 'node:path'
+import { resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import clipboardy from 'clipboardy'
 import { AssetEx } from './assetEx'
 import { getIcon } from './getIcon'
+import { PROJECT_ROOT } from './lib/projectRoot'
 import { pick } from './picker'
 import { renderImageLines } from './picker/render'
 
@@ -19,7 +20,7 @@ function buildOption(entry: DictEntry): import('./picker').PickerOption | undefi
       modname: entry.modname,
       caption: `${entry.source}:${entry.entry}:${entry.meta}`,
       footnote: entry.sNbt || undefined,
-      imagePath: path.resolve('i', `${iconPath}.png`),
+      imagePath: resolve(PROJECT_ROOT, 'i', `${iconPath}.png`),
     }
   }
   catch {

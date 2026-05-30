@@ -2,16 +2,17 @@ import process from 'node:process'
 import fast_glob from 'fast-glob'
 import fse from 'fs-extra'
 import { callInChunks } from '../lib/chunk'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 
 const { unlink } = fse
 
 export default async function prune() {
-  const dirs = fast_glob.sync('i/*', { onlyDirectories: true })
+  const dirs = fast_glob.sync('i/*', { onlyDirectories: true, cwd: PROJECT_ROOT })
 
   console.log('Total Directories:', dirs.length)
 
   for (const dir of dirs) {
-    const allImages = fast_glob.sync(`${dir}/*.png`)
+    const allImages = fast_glob.sync(`${dir}/*.png`, { cwd: PROJECT_ROOT })
     // console.log('  In folder', dir, '-', allImages.length)
 
     const map = new Map<string, string[]>()
@@ -35,7 +36,7 @@ export default async function prune() {
 }
 
 // Launch file
-if (import.meta.url === (await import('node:url')).pathToFileURL(process.argv[1]).href) {
+if (import.meta.main) {
   await prune()
   process.exit(0)
 }

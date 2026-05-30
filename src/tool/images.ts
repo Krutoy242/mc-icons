@@ -1,11 +1,12 @@
 import crypto from 'node:crypto'
 import { constants } from 'node:fs'
 
-import { join } from 'node:path'
+import { join, resolve as pathResolve } from 'node:path'
 import FastGlob from 'fast-glob'
 import fse from 'fs-extra'
 import _ from 'lodash'
 import sharp from 'sharp'
+import { PROJECT_ROOT } from '../lib/projectRoot'
 import { asset } from './assets'
 import { tree } from './tree'
 
@@ -29,7 +30,7 @@ export async function initOld(log: (current: number, total: number, skipped: num
   oldPathHash = {}
 
   const allEntries = Object.entries(asset.images)
-  const allImages = new Set(FastGlob.sync('i/*/*.png'))
+  const allImages = new Set(FastGlob.sync('i/*/*.png', { cwd: PROJECT_ROOT }))
   let skipped = 0
   let i = 0
 
@@ -98,7 +99,7 @@ export function appendImage(
         newHash = imgHash
         return copyFile(
           imgPath,
-          newImgPath,
+          pathResolve(PROJECT_ROOT, newImgPath),
           oldPathHash ? constants.COPYFILE_EXCL : undefined,
         )
       })
@@ -127,7 +128,7 @@ export async function grabImages<T>(
   getBase: (icon: T) => ImageBase,
   onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void,
 ) {
-  const existedDirs = new Set(FastGlob.sync('i/*', { onlyDirectories: true }))
+  const existedDirs = new Set(FastGlob.sync('i/*', { onlyDirectories: true, cwd: PROJECT_ROOT }))
   for (const chunk of _.chunk(arr, 1000)) {
     await Promise.all(
       chunk.map((icon) => {
@@ -135,7 +136,7 @@ export async function grabImages<T>(
 
         const dest = `i/${base.source}`
         if (!existedDirs.has(dest)) {
-          mkdirSync(dest)
+          mkdirSync(pathResolve(PROJECT_ROOT, dest))
           existedDirs.add(dest)
         }
 
