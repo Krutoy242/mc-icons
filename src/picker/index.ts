@@ -8,13 +8,14 @@ export type { PickerOption, PickerOpts } from './types'
 export function pick(opts: PickerOpts): Promise<number | undefined> {
   return new Promise((resolve) => {
     let resolved = false
+    let value: number | undefined
     let instance: ReturnType<typeof render> | undefined
 
-    const finish = (value: number | undefined) => {
+    const finish = (chosen: number | undefined) => {
       if (resolved)
         return
       resolved = true
-      resolve(value)
+      value = chosen
       instance?.unmount()
     }
 
@@ -26,5 +27,10 @@ export function pick(opts: PickerOpts): Promise<number | undefined> {
       }),
       { exitOnCtrlC: false },
     )
+
+    // Resolve only after Ink has fully torn down (raw mode off, cursor
+    // restored, final frame flushed). Otherwise downstream terminal output
+    // interleaves with Ink's teardown escapes and renders as ANSI garbage.
+    instance.waitUntilExit().then(() => resolve(value))
   })
 }

@@ -30,12 +30,16 @@ function isRemote(repo: string): boolean {
 }
 
 function imagePathFor(argv: CliOpts, d: DictEntry): string | undefined {
-  if (isRemote(argv.repo))
-    return undefined
   const rel = getIcon([d.source, d.entry, d.meta, d.sNbt])
   if (!rel)
     return undefined
-  return resolve(PROJECT_ROOT, argv.repo, `${rel}.png`)
+  // The picker shows a local PNG preview. `repo` is the link prefix written
+  // into the output file, which is usually a remote URL — useless for sharp.
+  // When it's remote, fall back to the bundled `i/` icon directory.
+  const base = isRemote(argv.repo)
+    ? resolve(PROJECT_ROOT, 'i')
+    : resolve(PROJECT_ROOT, argv.repo)
+  return resolve(base, `${rel}.png`)
 }
 
 function buildOption(argv: CliOpts, d: DictEntry): PickerOption {
