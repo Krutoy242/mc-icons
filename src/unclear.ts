@@ -6,8 +6,8 @@ import type { DictEntry } from './searcher'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
-import _ from 'lodash'
 import { getIcon } from './getIcon'
+import { chunk, countBy, escapeRegExp, uniqBy } from './lib/fp'
 import { PROJECT_ROOT } from './lib/projectRoot'
 import { pick } from './picker'
 
@@ -74,7 +74,7 @@ export class Unclear {
       const width = process.stdout.columns
       const columns = (width / (maxLen + 4)) | 0 || 1
       console.log(
-        `${_.chunk(
+        `${chunk(
           unfounds.map(
             s => `[${(`${chalk.bgGreen.black(s)}]`).padEnd(maxLen)}`,
           ),
@@ -100,7 +100,7 @@ export class Unclear {
     )
     const itemArr = exactArr.length > 1 ? exactArr : full_itemArr
 
-    const rgx = new RegExp(_.escapeRegExp(capture), 'i')
+    const rgx = new RegExp(escapeRegExp(capture), 'i')
     itemArr.sort((a, b) => Number(rgx.test(b.name)) - Number(rgx.test(a.name)))
 
     if (!itemArr.length || this.argv.silent) {
@@ -109,17 +109,17 @@ export class Unclear {
     }
 
     const is_allItemsHasUniqNames
-      = itemArr.length === _.uniqBy(itemArr, 'name').length
+      = itemArr.length === uniqBy(itemArr, o => o.name).length
 
-    const is_allModsAreDifferent = _(itemArr)
-      .countBy('modid')
-      .every(v => v === 1)
+    const is_allModsAreDifferent = Object.values(
+      countBy(itemArr, o => (o as { modid?: unknown }).modid),
+    ).every(v => v === 1)
 
     const is_sameMod_metasDifferent
-      = _.uniqBy(itemArr, 'modid').length === 1
-        && _(itemArr)
-          .countBy('meta')
-          .every(v => v === 1)
+      = uniqBy(itemArr, o => (o as { modid?: unknown }).modid).length === 1
+        && Object.values(
+          countBy(itemArr, o => o.meta),
+        ).every(v => v === 1)
 
     const inLine = linesOfMatch(match)
     const captureTag = chalk.bgGreen.black(` ${capture} `)

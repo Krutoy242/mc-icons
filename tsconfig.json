@@ -3,6 +3,7 @@
 
     "incremental": true,
     "target": "ESNext",
+    "jsx": "react-jsx",
     "lib": ["ESNext"],
     "emitDecoratorMetadata": true /* Enables experimental support for emitting type metadata for decorators. */,
     /* Experimental Options */
@@ -11,7 +12,6 @@
     "rootDir": "src",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "jsx": "react-jsx",
     "resolveJsonModule": true /* Include modules imported with .json extension. */,
 
     "typeRoots": ["./src/types"],

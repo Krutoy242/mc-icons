@@ -1,7 +1,6 @@
 import type { NameMap } from 'mc-jeiexporter/build/NameMap'
-import _ from 'lodash'
-
 import { getIcon } from '..'
+import { uniqBy } from '../lib/fp'
 
 import { asset } from './assets'
 
@@ -31,9 +30,9 @@ export function appendNames(nameMap: NameMap) {
 
   // Remove duplicates
   Object.entries(asset.names).forEach(([name, items]) => {
-    const uniq = _.uniqBy(
+    const uniq = uniqBy(
       items.map(i => ({ item: i, path: getIcon(getBase(i)) })),
-      'path',
+      o => o.path,
     )
     asset.names[name] = uniq.map(u => u.item)
   })

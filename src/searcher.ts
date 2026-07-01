@@ -5,11 +5,10 @@ import process from 'node:process'
 
 import { TrieSearch } from '@committed/trie-search'
 import chalk from 'chalk'
-import levenshtein from 'fast-levenshtein'
-import _ from 'lodash'
 import { AssetEx } from './assetEx'
 import { getIcon } from './getIcon'
 import { capture_rgx, iconizeMatch } from './iconizeMatch'
+import { FuzzyResolver } from './lib/fuzzy'
 import isgd from './lib/isgd'
 import { getTrieSearch } from './trie'
 
@@ -69,23 +68,13 @@ function getByCommandString(
   return id ? getByID(assetEx, id) : undefined
 }
 
-type LevDict = [number, DictEntry]
+// BK-tree over the name dictionary, built lazily on first fuzzy lookup
+// (mirrors the lazy trie above). Amortizes its build cost across the many
+// fuzzy queries a single document typically triggers.
+let fuzzyResolver: FuzzyResolver | undefined
 
-function levinshteinResolver(
-  assetEx: AssetEx,
-  treshold: number,
-  capture: string,
-  max: number,
-) {
-  const capture_low = capture.toLowerCase()
-  const lev = assetEx.nameDictionary.map(
-    o => [levenshtein.get(o.name_low, capture_low), o] as LevDict,
-  )
-  const levDict = _.sortBy(lev, 0)
-  const t1 = levDict[0][0]
-  const t2 = levDict[1][0]
-  const isTresholdPass = t1 < t2 && t1 <= treshold
-  return isTresholdPass ? [levDict[0][1]] : levDict.map(o => o[1]).slice(0, max)
+function getFuzzyResolver(assetEx: AssetEx) {
+  return (fuzzyResolver ??= new FuzzyResolver(assetEx.nameDictionary))
 }
 
 // ##################################################################
@@ -115,7 +104,7 @@ export async function bracketsSearch(
       match as RgxExecIconMatch,
       trieSearchFn,
       unclear,
-      s => levinshteinResolver(assetEx, argv.treshold || 0, s, argv.max),
+      s => getFuzzyResolver(assetEx).resolve(s, argv.treshold || 0, argv.max),
       s => getByCommandString(assetEx, s),
       s => getByID(assetEx, s),
     )

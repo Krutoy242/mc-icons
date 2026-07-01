@@ -1,16 +1,14 @@
 import crypto from 'node:crypto'
-import { constants } from 'node:fs'
+import { constants, mkdirSync } from 'node:fs'
+import { copyFile } from 'node:fs/promises'
 
 import { join, resolve as pathResolve } from 'node:path'
 import FastGlob from 'fast-glob'
-import fse from 'fs-extra'
-import _ from 'lodash'
 import sharp from 'sharp'
+import { chunk } from '../lib/fp'
 import { PROJECT_ROOT } from '../lib/projectRoot'
 import { asset } from './assets'
 import { tree } from './tree'
-
-const { copyFile, mkdirSync } = fse
 
 export function getHash(filePath: string) {
   return new Promise<string>((resolve, reject) => {
@@ -65,49 +63,46 @@ function trimImgPath(imgPath: string) {
  * Grab image from other folder and append it to repo
  * @returns `true` if copied, `false` if skipped - already have same image
  */
-export function appendImage(
+export async function appendImage(
   imgPath: string,
   newImgPath?: string,
   base?: Base,
 ): Promise<{ isAdded?: true, imgHash: string }> {
-  return new Promise((resolve) => {
-    let newHash: string
+  // Use already stored hash if item persists
+  if (oldPathHash && newImgPath) {
+    const oldHash = base
+      ? tree.get(base.source, base.entry, base.meta, base.nbtHash)
+      : oldPathHash[trimImgPath(newImgPath)]
+    if (oldHash)
+      return { imgHash: oldHash }
+  }
 
-    // Use already stored hash if item persist
-    if (oldPathHash && newImgPath) {
-      const oldHash = base
-        ? tree.get(base.source, base.entry, base.meta, base.nbtHash)
-        : oldPathHash[trimImgPath(newImgPath)]
-      if (oldHash) {
-        resolve({ imgHash: oldHash })
-        return
-      }
-    }
+  const imgHash = await getHash(imgPath)
 
-    getHash(imgPath)
-      .then((imgHash) => {
-        if (asset.images[imgHash])
-          return resolve({ imgHash }) // Already have this image
+  if (asset.images[imgHash])
+    return { imgHash } // Already have this image
 
-        // Write new hash into map
-        asset.images[imgHash] = trimImgPath(newImgPath ?? imgPath)
+  // Write new hash into map
+  asset.images[imgHash] = trimImgPath(newImgPath ?? imgPath)
 
-        // Not need to copy anything
-        if (newImgPath === undefined)
-          return resolve({ imgHash })
+  // Nothing to copy
+  if (newImgPath === undefined)
+    return { imgHash }
 
-        newHash = imgHash
-        return copyFile(
-          imgPath,
-          pathResolve(PROJECT_ROOT, newImgPath),
-          oldPathHash ? constants.COPYFILE_EXCL : undefined,
-        )
-      })
-      .catch(() => resolve({ imgHash: newHash }))
-      .then(() => {
-        resolve({ imgHash: newHash, isAdded: true })
-      })
-  })
+  try {
+    await copyFile(
+      imgPath,
+      pathResolve(PROJECT_ROOT, newImgPath),
+      oldPathHash ? constants.COPYFILE_EXCL : undefined,
+    )
+  }
+  catch {
+    // Copy failed (e.g. destination already exists with COPYFILE_EXCL) —
+    // the hash is recorded but the file was not newly added
+    return { imgHash }
+  }
+
+  return { imgHash, isAdded: true }
 }
 
 type Base = Omit<Parameters<typeof tree.add>[0], 'imgHash'>
@@ -129,9 +124,9 @@ export async function grabImages<T>(
   onAdd: (isAdded: boolean, wholeLength: number, base: ImageBase) => void,
 ) {
   const existedDirs = new Set(FastGlob.sync('i/*', { onlyDirectories: true, cwd: PROJECT_ROOT }))
-  for (const chunk of _.chunk(arr, 1000)) {
+  for (const group of chunk(arr, 1000)) {
     await Promise.all(
-      chunk.map((icon) => {
+      group.map((icon) => {
         const base = getBase(icon)
 
         const dest = `i/${base.source}`

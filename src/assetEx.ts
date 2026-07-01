@@ -3,6 +3,7 @@ import type { CliOpts } from './cli'
 import type { DictEntry } from './searcher'
 import type { Tree } from './tool/types'
 import { baseFromID } from './base'
+import { firstOf } from './lib/firstOf'
 import { asset } from './tool/assets'
 
 // TODO: Gas and fluid should not be in every modpack
@@ -31,10 +32,10 @@ export class AssetEx {
     const dm
       = meta && meta !== '*' && meta !== '32767'
         ? def[meta]
-        : def[''] ?? def[0] ?? def['0'] ?? def['*'] ?? Object.values(def)[0]
+        : firstOf(def, '', 0, '0', '*')
     if (!dm)
       return undefined
-    return sNbt ? dm[sNbt] : dm[''] ?? dm['{}'] ?? Object.values(dm)[0]
+    return sNbt ? dm[sNbt] : firstOf(dm, '', '{}')
   }
 
   private initDict() {

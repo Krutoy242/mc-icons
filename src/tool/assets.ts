@@ -1,13 +1,7 @@
 import type { Tree } from './types'
 
-import { dirname, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
-import fse from 'fs-extra'
-
+import { loadFromDb, writeStore } from './db'
 import { tree } from './tree'
-
-const { readFileSync, writeFile, existsSync } = fse
 
 const store = {
   /** Map of `imgHash: source/entry__meta` */
@@ -31,11 +25,17 @@ const store = {
 
 type AssetKey = keyof typeof store
 
-function loadAsset(key: AssetKey) {
-  const fPath = resolve(dirname(fileURLToPath(import.meta.url)), `../../assets/${key}.json`)
-  if (!existsSync(fPath))
-    return {}
-  return JSON.parse(readFileSync(fPath, 'utf8'))
+function loadAsset<K extends AssetKey>(key: K) {
+  return loadFromDb(key)
+}
+
+/**
+ * Whether an asset is already materialized in memory. `getIcon` uses this to
+ * decide between the in-memory store (populated during preparse) and direct
+ * database point-lookups (the shipped read path).
+ */
+export function isAssetLoaded(key: AssetKey): boolean {
+  return store[key] !== undefined
 }
 
 type NoUndefinedField<T> = { [P in keyof T]-?: NonNullable<T[P]> }
@@ -144,11 +144,5 @@ export async function saveAssets() {
     }
   }
 
-  await Promise.all(
-    (Object.keys(store) as AssetKey[])
-      .filter(Boolean)
-      .map(key =>
-        writeFile(`assets/${key}.json`, JSON.stringify(store[key], null, 2)),
-      ),
-  )
+  writeStore(store as Parameters<typeof writeStore>[0])
 }

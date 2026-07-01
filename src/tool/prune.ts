@@ -1,10 +1,8 @@
+import { unlink } from 'node:fs/promises'
 import process from 'node:process'
 import fast_glob from 'fast-glob'
-import fse from 'fs-extra'
 import { callInChunks } from '../lib/chunk'
 import { PROJECT_ROOT } from '../lib/projectRoot'
-
-const { unlink } = fse
 
 export default async function prune() {
   const dirs = fast_glob.sync('i/*', { onlyDirectories: true, cwd: PROJECT_ROOT })

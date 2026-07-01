@@ -1,97 +1,107 @@
 #!/usr/bin/env node
 
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import process from 'node:process'
-import fse from 'fs-extra'
-import yargs from 'yargs'
+import { defineCommand, runMain } from 'citty'
 import { discordMode } from './discord'
 import { bracketsSearch } from './searcher'
 
-const { existsSync, readFileSync, writeFileSync } = fse
-
-const yargsOpts = {
-  treshold: {
-    alias: 't',
-    type: 'number',
-    describe: 'Levenshtein name mistake treshold',
-    default: 0,
-  },
-  max: {
-    alias: 'x',
-    type: 'number',
-    describe: 'Maximum amount of icons in multiple results',
-    default: 64,
-  },
-  repo: {
-    alias: 'r',
-    type: 'string',
-    describe: 'Repository to make short links to',
-    default: 'https://github.com/Krutoy242/mc-icons/raw/master/i/',
-  },
-  modpack: {
-    alias: 'm',
-    type: 'string',
-    describe: 'Modpack shortand to filter icons, "e2ee" for example',
-  },
-  silent: {
-    alias: 's',
-    type: 'boolean',
-    describe: 'Do not any prompt',
-  },
-  short: {
-    alias: 'o',
-    type: 'boolean',
-    describe: 'Shorten long links with is.gd',
-    default: true,
-  },
-  discord: {
-    alias: 'd',
-    type: 'boolean',
-    describe: 'Interactive picker for Discord ANSI icons',
-    default: false,
-  },
-} as const
-
-interface OptsTypes {
-  string: string
-  boolean: boolean
-  number: number
+export interface CliOpts {
+  treshold: number
+  max: number
+  repo: string
+  modpack: string
+  silent: boolean
+  short: boolean
+  discord: boolean
 }
 
-export type CliOpts = {
-  [K in keyof typeof yargsOpts]: OptsTypes[typeof yargsOpts[K]['type']]
-}
-
-const argv = yargs(process.argv.slice(2))
-  .options(yargsOpts)
-  .command('[input]', 'input file to mutate', (yargs) => {
-    yargs.positional('input', {
-      describe: 'input file to mutate',
+const main = defineCommand({
+  meta: {
+    name: 'mc-icons',
+    description: 'Parsing markdown file to replace item names into item icons.',
+  },
+  args: {
+    input: {
+      type: 'positional',
+      required: false,
+      description: 'input file to mutate',
+    },
+    treshold: {
       type: 'string',
-    })
-  })
-  .version(false)
-  .help('help')
-  .wrap(null)
-  .parseSync()
+      alias: ['t', 'threshold'],
+      description: 'Levenshtein name mistake threshold',
+      default: '0',
+    },
+    max: {
+      type: 'string',
+      alias: 'x',
+      description: 'Maximum amount of icons in multiple results',
+      default: '64',
+    },
+    repo: {
+      type: 'string',
+      alias: 'r',
+      description: 'Repository to make short links to',
+      // jsDelivr CDN is globally cached; raw.githubusercontent.com is rate-limited and uncached
+      default: 'https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/',
+    },
+    modpack: {
+      type: 'string',
+      alias: 'm',
+      description: 'Modpack shortand to filter icons, "e2ee" for example',
+    },
+    silent: {
+      type: 'boolean',
+      alias: 's',
+      description: 'Do not any prompt',
+    },
+    short: {
+      type: 'boolean',
+      alias: 'o',
+      description: 'Shorten long links with is.gd',
+      default: true,
+    },
+    discord: {
+      type: 'boolean',
+      alias: 'd',
+      description: 'Interactive picker for Discord ANSI icons',
+      default: false,
+    },
+  },
+  async run({ args }) {
+    const opts: CliOpts = {
+      treshold: Number(args.treshold) || 0,
+      max: Number(args.max) || 64,
+      repo: args.repo,
+      modpack: args.modpack ?? '',
+      silent: !!args.silent,
+      short: args.short,
+      discord: args.discord,
+    }
 
-if (argv.discord) {
-  await discordMode(argv as CliOpts)
-  process.exit(0)
-}
+    if (opts.discord) {
+      await discordMode(opts)
+      process.exit(0)
+    }
 
-const filePath = argv._[0] as string
+    const filePath = args.input
 
-if (!filePath) {
-  console.error(`File path must be provided`)
-  process.exit(1)
-}
-if (!existsSync(filePath)) {
-  console.error(`File ${filePath} doesn\'t exist`)
-  process.exit(1)
-}
+    if (!filePath) {
+      console.error(`File path must be provided`)
+      process.exit(1)
+    }
+    if (!existsSync(filePath)) {
+      console.error(`File ${filePath} doesn't exist`)
+      process.exit(1)
+    }
 
-bracketsSearch(
-  argv as CliOpts,
-  readFileSync(filePath as string, 'utf8'),
-  replaced => writeFileSync(filePath as string, replaced),
-)
+    bracketsSearch(
+      opts,
+      readFileSync(filePath, 'utf8'),
+      replaced => writeFileSync(filePath, replaced),
+    )
+  },
+})
+
+runMain(main)

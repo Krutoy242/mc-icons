@@ -1,15 +1,14 @@
 import type { ItemIcon } from 'mc-iexporter-iterator'
 import type { ImageBase } from './images'
 
+import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
-import process from 'node:process'
 import chalk from 'chalk'
+import { defineCommand, runMain } from 'citty'
 import fast_glob from 'fast-glob'
-import fse from 'fs-extra'
 import iconIterator from 'mc-iexporter-iterator'
 
-import getNameMap from 'mc-jeiexporter/build/NameMap'
-import yargs from 'yargs'
+import getNameMap, { iTypePrefix } from 'mc-jeiexporter/build/NameMap'
 import { PROJECT_ROOT } from '../lib/projectRoot'
 import { asset, saveAssets } from './assets'
 import { appendImage, grabImages, initOld } from './images'
@@ -19,37 +18,74 @@ import { appendNames } from './names'
 import { addNbt } from './nbt'
 import { generatePlaceholders, registerPlaceholders } from './placeholder'
 
-const { readFileSync } = fse
+interface PreparseArgs {
+  mc: string
+  modpack: string
+  icons?: string
+  overwrite: boolean
+}
 
-const argv = yargs(process.argv.slice(2))
-  .alias('h', 'help')
-  .option('mc', {
-    alias: 'm',
-    type: 'string',
-    describe: 'Path to minecraft folder',
-    demandOption: true,
-  })
-  .option('modpack', {
-    alias: 'p',
-    type: 'string',
-    describe: 'Modpack short ID',
-    demandOption: true,
-  })
-  .option('icons', {
-    alias: 'i',
-    type: 'string',
-    describe: 'Path to folder with icons from E2E-E-icons tool',
-  })
-  .option('overwrite', {
-    alias: 'o',
-    type: 'boolean',
-    describe: 'Should overwrite .png files?',
-    default: true,
-  })
-  .parseSync()
+const main = defineCommand({
+  meta: {
+    name: 'preparse',
+    description: 'Grab icons from a Minecraft instance and build the asset database.',
+  },
+  args: {
+    mc: {
+      type: 'string',
+      alias: 'm',
+      description: 'Path to minecraft folder',
+      required: true,
+    },
+    modpack: {
+      type: 'string',
+      alias: 'p',
+      description: 'Modpack short ID',
+      required: true,
+    },
+    icons: {
+      type: 'string',
+      alias: 'i',
+      description: 'Path to folder with icons from E2E-E-icons tool',
+    },
+    overwrite: {
+      type: 'boolean',
+      alias: 'o',
+      description: 'Should overwrite .png files?',
+      default: true,
+    },
+  },
+  run: ({ args }) => init(args as unknown as PreparseArgs),
+})
 
-init()
-async function init() {
+runMain(main)
+
+// mc-jeiexporter hard-throws on any JEIE ingredient type missing from its
+// `iTypePrefix` table. Mod class paths drift between versions (e.g. Requious'
+// Energy gained a `com.bordlistian.` prefix), so remap unknown types onto a
+// known one by suffix match, dropping anything truly unrecognized.
+function sanitizeNameMap(jsonTxt: string, log: (msg: string) => void): string {
+  const json: Record<string, Record<string, unknown>> = JSON.parse(jsonTxt)
+  const known = Object.keys(iTypePrefix)
+  const out: Record<string, Record<string, unknown>> = {}
+  for (const [itype, vis] of Object.entries(json)) {
+    if (itype in iTypePrefix) {
+      out[itype] = { ...out[itype], ...vis }
+      continue
+    }
+    const match = known.find(k => k && itype.endsWith(k))
+    if (match) {
+      log(`Remapping JEIE iType ${itype} -> ${match}`)
+      out[match] = { ...out[match], ...vis }
+    }
+    else {
+      log(`Skipping unknown JEIE iType: ${itype}`)
+    }
+  }
+  return JSON.stringify(out)
+}
+
+async function init(argv: PreparseArgs) {
   let log = category('Preparation')
 
   if (argv.overwrite) {
@@ -68,7 +104,7 @@ async function init() {
   log = category('JEIExporter')
   log('Open JEIExporter nameMap.json...')
   const nameMap = getNameMap(
-    readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'),
+    sanitizeNameMap(readFileSync(join(argv.mc, '/exports/nameMap.json'), 'utf8'), log),
   )
 
   log('Generating nbt hash map...')
@@ -144,17 +180,29 @@ async function init() {
   appendNames(nameMap)
 
   log('Generating mod names ...')
-  const newModNames: Record<string, string> = JSON.parse(
-    readFileSync(join(argv.mc, 'crafttweaker_raw.log'), 'utf8'),
-  ).modNames
-  for (const [id, name] of Object.entries(newModNames)) {
-    asset.mods[id] = name
-  }
+  const modlist = join(argv.mc, 'config/crash_assistant/modlist.json')
+  if (existsSync(modlist)) {
+    const modlistData: Record<string, { modId: string; name: string }> = JSON.parse(
+      readFileSync(modlist, 'utf8'),
+    )
+    const modNames: Record<string, string> = {}
+    for (const entry of Object.values(modlistData)) {
+      if (entry.modId && entry.name)
+        modNames[entry.modId] = entry.name
+    }
 
-  log('Generating modpacks data')
-  asset.modpacks[argv.modpack] = Object.keys(newModNames)
-    .filter(k => asset.items[k] && Object.keys(asset.items[k]).length)
-    .sort()
+    for (const [id, name] of Object.entries(modNames)) {
+      asset.mods[id] = name
+    }
+
+    log('Generating modpacks data')
+    asset.modpacks[argv.modpack] = Object.keys(modNames)
+      .filter(k => asset.items[k] && Object.keys(asset.items[k]).length)
+      .sort()
+  }
+  else {
+    log(`Skipping mod names & modpacks: ${modlist} not found`)
+  }
 
   log('Saving assets ...')
   await saveAssets()

@@ -1,10 +1,10 @@
 import type { DictEntry } from '../searcher'
 import { TrieSearch } from '@committed/trie-search'
 import levenshtein from 'fast-levenshtein'
-import _ from 'lodash'
 import { describe, expect, it } from 'vitest'
 import { AssetEx } from '../assetEx'
 import { capture_rgx, iconizeMatch } from '../iconizeMatch'
+import { FuzzyResolver, linearResolve } from '../lib/fuzzy'
 import { getTrieSearch } from '../trie'
 import { Unclear } from '../unclear'
 
@@ -51,10 +51,9 @@ function createTestDeps(argv = defaultArgv) {
 
   function levinshteinResolver(capture: string) {
     const capture_low = capture.toLowerCase()
-    const lev = assetEx.nameDictionary.map(
-      o => [levenshtein.get(o.name_low, capture_low), o] as [number, DictEntry],
-    )
-    const levDict = _.sortBy(lev, 0)
+    const levDict = assetEx.nameDictionary
+      .map(o => [levenshtein.get(o.name_low, capture_low), o] as [number, DictEntry])
+      .sort((a, b) => a[0] - b[0])
     const t1 = levDict[0][0]
     const t2 = levDict[1]?.[0] ?? Infinity
     const isTresholdPass = t1 < t2 && t1 <= (argv.treshold || 0)
@@ -299,6 +298,31 @@ describe('trie search', () => {
     const results = deps.trieSearchFn('Stone')
     expect(results.length).toBeGreaterThan(0)
     expect(results.some(r => r.name.toLowerCase().includes('stone'))).toBe(true)
+  })
+})
+
+describe('fuzzy resolver (BK-tree vs linear parity)', () => {
+  const assetEx = new AssetEx(defaultArgv)
+  const dict = assetEx.nameDictionary
+  const resolver = new FuzzyResolver(dict)
+  const queries = ['Beacom', 'Daimond', 'Cobblstone', 'Redstoen', 'Iron Igot']
+  const dist = (e: DictEntry, q: string) => levenshtein.get(e.name_low, q.toLowerCase())
+
+  for (const q of queries) {
+    it(`finds the same closest distance as linear for "${q}"`, () => {
+      const bk = resolver.resolve(q, 0, 64)
+      const lin = linearResolve(dict, q, 0, 64)
+      expect(bk.length).toBeGreaterThan(0)
+      // BK-tree must reach the true nearest neighbour that the full scan finds
+      expect(dist(bk[0], q)).toBe(dist(lin[0], q))
+    })
+  }
+
+  it('returns a single entry when one match passes the threshold', () => {
+    // "Beaco" is distance 1 from "Beacon"; with threshold 1 it should resolve uniquely
+    const bk = resolver.resolve('Beaco', 1, 64)
+    const lin = linearResolve(dict, 'Beaco', 1, 64)
+    expect(bk.length).toBe(lin.length)
   })
 })
 
