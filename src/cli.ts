@@ -16,7 +16,7 @@ export interface CliOpts {
   discord: boolean
 }
 
-const main = defineCommand({
+export const main = defineCommand({
   meta: {
     name: 'mc-icons',
     description: 'Parsing markdown file to replace item names into item icons.',
@@ -104,4 +104,7 @@ const main = defineCommand({
   },
 })
 
-runMain(main)
+// Launch only when run directly; importing `main` (e.g. src/tool/gen-readme.ts
+// renders its `--help`) must not start the CLI. `import.meta.main` needs Node ≥24.2.
+if (import.meta.main)
+  runMain(main)

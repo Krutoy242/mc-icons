@@ -48,14 +48,32 @@ interactively prompt you whenever a name is ambiguous.
 
 `> npx mc-icons --help` output:
 
+<!-- The block below is generated from the CLI definition in src/cli.ts.
+     Do not edit by hand — run `pnpm gen:readme`. -->
+<!-- AUTOGEN:cli -->
+
 ```
--t, --treshold    Levenshtein name mistake treshold  [number] [default: 0]
--x, --max         Maximum amount of icons in multiple results  [number] [default: 64]
--r, --repo        Repository to make short links to  [string] [default: "https://github.com/Krutoy242/mc-icons/raw/master/i/"]
--m, --modpack     Modpack shortand to filter icons, "e2ee" for example  [string]
--s, --silent      Do not any prompt  [boolean]
--o, --short       Shorten long links with is.gd  [boolean] [default: true]
+Parsing markdown file to replace item names into item icons. (mc-icons)
+
+USAGE mc-icons [OPTIONS] [INPUT]
+
+ARGUMENTS
+
+  INPUT    input file to mutate
+
+OPTIONS
+
+  -t, -threshold, --treshold=<treshold>    Levenshtein name mistake threshold (Default: 0)
+                        -x, --max=<max>    Maximum amount of icons in multiple results (Default: 64)
+                      -r, --repo=<repo>    Repository to make short links to (Default: https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/)
+                -m, --modpack=<modpack>    Modpack shortand to filter icons, "e2ee" for example
+                           -s, --silent    Do not any prompt
+                            -o, --short    Shorten long links with is.gd (Default: true)
+                     --no-o, --no-short
+                          -d, --discord    Interactive picker for Discord ANSI icons (Default: false)
 ```
+
+<!-- /AUTOGEN:cli -->
 
 ## Developing
 
@@ -93,8 +111,8 @@ your machine's game data. Collapsed into a single command:
 
 - **On commit** (pre-commit hook, kept under ~3s): staged files are `eslint --fix`ed
   via the `eslint_d` daemon (the first commit of a session warms it in ~6s, every
-  commit after is ~instant), and the README example table is regenerated only when
-  `src/tool/examples.ts` changes.
+  commit after is ~instant), and the README autogen blocks are regenerated only when
+  their source (`src/tool/examples.ts` or `src/cli.ts`) changes.
 - **On push to `master`** (GitHub Actions): CI builds & tests on Linux + Windows and
   lints on Linux; [semantic-release](https://semantic-release.gitbook.io/) then derives
   the version, tag, `CHANGELOG.md`, GitHub release, and npm publish from your commit
