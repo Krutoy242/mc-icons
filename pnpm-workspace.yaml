@@ -1,8 +1,6 @@
 allowBuilds:
   better-sqlite3: true
   esbuild: true
-  optipng-bin: true
-  pngquant-bin: true
   sharp: true
   skia-canvas: true
 minimumReleaseAgeExclude:

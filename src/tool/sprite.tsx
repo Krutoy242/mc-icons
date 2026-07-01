@@ -2,11 +2,9 @@ import type { Buffer } from 'node:buffer'
 import { existsSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
-import imagemin from 'imagemin'
-import imageminOptipng from 'imagemin-optipng'
-import imageminPngquant from 'imagemin-pngquant'
 import { Box, render, Text } from 'ink'
 import React from 'react'
+import sharp from 'sharp'
 import { Canvas, loadImage } from 'skia-canvas'
 import { PROJECT_ROOT } from '../lib/projectRoot'
 import { getSpriteImages, iconTextureSize, rowCount } from '../lib/sprite'
@@ -89,13 +87,13 @@ async function createSprite(report: (patch: ProgressPatch) => void) {
   writeFileSync(resolve(PROJECT_ROOT, 'i/sprite.png'), newBuffer)
 }
 
-function optimize(buffer: Buffer) {
-  return imagemin.buffer(buffer, {
-    plugins: [
-      imageminPngquant({ quality: [0.6, 0.8] }), // Lossy compression with pngquant
-      imageminOptipng({ optimizationLevel: 3 }), // Lossless compression with optipng
-    ],
-  })
+function optimize(buffer: Buffer): Promise<Buffer> {
+  // `palette: true` runs sharp's built-in libimagequant (same engine pngquant
+  // wraps) for lossy quantization; max compressionLevel/effort is the lossless
+  // pass that optipng used to do. One dependency we already ship for both.
+  return sharp(buffer)
+    .png({ palette: true, quality: 80, effort: 10, compressionLevel: 9 })
+    .toBuffer()
 }
 
 async function main() {
