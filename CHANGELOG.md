@@ -1,3 +1,10 @@
+## [1.10.1](https://github.com/Krutoy242/mc-icons/compare/v1.10.0...v1.10.1) (2026-07-01)
+
+
+### Bug Fixes
+
+* 🐛 add .js extensions so the published bin runs under Node ESM ([b72376c](https://github.com/Krutoy242/mc-icons/commit/b72376cb477eaf48af1e7dd8fec30915570458de))
+
 # [1.10.0](https://github.com/Krutoy242/mc-icons/compare/v1.9.1...v1.10.0) (2026-07-01)
 
 
