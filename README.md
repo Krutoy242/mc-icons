@@ -8,21 +8,28 @@ This TS-Node CLI app designed to automatically turn text in Markdown files into 
 
 Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/modpacks/enigmatica-2-expert-extended) using this tool for [changelogs](https://github.com/Krutoy242/Enigmatica2Expert-Extended/blob/master/CHANGELOG.md).
 
-| Description                                                     |                                                                    Capture | Result                                                                                               |
-|-----------------------------------------------------------------|---------------------------------------------------------------------------:|------------------------------------------------------------------------------------------------------|
-| Items with exact match                                          |                                                                   [Beacon] | ![](https://is.gd/oiTLv6 "Beacon")                                                                   |
-| Item from **Minecraft** picked first                            |                                                                    [Glass] | ![](https://is.gd/bggvW5 "Glass")                                                                    |
-| Add `(every)` inside get all items                              |                                                       [Mossy Wall (every)] | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")![](https://is.gd/wiuAOR "Mossy Stone Brick Wall") |
-| Add `(any)` inside to pick only one                             |                                                         [Mossy Wall (any)] | ![](https://is.gd/uC6VQ2 "Mossy Cobblestone Wall")                                                   |
-| Specify mod in parenth                                          |                                          [Green wall] (Actually Additions) | ![](https://is.gd/wxi3cX "Ethetic Green Wall")                                                       |
-| You can use mod **shortand**<br/>or **abbreviature**            |                                [Green wall] (actual)<br/>[Green wall] (EM) | ![](https://is.gd/wxi3cX "Ethetic Green Wall")![](https://is.gd/PR2MS1 "Green Alabaster Wall")       |
-| Use `(fluid)` postfix to get fluid                              |                                                    [Enriched Lava] (fluid) | ![](https://is.gd/XPxBoQ "Enriched Lava")                                                            |
-| Use numbers `(4)` as metadata                                   |                                  [Futura Block] (4)<br/>[Futura Block] (5) | ![](https://is.gd/eGPYzG "Futura Block")![](https://git.io/JLjsJ 'Futura Block')                     |
-| Capture by id **&#91;&lt;mod:name:meta:{tag}>]**                |                       [<tconstruct:large_plate:0:{Material:"fierymetal"}>] | ![](https://is.gd/Zza0WL "Fiery Large Plate")                                                        |
-| Output first items if all have same icon                        |                                                     [Advanced Pocket] (CC) | ![](https://is.gd/m64erK "Advanced Pocket Computer")                                                 |
-| With mod defined only subset will be picked (if no exact match) |                                               [Basalt Sla (every)] (Quark) | ![](https://github.com/Krutoy242/mc-icons/raw/master/i/quark/stone_basalt_slab__0.png "Basalt Slab") |
-| Big lists (not all names available)                             |                                                    [Molten Bucket (every)] |                                                                                                      |
-| Predefined placeholders                                         | [<placeholder:pickaxe:3>][<placeholder:jackhammer:15>][<placeholder:null>] |                                                                                                      |
+<!-- The table below is generated from `@example` rows in the source (see
+     src/tool/examples.ts). Do not edit by hand — run `pnpm gen:readme`. -->
+<!-- AUTOGEN:examples -->
+
+| Description | Capture | Result |
+|-------------|---------|--------|
+| Ignore markdown links | `[docs](https://example.com)` | — |
+| Use numbers as metadata | `[Flag] (1)`<br/>`[Flag] (0)` | ![Flag](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/openblocks/flag__1.png "Flag")![Flag](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/openblocks/flag__0.png "Flag") |
+| Specify mod by name, shorthand or abbreviation | `[Ash] (forestry)`<br/>`[Green wall] (Actually Additions)`<br/>`[Fan] (cyclicmagic)` | ![Ash](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/forestry/ash__0.png "Ash")![Ethetic Green Wall](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/actuallyadditions/block_testifi_bucks_green_fence__0.png "Ethetic Green Wall")![Fan](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/cyclicmagic/fan__0.png "Fan") |
+| Items with exact match | `[Beacon]` | ![Beacon](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/beacon__0.png "Beacon") |
+| Names match case-insensitively | `[beacon]` | ![Beacon](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/beacon__0.png "Beacon") |
+| Item from Minecraft picked first | `[Glass]` | ![Glass](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/glass__0.png "Glass") |
+| Output first items when all share one icon | `[Advanced Pocket] (CC)` | ![Advanced Pocket Computer](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/computercraft/pocket_computer__1.png "Advanced Pocket Computer") |
+| Ignore checkbox `[x]` and empty captures | `[x]` | — |
+| Unknown names are left untouched | `[ZZZNonExistentItemZZZ]` | — |
+| Add (every) to get all matching items | `[Mossy Wall (every)]` | ![Mossy Cobblestone Wall](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/cobblestone_wall__1.png "Mossy Cobblestone Wall")![Mossy Stone Brick Wall](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/quark/stonebrick_mossy_wall__0.png "Mossy Stone Brick Wall") |
+| Add (any) to pick only the first match | `[Mossy Wall (any)]` | ![Mossy Cobblestone Wall](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/cobblestone_wall__1.png "Mossy Cobblestone Wall") |
+| Capture by full id `<mod:name:meta:{nbt}>` | `[<tconstruct:large_plate:0:{Material:"fierymetal"}>]`<br/>`[<minecraft:coal:1>]` | ![Fiery Large Plate](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/tconstruct/large_plate__0__b1173263.png "Fiery Large Plate")![Charcoal](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/minecraft/coal__1__89b8507a.png "Charcoal") |
+| Use (fluid) postfix to get a fluid | `[Enriched Lava] (fluid)` | ![Enriched Lava](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/fluid/enrichedlava.png "Enriched Lava") |
+| Predefined placeholders | `[<placeholder:pickaxe:3>][<placeholder:jackhammer:15>][<placeholder:null>]` | ![Placeholder pickaxe:3](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/placeholder/pickaxe__3.png "Placeholder pickaxe:3")![Placeholder jackhammer:15](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/placeholder/jackhammer__15.png "Placeholder jackhammer:15")![Placeholder null](https://cdn.jsdelivr.net/gh/Krutoy242/mc-icons@master/i/placeholder/null.png "Placeholder null") |
+
+<!-- /AUTOGEN:examples -->
 
 ## Usage
 

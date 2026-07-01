@@ -22,6 +22,8 @@
     "release": "tsc && release-it",
     "test": "vitest run",
     "test run": "tsx src/cli.ts README.md --no-short --repo=i/",
+    "gen:readme": "tsx src/tool/gen-readme.ts",
+    "gen:readme --check": "tsx src/tool/gen-readme.ts --check",
     "preparse": "tsx src/tool/preparse.ts --mc=D:/mc/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
     "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
     "sprite:create": "tsx src/tool/sprite.tsx",

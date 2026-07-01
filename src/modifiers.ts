@@ -24,6 +24,12 @@ const modifiersList = [
   createModifier(/\s*\(Any\)\s*/gi, d => [[d[0]], !!d.length]),
 ]
 
+/**
+ * Strip `(every)`/`(any)` modifiers from a capture and return the leftover text
+ * plus a filter that applies the modifier's semantics to the result set.
+ * @example Add (every) to get all matching items | [Mossy Wall (every)] => minecraft/cobblestone_wall__1,quark/stonebrick_mossy_wall__0
+ * @example Add (any) to pick only the first match | [Mossy Wall (any)] => minecraft/cobblestone_wall__1
+ */
 export function refine(rawCapture: string) {
   let capture = rawCapture
   const filters = modifiersList

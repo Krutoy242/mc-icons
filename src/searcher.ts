@@ -60,6 +60,11 @@ function getByID(assetEx: AssetEx, id: string): DictEntry[] | undefined {
   return result ? [result] : undefined
 }
 
+/**
+ * Resolve a full command-string capture `<mod:name:meta:{nbt}>` straight to its
+ * item, bypassing name matching.
+ * @example Capture by full id `<mod:name:meta:{nbt}>` | [<tconstruct:large_plate:0:{Material:"fierymetal"}>] => tconstruct/large_plate__0__b1173263 ; [<minecraft:coal:1>] => minecraft/coal__1__89b8507a
+ */
 function getByCommandString(
   assetEx: AssetEx,
   capture: string,

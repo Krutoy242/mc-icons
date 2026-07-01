@@ -16,9 +16,20 @@ export interface RgxExecIconMatch extends RegExpMatchArray {
   }
 }
 
+/**
+ * Matches `[capture]` optionally followed by ` (option)`, but never a markdown
+ * link `[text](url)` — the negative lookahead on `(` skips those.
+ * @example Ignore markdown links | [docs](https://example.com) => (none)
+ */
 export const capture_rgx
   = /\[(?<capture>[^\][]+)\](?!\()(?<tail>\s+\((?<option>[^)]+)\))?/g
 
+/**
+ * Narrow results by the trailing `(option)`: a bare number filters by metadata,
+ * anything else matches a mod by its source id, full name or abbreviation.
+ * @example Use numbers as metadata | [Flag] (1) => openblocks/flag__1 ; [Flag] (0) => openblocks/flag__0
+ * @example Specify mod by name, shorthand or abbreviation | [Ash] (forestry) => forestry/ash__0 ; [Green wall] (Actually Additions) => actuallyadditions/block_testifi_bucks_green_fence__0 ; [Fan] (cyclicmagic) => cyclicmagic/fan__0
+ */
 function filterByOption(result: DictEntry[], option?: string): DictEntry[] {
   if (!option)
     return result
@@ -38,6 +49,17 @@ function filterByOption(result: DictEntry[], option?: string): DictEntry[] {
   )
 }
 
+/**
+ * Resolve one `[capture]` match to its dictionary entries, walking the matching
+ * strategies in {@link attempts} order (exact name, Minecraft-preferred, trie,
+ * fuzzy) and narrowing with the option/modifier/same-image filters.
+ * @example Items with exact match | [Beacon] => minecraft/beacon__0
+ * @example Names match case-insensitively | [beacon] => minecraft/beacon__0
+ * @example Item from Minecraft picked first | [Glass] => minecraft/glass__0
+ * @example Output first items when all share one icon | [Advanced Pocket] (CC) => computercraft/pocket_computer__1
+ * @example Ignore checkbox `[x]` and empty captures | [x] => (none)
+ * @example Unknown names are left untouched | [ZZZNonExistentItemZZZ] => (none)
+ */
 export async function iconizeMatch(
   match: RgxExecIconMatch,
   trieSearch: (s: string) => DictEntry[],

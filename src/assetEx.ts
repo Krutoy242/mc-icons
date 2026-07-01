@@ -7,6 +7,12 @@ import { firstOf } from './lib/firstOf'
 import { asset } from './tool/assets'
 
 // TODO: Gas and fluid should not be in every modpack
+/**
+ * Sources kept regardless of the modpack filter, so `(fluid)`/gas/placeholder
+ * captures always resolve.
+ * @example Use (fluid) postfix to get a fluid | [Enriched Lava] (fluid) => fluid/enrichedlava
+ * @example Predefined placeholders | [<placeholder:pickaxe:3>][<placeholder:jackhammer:15>][<placeholder:null>] => placeholder/pickaxe__3,placeholder/jackhammer__15,placeholder/null
+ */
 const whitelistSources = ['gas', 'fluid', 'placeholder']
 
 function abbr1(str: string) {
