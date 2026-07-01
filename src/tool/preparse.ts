@@ -18,7 +18,7 @@ import { appendNames } from './names'
 import { addNbt } from './nbt'
 import { generatePlaceholders, registerPlaceholders } from './placeholder'
 
-interface PreparseArgs {
+export interface PreparseArgs {
   mc: string
   modpack: string
   icons?: string
@@ -58,7 +58,10 @@ const main = defineCommand({
   run: ({ args }) => init(args as unknown as PreparseArgs),
 })
 
-runMain(main)
+// Only run the CLI when invoked directly (`tsx src/tool/preparse.ts …`).
+// `src/tool/data.ts` imports `init` and must not trigger `runMain`.
+if (import.meta.main)
+  runMain(main)
 
 // mc-jeiexporter hard-throws on any JEIE ingredient type missing from its
 // `iTypePrefix` table. Mod class paths drift between versions (e.g. Requious'
@@ -85,7 +88,7 @@ function sanitizeNameMap(jsonTxt: string, log: (msg: string) => void): string {
   return JSON.stringify(out)
 }
 
-async function init(argv: PreparseArgs) {
+export async function init(argv: PreparseArgs) {
   let log = category('Preparation')
 
   if (argv.overwrite) {
@@ -182,7 +185,7 @@ async function init(argv: PreparseArgs) {
   log('Generating mod names ...')
   const modlist = join(argv.mc, 'config/crash_assistant/modlist.json')
   if (existsSync(modlist)) {
-    const modlistData: Record<string, { modId: string; name: string }> = JSON.parse(
+    const modlistData: Record<string, { modId: string, name: string }> = JSON.parse(
       readFileSync(modlist, 'utf8'),
     )
     const modNames: Record<string, string> = {}

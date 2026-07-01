@@ -5,7 +5,7 @@
   "packageManager": "pnpm@11.9.0",
   "description": "Parsing markdown file to replace item names into item icons.",
   "license": "MIT",
-  "repository": "https://github.com/Krutoy242/E2E-E-icons",
+  "repository": "https://github.com/Krutoy242/mc-icons",
   "keywords": [],
   "main": "./build/index.js",
   "bin": "./build/cli.js",
@@ -18,14 +18,16 @@
     "node": ">=22"
   },
   "scripts": {
+    "build": "tsc",
+    "prepare": "simple-git-hooks || true && tsc",
+    "data": "tsx src/tool/data.ts",
+    "preparse": "tsx src/tool/preparse.ts",
     "add-new-images": "git add -fv i",
-    "release": "tsc && release-it",
     "test": "vitest run",
     "test run": "tsx src/cli.ts README.md --no-short --repo=i/",
+    "lint": "eslint .",
     "gen:readme": "tsx src/tool/gen-readme.ts",
-    "gen:readme --check": "tsx src/tool/gen-readme.ts --check",
-    "preparse": "tsx src/tool/preparse.ts --mc=D:/mc/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
-    "preparse --no-overwrite": "tsx src/tool/preparse.ts --no-overwrite --mc=D:/mc/E2E-E --icons=icon-exports-x64 --modpack=e2ee",
+    "readme:check": "tsx src/tool/gen-readme.ts --check",
     "sprite:create": "tsx src/tool/sprite.tsx",
     "test:picker": "tsx src/tool/test-picker.ts"
   },
@@ -44,6 +46,8 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.1.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/better-sqlite3": "^7.6.13",
     "@types/fast-levenshtein": "^0.0.4",
     "@types/node": "^26.0.1",
@@ -51,13 +55,20 @@
     "@types/skmeans": "^0.11.8",
     "boxen": "5.1.2",
     "eslint": "^10.6.0",
+    "eslint_d": "^15.0.2",
     "fast-glob": "^3.3.3",
+    "lint-staged": "^17.0.8",
     "log-update": "^8.0.0",
     "mc-iexporter-iterator": "^1.0.1",
     "mc-jeiexporter": "^1.0.0",
+    "semantic-release": "^25.0.5",
+    "simple-git-hooks": "^2.13.1",
     "skia-canvas": "^3.0.8",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3",
     "vitest": "^4.1.9"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm exec lint-staged"
   }
 }

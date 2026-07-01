@@ -33,15 +33,16 @@ Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/m
 
 ## Usage
 
-1. Install latest **NodeJS** for [Windows](https://nodejs.org/en/download/current/) or [Unix](https://nodejs.org/en/download/package-manager/)
+No install, no setup — one command. With [NodeJS](https://nodejs.org/en/download/current/) present:
 
-2. Create Markdown file with strings of form `[Item Name] (options)`
+```sh
+npx mc-icons README.md
+```
 
-3. Run `mc-icons` with input file path
-    ```sh
-    > npx mc-icons README.md
-    ```
-4. Input file would be changed in place
+Write `[Item Name] (options)` anywhere in a Markdown file, run the command, and
+the file is rewritten in place with the matching Minecraft icons. The tool ships
+prebuilt with its icon database, so the first run is ready immediately and will
+interactively prompt you whenever a name is ambiguous.
 
 ## Options
 
@@ -58,15 +59,46 @@ Modpack [Enigmatica 2: Expert - Extended](https://www.curseforge.com/minecraft/m
 
 ## Developing
 
-To generate icons into repo:
+Everything is automated — you make commits, the rest regenerates and publishes itself.
 
-1. Install mods [IconExporter](https://www.curseforge.com/minecraft/mc-mods/iconexporter) and [JEIExporter](https://github.com/friendlyhj/JEIExporter).
-2. Run from game `/iconexporter export 64`. Note [this issue](https://github.com/CyclopsMC/IconExporter/issues/7) and the fact that when MC window resized, it could output icons in 32x32 format despite `64` in argument.
-3. Export JEI data (default `ctrl+J` hotkey, see controls).
-4. Run
-  ```sh
-  ts-node src/tool/preparse.ts --mc=path/to/modpack --icons=icon-exports-x64 --modpack=modpack_shortand
-  ```
+### One-command setup
+
+```sh
+pnpm install
+```
+
+That's it. A `prepare` lifecycle step installs the git hooks and builds the
+project, so a fresh clone is ready to work immediately. (Requires
+[pnpm](https://pnpm.io/installation) — `corepack enable` if you don't have it.)
+
+### Regenerating the icon database
+
+Icons come from a live Minecraft instance, so this is the one step that needs
+your machine's game data. Collapsed into a single command:
+
+1. Install the [IconExporter](https://www.curseforge.com/minecraft/mc-mods/iconexporter) and [JEIExporter](https://github.com/friendlyhj/JEIExporter) mods.
+2. In-game, run `/iconexporter export 64` (note [this issue](https://github.com/CyclopsMC/IconExporter/issues/7): a resized MC window can emit 32×32 despite the `64`), then export JEI data (default `ctrl+J`).
+3. Run:
+   ```sh
+   pnpm data
+   ```
+   The **first run is interactive** — it auto-detects common launcher locations
+   and asks for your instance path, the IconExporter sub-folder, and the modpack
+   short id, then remembers them in `mcicons.config.json` (gitignored). Later
+   runs are silent. It regenerates `assets/assets.db`, copies new icons into
+   `i/`, and **git-stages the result for you** (no more manual `add-new-images`).
+   Use `pnpm data --reconfigure` to change the saved paths.
+
+### What happens automatically
+
+- **On commit** (pre-commit hook, kept under ~3s): staged files are `eslint --fix`ed
+  via the `eslint_d` daemon (the first commit of a session warms it in ~6s, every
+  commit after is ~instant), and the README example table is regenerated only when
+  `src/tool/examples.ts` changes.
+- **On push to `master`** (GitHub Actions): CI builds & tests on Linux + Windows and
+  lints on Linux; [semantic-release](https://semantic-release.gitbook.io/) then derives
+  the version, tag, `CHANGELOG.md`, GitHub release, and npm publish from your commit
+  messages. Publishing requires an `NPM_TOKEN` secret in the repo settings.
 
 ## Author
 

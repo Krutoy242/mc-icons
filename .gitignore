@@ -11,3 +11,6 @@ coverage
 yarn.lock
 *.tsbuildinfo
 i
+
+# Local machine paths for `pnpm data` (per-developer, never committed)
+mcicons.config.json

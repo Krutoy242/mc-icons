@@ -2,6 +2,7 @@ allowBuilds:
   better-sqlite3: true
   esbuild: true
   sharp: true
+  simple-git-hooks: true
   skia-canvas: true
 minimumReleaseAgeExclude:
   - '@eslint/plugin-kit@0.7.2'

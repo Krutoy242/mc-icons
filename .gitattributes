@@ -1,0 +1,6 @@
+# LF everywhere so the antfu stylistic rules round-trip on Windows checkouts.
+* text=auto eol=lf
+
+# Binaries git must never touch or try to normalize.
+*.png binary
+*.db  binary
