@@ -6,10 +6,10 @@ import { Box, render, Text } from 'ink'
 import React from 'react'
 import sharp from 'sharp'
 import { Canvas, loadImage } from 'skia-canvas'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { getSpriteImages, iconTextureSize, rowCount } from '../lib/sprite'
-import { CELL_COLS } from '../picker/pixels'
-import { renderImageLines } from '../picker/render'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { getSpriteImages, iconTextureSize, rowCount } from '../lib/sprite.js'
+import { CELL_COLS } from '../picker/pixels.js'
+import { renderImageLines } from '../picker/render/index.js'
 
 interface Thumb { key: string, lines: string[] }
 

@@ -19,20 +19,20 @@
  *   returns them, without repo prefix or `.png`). Use `(none)` for "no match".
  * - `;` separates several captures that belong to the same README row.
  */
-import type { CliOpts } from '../cli'
-import type { RgxExecIconMatch } from '../iconizeMatch'
-import type { DictEntry } from '../searcher'
+import type { CliOpts } from '../cli.js'
+import type { RgxExecIconMatch } from '../iconizeMatch.js'
+import type { DictEntry } from '../searcher.js'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { TrieSearch } from '@committed/trie-search'
-import { AssetEx } from '../assetEx'
-import { getIcon } from '../getIcon'
-import { capture_rgx, iconizeMatch } from '../iconizeMatch'
-import { FuzzyResolver } from '../lib/fuzzy'
+import { AssetEx } from '../assetEx.js'
+import { getIcon } from '../getIcon.js'
+import { capture_rgx, iconizeMatch } from '../iconizeMatch.js'
+import { FuzzyResolver } from '../lib/fuzzy.js'
 
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { getTrieSearch } from '../trie'
-import { Unclear } from '../unclear'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { getTrieSearch } from '../trie.js'
+import { Unclear } from '../unclear.js'
 
 // ──────────────────────────────────────────────────────────────────────────
 // Example DSL parsing

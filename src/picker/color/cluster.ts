@@ -1,6 +1,6 @@
-import type { Lab } from './oklab'
+import type { Lab } from './oklab.js'
 import skmeans from 'skmeans'
-import { labDist2 } from './oklab'
+import { labDist2 } from './oklab.js'
 
 export interface ClusterResult {
   centers: Lab[]

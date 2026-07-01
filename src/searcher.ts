@@ -1,18 +1,18 @@
-import type { CliOpts } from './cli'
-import type { RgxExecIconMatch } from './iconizeMatch'
-import type { Base } from './tool/types'
+import type { CliOpts } from './cli.js'
+import type { RgxExecIconMatch } from './iconizeMatch.js'
+import type { Base } from './tool/types.js'
 import process from 'node:process'
 
 import { TrieSearch } from '@committed/trie-search'
 import chalk from 'chalk'
-import { AssetEx } from './assetEx'
-import { getIcon } from './getIcon'
-import { capture_rgx, iconizeMatch } from './iconizeMatch'
-import { FuzzyResolver } from './lib/fuzzy'
-import isgd from './lib/isgd'
-import { getTrieSearch } from './trie'
+import { AssetEx } from './assetEx.js'
+import { getIcon } from './getIcon.js'
+import { capture_rgx, iconizeMatch } from './iconizeMatch.js'
+import { FuzzyResolver } from './lib/fuzzy.js'
+import isgd from './lib/isgd.js'
+import { getTrieSearch } from './trie.js'
 
-import { Unclear } from './unclear'
+import { Unclear } from './unclear.js'
 
 const write = (s = '.') => process.stdout.write(s)
 

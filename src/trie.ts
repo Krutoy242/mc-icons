@@ -1,5 +1,5 @@
 import type { Reducer } from '@committed/trie-search'
-import type { DictEntry } from './searcher'
+import type { DictEntry } from './searcher.js'
 
 import { TrieSearch } from '@committed/trie-search'
 

@@ -1,4 +1,4 @@
-import type { Lab, RGB } from '../color/oklab'
+import type { Lab, RGB } from '../color/oklab.js'
 
 // Subpixels are stored row-major within a cell. With a 2-col × 4-row grid
 // the indices are:

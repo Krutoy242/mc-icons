@@ -1,8 +1,8 @@
-import type { PickerOption } from './types'
+import type { PickerOption } from './types.js'
 import { Box } from 'ink'
 import React from 'react'
-import { Card } from './Card'
-import { Image } from './Image'
+import { Card } from './Card.js'
+import { Image } from './Image.js'
 
 interface Props {
   option: PickerOption

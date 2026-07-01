@@ -1,10 +1,10 @@
-import type { CliOpts } from './cli'
+import type { CliOpts } from './cli.js'
 
-import type { DictEntry } from './searcher'
-import type { Tree } from './tool/types'
-import { baseFromID } from './base'
-import { firstOf } from './lib/firstOf'
-import { asset } from './tool/assets'
+import type { DictEntry } from './searcher.js'
+import type { Tree } from './tool/types.js'
+import { baseFromID } from './base.js'
+import { firstOf } from './lib/firstOf.js'
+import { asset } from './tool/assets.js'
 
 // TODO: Gas and fluid should not be in every modpack
 /**

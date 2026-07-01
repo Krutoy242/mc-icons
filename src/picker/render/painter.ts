@@ -1,9 +1,9 @@
-import type { Lab, RGB } from '../color/oklab'
-import type { GlyphCandidate, Sub } from './types'
+import type { Lab, RGB } from '../color/oklab.js'
+import type { GlyphCandidate, Sub } from './types.js'
 import chalk from 'chalk'
-import { clusterColors } from '../color/cluster'
-import { avgRgb, labDist2, mixLab, rgbToLab } from '../color/oklab'
-import { ALL_GLYPHS } from './glyphs'
+import { clusterColors } from '../color/cluster.js'
+import { avgRgb, labDist2, mixLab, rgbToLab } from '../color/oklab.js'
+import { ALL_GLYPHS } from './glyphs/index.js'
 
 // Alpha (shape) is more important than colour — weights below.
 const W_SHAPE = 1.0

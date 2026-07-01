@@ -1,5 +1,5 @@
 import type { Buffer } from 'node:buffer'
-import type { Sub } from './types'
+import type { Sub } from './types.js'
 import chalk from 'chalk'
 import {
   CELL_COLS,
@@ -8,9 +8,9 @@ import {
   SUBPX_PER_CELL_X,
   SUBPX_PER_CELL_Y,
   SUPERSAMPLE,
-} from '../pixels'
-import { paintCell } from './painter'
-import { readSub } from './subpixel'
+} from '../pixels.js'
+import { paintCell } from './painter.js'
+import { readSub } from './subpixel.js'
 
 export function pixelsToLines(buf: Buffer, w: number, _h: number): string[] {
   const step = SUPERSAMPLE

@@ -1,4 +1,4 @@
-import { asset } from './assets'
+import { asset } from './assets.js'
 
 const existsNbt = new Set<string>()
 

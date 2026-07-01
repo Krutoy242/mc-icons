@@ -1,10 +1,10 @@
-import type { PickerOption } from './types'
+import type { PickerOption } from './types.js'
 import { Box, Text, useInput, useStdout } from 'ink'
 import React, { useEffect, useMemo, useState } from 'react'
-import { CompactRow } from './CompactRow'
-import { Grid } from './Grid'
-import { computeLayout } from './layout'
-import { useGridNavigation } from './useGridNavigation'
+import { CompactRow } from './CompactRow.js'
+import { Grid } from './Grid.js'
+import { computeLayout } from './layout.js'
+import { useGridNavigation } from './useGridNavigation.js'
 
 interface Props {
   prompt: string

@@ -1,7 +1,7 @@
-import type { Tree } from './types'
+import type { Tree } from './types.js'
 
-import { loadFromDb, writeStore } from './db'
-import { tree } from './tree'
+import { loadFromDb, writeStore } from './db.js'
+import { tree } from './tree.js'
 
 const store = {
   /** Map of `imgHash: source/entry__meta` */

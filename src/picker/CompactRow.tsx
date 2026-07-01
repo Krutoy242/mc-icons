@@ -1,4 +1,4 @@
-import type { PickerOption } from './types'
+import type { PickerOption } from './types.js'
 import chalk from 'chalk'
 import { Text } from 'ink'
 import React from 'react'

@@ -5,10 +5,10 @@ import { copyFile } from 'node:fs/promises'
 import { join, resolve as pathResolve } from 'node:path'
 import FastGlob from 'fast-glob'
 import sharp from 'sharp'
-import { chunk } from '../lib/fp'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { asset } from './assets'
-import { tree } from './tree'
+import { chunk } from '../lib/fp.js'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { asset } from './assets.js'
+import { tree } from './tree.js'
 
 export function getHash(filePath: string) {
   return new Promise<string>((resolve, reject) => {

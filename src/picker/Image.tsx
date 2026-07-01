@@ -1,6 +1,6 @@
 import { Text } from 'ink'
 import React, { useEffect, useState } from 'react'
-import { PLACEHOLDER_LINES, renderImageLines } from './render'
+import { PLACEHOLDER_LINES, renderImageLines } from './render/index.js'
 
 interface Props {
   path?: string

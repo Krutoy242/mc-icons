@@ -1,6 +1,6 @@
-import { firstOf } from './lib/firstOf'
-import { asset, isAssetLoaded } from './tool/assets'
-import { dbDefinition, dbImagePath, dbNbtHash } from './tool/db'
+import { firstOf } from './lib/firstOf.js'
+import { asset, isAssetLoaded } from './tool/assets.js'
+import { dbDefinition, dbImagePath, dbNbtHash } from './tool/db.js'
 
 interface Definition { [meta: string]: { [nbt: string]: string } }
 

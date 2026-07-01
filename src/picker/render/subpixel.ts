@@ -1,7 +1,7 @@
 import type { Buffer } from 'node:buffer'
-import type { Sub } from './types'
-import { rgbToLab } from '../color/oklab'
-import { SUPERSAMPLE } from '../pixels'
+import type { Sub } from './types.js'
+import { rgbToLab } from '../color/oklab.js'
+import { SUPERSAMPLE } from '../pixels.js'
 
 // Read a subpixel by averaging a SUPERSAMPLE×SUPERSAMPLE block of source
 // pixels. Alpha is decisive for shape fidelity:

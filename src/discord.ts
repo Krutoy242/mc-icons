@@ -1,16 +1,16 @@
-import type { CliOpts } from './cli'
-import type { DictEntry } from './searcher'
+import type { CliOpts } from './cli.js'
+import type { DictEntry } from './searcher.js'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
 import clipboardy from 'clipboardy'
-import { AssetEx } from './assetEx'
-import { getIcon } from './getIcon'
-import { PROJECT_ROOT } from './lib/projectRoot'
-import { pick } from './picker'
-import { renderImageLines } from './picker/render'
+import { AssetEx } from './assetEx.js'
+import { getIcon } from './getIcon.js'
+import { PROJECT_ROOT } from './lib/projectRoot.js'
+import { pick } from './picker/index.js'
+import { renderImageLines } from './picker/render/index.js'
 
-function buildOption(entry: DictEntry): import('./picker').PickerOption | undefined {
+function buildOption(entry: DictEntry): import('./picker/index.js').PickerOption | undefined {
   try {
     const iconPath = getIcon([entry.source, entry.entry, entry.meta, entry.sNbt])
     if (!iconPath)

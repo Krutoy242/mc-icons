@@ -1,4 +1,4 @@
-import type { DictEntry } from '../searcher'
+import type { DictEntry } from '../searcher.js'
 
 import levenshtein from 'fast-levenshtein'
 import { BKTree } from 'mnemonist'

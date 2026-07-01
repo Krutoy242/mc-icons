@@ -1,15 +1,15 @@
-import type { CliOpts } from './cli'
-import type { RgxExecIconMatch } from './iconizeMatch'
-import type { PickerOption } from './picker'
-import type { DictEntry } from './searcher'
+import type { CliOpts } from './cli.js'
+import type { RgxExecIconMatch } from './iconizeMatch.js'
+import type { PickerOption } from './picker/index.js'
+import type { DictEntry } from './searcher.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
 import chalk from 'chalk'
-import { getIcon } from './getIcon'
-import { chunk, countBy, escapeRegExp, uniqBy } from './lib/fp'
-import { PROJECT_ROOT } from './lib/projectRoot'
-import { pick } from './picker'
+import { getIcon } from './getIcon.js'
+import { chunk, countBy, escapeRegExp, uniqBy } from './lib/fp.js'
+import { PROJECT_ROOT } from './lib/projectRoot.js'
+import { pick } from './picker/index.js'
 
 type NonEmptyArray<T> = [T, ...T[]]
 

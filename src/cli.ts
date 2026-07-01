@@ -3,8 +3,8 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import process from 'node:process'
 import { defineCommand, runMain } from 'citty'
-import { discordMode } from './discord'
-import { bracketsSearch } from './searcher'
+import { discordMode } from './discord.js'
+import { bracketsSearch } from './searcher.js'
 
 export interface CliOpts {
   treshold: number

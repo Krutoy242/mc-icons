@@ -1,8 +1,8 @@
-import type { Layout } from './layout'
-import type { PickerOption } from './types'
+import type { Layout } from './layout.js'
+import type { PickerOption } from './types.js'
 import { Box } from 'ink'
 import React from 'react'
-import { Cell } from './Cell'
+import { Cell } from './Cell.js'
 
 interface Props {
   options: PickerOption[]

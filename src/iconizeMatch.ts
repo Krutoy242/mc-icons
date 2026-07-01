@@ -1,8 +1,8 @@
-import type { DictEntry } from './searcher'
-import type { Unclear } from './unclear'
-import { getIcon } from './getIcon'
-import { refine } from './modifiers'
-import { asset } from './tool/assets'
+import type { DictEntry } from './searcher.js'
+import type { Unclear } from './unclear.js'
+import { getIcon } from './getIcon.js'
+import { refine } from './modifiers.js'
+import { asset } from './tool/assets.js'
 
 type Promisable<T> = T | Promise<T>
 

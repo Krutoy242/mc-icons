@@ -1,4 +1,4 @@
-import type { GlyphCandidate } from '../types'
+import type { GlyphCandidate } from '../types.js'
 
 // All glyphs are described against a 2-col × 4-row subpixel grid (8 cells),
 // row-major top-to-bottom. Index = row * 2 + col.

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { extractExamples, IconizeRunner } from '../tool/examples'
+import { extractExamples, IconizeRunner } from '../tool/examples.js'
 
 // Conversion features are documented once, as `@example` rows at their
 // implementation site (see src/tool/examples.ts). Here we execute every one of

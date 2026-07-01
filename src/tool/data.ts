@@ -21,8 +21,8 @@ import { createInterface } from 'node:readline/promises'
 import chalk from 'chalk'
 import { defineCommand, runMain } from 'citty'
 import fast_glob from 'fast-glob'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import prune from './prune'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import prune from './prune.js'
 
 const CONFIG_PATH = resolve(PROJECT_ROOT, 'mcicons.config.json')
 
@@ -228,7 +228,7 @@ const main = defineCommand({
     },
   },
   async run({ args }) {
-    const { init } = await import('./preparse')
+    const { init } = await import('./preparse.js')
     const cfg = await resolveConfig(!!args.reconfigure)
 
     await init({

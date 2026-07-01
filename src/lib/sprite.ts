@@ -1,4 +1,4 @@
-import { asset } from '../tool/assets'
+import { asset } from '../tool/assets.js'
 
 // (": "\w+/[a-z]+__\d+__)(.+\n\s+"\w+\1){150}
 const blacklistedItems = [

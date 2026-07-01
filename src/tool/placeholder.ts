@@ -4,10 +4,10 @@ import { resolve } from 'node:path'
 import FastGlob from 'fast-glob'
 
 import { Canvas, loadImage } from 'skia-canvas'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { asset } from './assets'
-import { getHash } from './images'
-import { tree } from './tree'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { asset } from './assets.js'
+import { getHash } from './images.js'
+import { tree } from './tree.js'
 
 const possibleToolTypes = {
   pickaxe: resolve(PROJECT_ROOT, 'i/minecraft/stone_pickaxe__0.png'),

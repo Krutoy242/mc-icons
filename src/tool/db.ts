@@ -1,5 +1,5 @@
 import type { Database as Db } from 'better-sqlite3'
-import type { Tree } from './types'
+import type { Tree } from './types.js'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import Database from 'better-sqlite3'

@@ -1,1 +1,1 @@
-export * from './getIcon'
+export * from './getIcon.js'

@@ -1,8 +1,8 @@
 /* eslint-disable test/prefer-lowercase-title */
-import type { DictEntry } from '../searcher'
+import type { DictEntry } from '../searcher.js'
 import { bench, describe } from 'vitest'
-import { AssetEx } from '../assetEx'
-import { FuzzyResolver, linearResolve } from '../lib/fuzzy'
+import { AssetEx } from '../assetEx.js'
+import { FuzzyResolver, linearResolve } from '../lib/fuzzy.js'
 
 // ──────────────────────────────────────────────────────────────────────────
 // Setup — load the real name dictionary once (from assets.db via AssetEx)

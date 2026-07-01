@@ -1,9 +1,9 @@
-import type { PickerOpts } from './types'
+import type { PickerOpts } from './types.js'
 import { render } from 'ink'
 import React from 'react'
-import { Picker } from './Picker'
+import { Picker } from './Picker.js'
 
-export type { PickerOption, PickerOpts } from './types'
+export type { PickerOption, PickerOpts } from './types.js'
 
 export function pick(opts: PickerOpts): Promise<number | undefined> {
   return new Promise((resolve) => {

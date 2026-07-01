@@ -1,4 +1,4 @@
-import type { DictEntry } from './searcher'
+import type { DictEntry } from './searcher.js'
 
 type DictTuple = [d: DictEntry[], isFinal: boolean | undefined]
 type DictEntriesFilter = (dictEntries: DictEntry[]) => DictTuple

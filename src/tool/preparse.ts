@@ -1,5 +1,5 @@
 import type { ItemIcon } from 'mc-iexporter-iterator'
-import type { ImageBase } from './images'
+import type { ImageBase } from './images.js'
 
 import { existsSync, readFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
@@ -9,14 +9,14 @@ import fast_glob from 'fast-glob'
 import iconIterator from 'mc-iexporter-iterator'
 
 import getNameMap, { iTypePrefix } from 'mc-jeiexporter/build/NameMap'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { asset, saveAssets } from './assets'
-import { appendImage, grabImages, initOld } from './images'
-import { parseJEIEFiles } from './jeie'
-import { category } from './log'
-import { appendNames } from './names'
-import { addNbt } from './nbt'
-import { generatePlaceholders, registerPlaceholders } from './placeholder'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { asset, saveAssets } from './assets.js'
+import { appendImage, grabImages, initOld } from './images.js'
+import { parseJEIEFiles } from './jeie.js'
+import { category } from './log.js'
+import { appendNames } from './names.js'
+import { addNbt } from './nbt.js'
+import { generatePlaceholders, registerPlaceholders } from './placeholder.js'
 
 export interface PreparseArgs {
   mc: string

@@ -15,9 +15,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 import { renderUsage } from 'citty'
-import { main } from '../cli'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { extractExamples, IconizeRunner } from './examples'
+import { main } from '../cli.js'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { extractExamples, IconizeRunner } from './examples.js'
 
 const README = resolve(PROJECT_ROOT, 'README.md')
 

@@ -1,11 +1,11 @@
-import type { DictEntry } from '../searcher'
+import type { DictEntry } from '../searcher.js'
 import { TrieSearch } from '@committed/trie-search'
 import levenshtein from 'fast-levenshtein'
 import { describe, expect, it } from 'vitest'
-import { AssetEx } from '../assetEx'
-import { capture_rgx } from '../iconizeMatch'
-import { FuzzyResolver, linearResolve } from '../lib/fuzzy'
-import { getTrieSearch } from '../trie'
+import { AssetEx } from '../assetEx.js'
+import { capture_rgx } from '../iconizeMatch.js'
+import { FuzzyResolver, linearResolve } from '../lib/fuzzy.js'
+import { getTrieSearch } from '../trie.js'
 
 // NOTE: the text→icon conversion features (exact/mod/meta/modifier/id matching)
 // are covered by `examples.test.ts`, driven by the `@example` rows that also
@@ -116,20 +116,20 @@ describe('fuzzy resolver (BK-tree vs linear parity)', () => {
 
 describe('getIcon', () => {
   it('returns path for valid item', async () => {
-    const { getIcon } = await import('../getIcon')
+    const { getIcon } = await import('../getIcon.js')
     const result = getIcon(['minecraft', 'stone', 0])
     expect(result).toBeDefined()
     expect(typeof result).toBe('string')
   })
 
   it('returns undefined for non-existent item', async () => {
-    const { getIcon } = await import('../getIcon')
+    const { getIcon } = await import('../getIcon.js')
     const result = getIcon(['nonexistent', 'mod', 0])
     expect(result).toBeUndefined()
   })
 
   it('handles object parameter', async () => {
-    const { getIcon } = await import('../getIcon')
+    const { getIcon } = await import('../getIcon.js')
     const result = getIcon({ source: 'minecraft', entry: 'stone', meta: 0 })
     expect(result).toBeDefined()
     expect(typeof result).toBe('string')

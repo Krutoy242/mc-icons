@@ -1,10 +1,10 @@
-import type { PickerOption } from '../picker'
+import type { PickerOption } from '../picker/index.js'
 import fs from 'node:fs'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
-import { PROJECT_ROOT } from '../lib/projectRoot'
-import { pick } from '../picker'
-import { asset } from './assets'
+import { PROJECT_ROOT } from '../lib/projectRoot.js'
+import { pick } from '../picker/index.js'
+import { asset } from './assets.js'
 
 const ROOT = resolve(PROJECT_ROOT, 'i')
 const SUBDIR_COUNT = 10

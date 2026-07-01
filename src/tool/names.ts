@@ -1,8 +1,8 @@
 import type { NameMap } from 'mc-jeiexporter/build/NameMap'
 import { getIcon } from '..'
-import { uniqBy } from '../lib/fp'
+import { uniqBy } from '../lib/fp.js'
 
-import { asset } from './assets'
+import { asset } from './assets.js'
 
 export function appendNames(nameMap: NameMap) {
   // Make a tree from all Item names
